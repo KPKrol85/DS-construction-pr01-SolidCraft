@@ -164,7 +164,9 @@ W kodzie występują jawne mechanizmy wspierające wydajność:
 
 ### Licencja
 
-Projekt jest oznaczony jako `MIT` w `package.json`.
+Projekt jest objęty własnościową licencją **Własnościowa Licencja Projektu KP_CODE (wersja 1.0)** — pełna treść znajduje się w pliku [`LICENSE`](LICENSE).
+
+Projekt nie jest oprogramowaniem open source. Wykorzystanie komercyjne, redystrybucja, publiczne wdrożenie oraz wykorzystanie Projektu jako szablonu wymagają uprzedniej, pisemnej zgody Właściciela praw: **kontakt@kp-code.pl**.
 
 ## EN
 
@@ -330,4 +332,6 @@ The codebase includes explicit performance-related mechanisms:
 
 ### License
 
-The project is declared as `MIT` in `package.json`.
+This project is covered by the **KP_CODE Proprietary Project License (version 1.0)** — the full text is available in the [`LICENSE`](LICENSE) file.
+
+The project is not open-source software. Commercial use, redistribution, public deployment, and use of the Project as a template require prior written permission from the Copyright Owner: **kontakt@kp-code.pl**.
