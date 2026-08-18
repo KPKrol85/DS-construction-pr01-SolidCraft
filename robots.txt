@@ -1,0 +1,34 @@
+# ==================================================
+
+# robots.txt — SolidCraft — demo (Demo)
+
+# Author: KP_Code_
+# Last update: 2025-10-21
+
+# ==================================================
+
+
+
+## Zezwól wszystkim wyszukiwarkom na indeksowanie strony
+
+User-agent: *
+
+Allow: /
+
+
+
+# Lokalizacja mapy strony (dla Google i Bing)
+
+Sitemap: https://construction-pr01-solidcraft.netlify.app/sitemap.xml
+
+
+
+# Netlify hostuje stronę przez HTTPS — preferowany adres kanoniczny
+
+# Host: https://construction-pr01-solidcraft.netlify.app
+
+
+
+# Dodatkowe informacje (opcjonalnie)
+
+# Crawl-delay: 10  # jeśli chcesz ograniczyć tempo skanowania (rzadko używane)
