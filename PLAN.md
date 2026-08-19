@@ -240,3 +240,8 @@
   - **Value:** the remaining five `oferta/` subpages and two `doc/` pages are unscanned, and the subpages carry the gallery structure addressed by `PH6-01`
   - **Scope boundary:** explicitly non-blocking; valuable only after `PH1-01`, otherwise it scans more unstyled, script-less pages
   - **Source:** `README.md` — "Roadmap", `AUDIT.md` — section 7
+
+- [ ] **O-06 — Remove the speculative `modules/*.css` 404s from the development rendering**
+  - **Value:** every page load under `npm run dev` and `npm run qa:a11y` logs seven 404s for document-relative `modules/*.css` requests; the browser's speculative preloader resolves the `@import` paths in `css/style.css` against the document instead of against the stylesheet, while the correctly resolved `css/modules/*.css` requests all return 200 — nothing is broken, but the console noise obscures real errors during development and QA runs
+  - **Scope boundary:** explicitly non-blocking and development-only; `build:css` inlines every `@import` into `css/style.min.css` (enforced by `scripts/verify-css-build.js`) and `build:dist` rewrites the pages to the minified assets, so no deployed page issues these requests
+  - **Source:** `PH1-01` re-baseline run
