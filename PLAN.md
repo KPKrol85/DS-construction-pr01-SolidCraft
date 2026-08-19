@@ -56,11 +56,11 @@
 
 **Goal:** Make the two blocking interaction paths a visitor cannot avoid — the first-visit modal and the header offer submenu — correct, keyboard-operable and truthful in their ARIA state.
 
-- [ ] **PH2-01 — Make the first-visit modal operable and reliably dismissible** — **Priority:** High
-  - [ ] move focus into the dialog on open and restore it to a sensible element on dismissal
-  - [ ] constrain Tab within the dialog and add an Escape dismissal path, reusing the focus pattern already implemented in `js/modules/lightbox.js` instead of introducing a second one
-  - [ ] apply the existing `body.has-project-modal` scroll-lock class, which no code currently sets
-  - [ ] wrap the `localStorage` read and write in `js/modules/project-banner.js` with the guarded helpers already used by `js/theme-init.js`, `js/modules/map-consent.js` and `js/modules/ui-core.js`, and set the hidden state before persisting
+- [x] **PH2-01 — Make the first-visit modal operable and reliably dismissible** — **Priority:** High
+  - [x] move focus into the dialog on open and restore it to a sensible element on dismissal
+  - [x] constrain Tab within the dialog and add an Escape dismissal path, reusing the focus pattern already implemented in `js/modules/lightbox.js` instead of introducing a second one
+  - [x] apply the existing `body.has-project-modal` scroll-lock class, which no code currently sets
+  - [x] wrap the `localStorage` read and write in `js/modules/project-banner.js` with the guarded helpers already used by `js/theme-init.js`, `js/modules/map-consent.js` and `js/modules/ui-core.js`, and set the hidden state before persisting
   - **Completion condition:** with the modal open, focus starts inside the dialog, Tab cycles only within it, Escape dismisses it, background scrolling is locked, focus returns after dismissal, and the modal is still dismissible when `localStorage` access throws
   - **Source:** `AUDIT.md` — P1-02, P2-12
 
