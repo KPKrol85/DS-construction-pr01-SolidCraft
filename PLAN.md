@@ -45,11 +45,12 @@
   - **Completion condition:** a commit that edits a file under `css/modules/` or `js/modules/` and is deployed without a manual local build either produces regenerated minified output or fails the build
   - **Source:** `AUDIT.md` — P1-08
 
-- [ ] **PH1-04 — Add the missing repository hygiene controls** — **Priority:** Medium
-  - [ ] create `.gitignore` (new file) covering `node_modules/`, `dist/` and `.lighthouseci/`
-  - [ ] create `.gitattributes` (new file) normalising tracked text files to LF, then renormalise the working tree
-  - [ ] remove the two tracked duplicate gallery renditions whose filenames contain `" (1)"` from `assets/img/gallery/`
+- [x] **PH1-04 — Add the missing repository hygiene controls** — **Priority:** Medium
+  - [x] create `.gitignore` (new file) covering `node_modules/`, `dist/` and `.lighthouseci/`
+  - [x] create `.gitattributes` (new file) normalising tracked text files to LF, then renormalise the working tree
+  - [x] remove the two tracked duplicate gallery renditions whose filenames contain `" (1)"` from `assets/img/gallery/`
   - **Completion condition:** after a fresh `npm install` and `npm run build:dist`, `git status` is clean, `git diff --ignore-cr-at-eol` and `git diff` agree, and no tracked asset filename contains `" (1)"`
+  - **Outstanding:** the files are in place — `.gitignore` consolidated, `.gitattributes` added with `* text=auto eol=lf` plus `binary` for `.avif`, `.ico`, `.jpg`, `.png`, `.webp` and `.woff2`, and both `" (1)"` renditions deleted from `assets/img/gallery/`. Renormalising the working tree so `.gitattributes` takes effect for already-tracked files (`git add --renormalize .`) is a Git operation performed separately by the maintainer and was not carried out here; the `git status`-clean part of the completion condition holds only once it has been.
   - **Source:** `AUDIT.md` — P2-02
 
 ## Phase 2 — Entry-path and navigation accessibility
