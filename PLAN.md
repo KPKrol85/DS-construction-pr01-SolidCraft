@@ -25,10 +25,11 @@
 **Goal:** Make the project's own validation and deployment contracts trustworthy, so every later phase can be verified against them.
 
 - [ ] **PH1-01 — Serve correct MIME types from the accessibility gate's static server** — **Priority:** High
-  - [ ] replace the `application/octet-stream` fallback in `scripts/qa-a11y.mjs` with a type map covering at least `.css`, `.js`, `.mjs`, `.json`, `.svg`, `.woff2`, `.png`, `.jpg`, `.webp`, `.avif`, `.ico`
-  - [ ] align the equivalent branch in `scripts/check-links.mjs` so both harnesses share one convention
+  - [x] replace the `application/octet-stream` fallback in `scripts/qa-a11y.mjs` with a type map covering at least `.css`, `.js`, `.mjs`, `.json`, `.svg`, `.woff2`, `.png`, `.jpg`, `.webp`, `.avif`, `.ico`
+  - [x] align the equivalent branch in `scripts/check-links.mjs` so both harnesses share one convention
   - [ ] re-baseline the axe violation list produced against the corrected rendering and record which violations are pre-existing
   - **Completion condition:** during `npm run qa:a11y` the scanned page has the project stylesheet applied and `window.SC` defined, and the reported violations are reviewed against that corrected baseline
+  - **Blocked on:** the re-baseline subtask requires `npm run qa:a11y`, which cannot run while `node_modules` is absent from the checkout (`playwright` and `axe-core` fail to load). Run `npm install` first, then complete the re-baseline and record it in `AUDIT.md` — P1-07.
   - **Source:** `AUDIT.md` — P1-07
 
 - [ ] **PH1-02 — Repair the first-visit modal's legal-document links** — **Priority:** High

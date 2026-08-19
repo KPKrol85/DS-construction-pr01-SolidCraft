@@ -34,6 +34,7 @@ All significant changes to this project are documented in this file.
 - Added an accessibility QA script (`scripts/qa-a11y.mjs`) running axe-core through Playwright.
 - Added internal link and HTML asset reference checkers (`scripts/check-links.mjs`, `scripts/check-html-assets.mjs`) combined into a `check:predeploy` gate together with the accessibility run.
 - Added a Lighthouse CI configuration (`lighthouserc.json`) with defined quality thresholds.
+- Corrected the response content types served by the QA static servers in `scripts/qa-a11y.mjs` and `scripts/check-links.mjs`, which previously returned `application/octet-stream` for every non-HTML file and caused the accessibility gate to scan a page with the stylesheet unapplied and the module script blocked by strict MIME checking. Both harnesses now resolve content types through a shared extension map in `scripts/utils/mime-types.mjs`, with `charset=utf-8` for text-based types and `application/octet-stream` kept only as the fallback for unknown extensions.
 
 ### Documentation
 

@@ -3,6 +3,7 @@
 import { createServer } from 'node:http';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { resolveContentType } from './utils/mime-types.mjs';
 
 const projectRoot = process.cwd();
 const htmlFiles = await collectHtmlFiles(projectRoot);
@@ -247,7 +248,7 @@ async function startStaticServer() {
     }
     const data = await fs.readFile(filePath);
     const ext = path.extname(filePath).toLowerCase();
-    res.writeHead(200, { 'Content-Type': ext === '.html' ? 'text/html; charset=utf-8' : 'application/octet-stream' });
+    res.writeHead(200, { 'Content-Type': resolveContentType(ext) });
     res.end(data);
   });
 
