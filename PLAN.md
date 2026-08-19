@@ -38,10 +38,10 @@
   - **Completion condition:** `npm run check:links` reports no internal failures and all three modal links open the corresponding `doc/` page
   - **Source:** `AUDIT.md` — P1-01
 
-- [ ] **PH1-03 — Make the deploy command produce the assets it publishes** — **Priority:** High
-  - [ ] run the asset build (`build:css` + `build:js`) as part of the deploy path, or fail `scripts/build-dist.js` when a minified artefact is older than its canonical sources
-  - [ ] keep the existing `ensureRequiredFilesExist()` presence check as a second guard
-  - [ ] update `settings.md` — "Scripts" / "Deployment Notes" and the `README.md` maintenance sections to describe the new contract
+- [x] **PH1-03 — Make the deploy command produce the assets it publishes** — **Priority:** High
+  - [x] run the asset build (`build:css` + `build:js`) as part of the deploy path, or fail `scripts/build-dist.js` when a minified artefact is older than its canonical sources
+  - [x] keep the existing `ensureRequiredFilesExist()` presence check as a second guard
+  - [x] update `settings.md` — "Scripts" / "Deployment Notes" and the `README.md` maintenance sections to describe the new contract
   - **Completion condition:** a commit that edits a file under `css/modules/` or `js/modules/` and is deployed without a manual local build either produces regenerated minified output or fails the build
   - **Source:** `AUDIT.md` — P1-08
 

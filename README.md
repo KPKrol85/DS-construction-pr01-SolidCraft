@@ -132,7 +132,7 @@ npm run watch:js
 - `npm run build:css` — PostCSS buduje `css/style.min.css`, następnie `scripts/verify-css-build.js` sprawdza brak pozostałych `@import`.
 - `npm run build:js` — esbuild buduje `js/theme-init.min.js` i `js/script.min.js`, następnie `scripts/verify-js-build.js` sprawdza brak składni `import`/`export`.
 - `npm run build` — `build:css` i `build:js`.
-- `npm run build:dist` — tworzy katalog `dist/` i uruchamia `build:sitemap`.
+- `npm run build:dist` — uruchamia `build`, tworzy katalog `dist/` i uruchamia `build:sitemap`.
 - `npm run build:sitemap` — generuje `dist/sitemap.xml` dla adresu przekazanego w `SITE_URL`.
 - `npm run images:build` / `npm run images:clean` — generowanie i czyszczenie obrazów w `assets/img/`.
 - `npm run check:links` — walidacja linków wewnętrznych, zewnętrznych i kotwic w plikach HTML.
@@ -140,17 +140,16 @@ npm run watch:js
 - `npm run check:html` — `check:links` i `check:assets`.
 - `npm run qa:a11y` — skan axe-core w przeglądarce headless.
 - `npm run check:predeploy` — `check:html` i `qa:a11y` jako lokalna bramka przed wdrożeniem.
-- `npm run qa:lhci` — `build`, `build:dist` i `lhci autorun` z konfiguracją `lighthouserc.json`.
+- `npm run qa:lhci` — `build:dist` (który sam uruchamia `build`) i `lhci autorun` z konfiguracją `lighthouserc.json`.
 - `npm run format` / `npm run format:check` — Prettier w trybie zapisu i weryfikacji.
 
 ### Build produkcyjny
 
 ```bash
-npm run build
 npm run build:dist
 ```
 
-`npm run build` generuje artefakty minifikowane (`css/style.min.css`, `js/script.min.js`, `js/theme-init.min.js`). `npm run build:dist` usuwa i odtwarza katalog `dist/`, kopiuje wszystkie pliki HTML, wymagane assety minifikowane, katalog `assets/` (z pominięciem `assets/img-src/`) oraz pliki opcjonalne (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), a następnie w kopiach HTML podmienia odwołania `css/style.css`, `js/script.js` i `js/theme-init.js` na warianty minifikowane. Build kończy się błędem, gdy brakuje wymaganych assetów produkcyjnych.
+`npm run build:dist` zaczyna od `npm run build`, który generuje artefakty minifikowane (`css/style.min.css`, `js/script.min.js`, `js/theme-init.min.js`) z bieżących źródeł. Następnie usuwa i odtwarza katalog `dist/`, kopiuje wszystkie pliki HTML, wymagane assety minifikowane, katalog `assets/` (z pominięciem `assets/img-src/`) oraz pliki opcjonalne (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), a następnie w kopiach HTML podmienia odwołania `css/style.css`, `js/script.js` i `js/theme-init.js` na warianty minifikowane. Build kończy się błędem, gdy po kroku `build` brakuje wymaganych assetów produkcyjnych.
 
 `build:sitemap` wymaga zmiennej `SITE_URL` i kończy się kodem różnym od zera, gdy jej nie ustawiono. Skrypt `build:dist` w `package.json` przekazuje `SITE_URL=https://construction-pr01-solidcraft.netlify.app` przez `cross-env`. Z sitemapy wykluczone są `404.html`, `offline.html` i `thank-you.html`.
 
@@ -169,7 +168,7 @@ Powyższe komendy są skonfigurowane w repozytorium; ich wykonanie nie było ele
 
 Repozytorium zawiera konfigurację wdrożenia na Netlify:
 
-- `netlify.toml` — komenda build `npm run build:dist`, katalog publikacji `dist`.
+- `netlify.toml` — komenda build `npm run build:dist`, katalog publikacji `dist`. Ponieważ `build:dist` uruchamia `npm run build`, wdrożenie regeneruje assety minifikowane z bieżących źródeł i nie publikuje wersji zapisanych w repozytorium.
 - `_redirects` — przekierowania 301 dla adresów bez rozszerzenia `.html` i ze slashem końcowym oraz reguła 404 na `/404.html`.
 - `_headers` — nagłówki `Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` i `X-Robots-Tag`.
 - Formularz kontaktowy jest przygotowany pod Netlify Forms (atrybuty `netlify`, `netlify-honeypot="bot-field"` oraz ukryte pole `form-name`). Repozytorium nie zawiera własnej implementacji obsługi zgłoszeń.
@@ -227,7 +226,8 @@ Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 
 - Pliki źródłowe do edycji: `css/style.css` i `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/modules/**`, `assets/img-src/**`.
 - Artefakty generowane, których nie należy edytować ręcznie: `css/style.min.css`, `js/script.min.js`, `js/theme-init.min.js`, `assets/img/**` oraz katalog `dist/`.
-- Po zmianie plików źródłowych CSS/JS należy uruchomić `npm run build`, a po zmianie obrazów źródłowych `npm run images:build`.
+- Po zmianie plików źródłowych CSS/JS `npm run build` odświeża artefakty minifikowane lokalnie; wdrożenie nie wymaga tego kroku ręcznie, ponieważ `npm run build:dist` uruchamia `build` przed złożeniem katalogu `dist/`.
+- Po zmianie obrazów źródłowych należy uruchomić `npm run images:build` — ten krok pozostaje ręczny i nie jest częścią ścieżki wdrożenia.
 - Lista precache’owanych zasobów i wartość `CACHE_VERSION` w `sw.js` są utrzymywane ręcznie — po zmianie zasobów wchodzących do cache należy podnieść wersję.
 - Zasady pipeline’u i narzędzi są opisane w `settings.md`, który pozostaje jedynym źródłem prawdy dla tej warstwy; historia zmian jest prowadzona w `CHANGELOG.md`.
 
@@ -378,7 +378,7 @@ npm run watch:js
 - `npm run build:css` — PostCSS builds `css/style.min.css`, then `scripts/verify-css-build.js` checks that no `@import` remains.
 - `npm run build:js` — esbuild builds `js/theme-init.min.js` and `js/script.min.js`, then `scripts/verify-js-build.js` checks that no `import`/`export` syntax remains.
 - `npm run build` — runs `build:css` and `build:js`.
-- `npm run build:dist` — creates the `dist/` directory and runs `build:sitemap`.
+- `npm run build:dist` — runs `build`, creates the `dist/` directory, and runs `build:sitemap`.
 - `npm run build:sitemap` — generates `dist/sitemap.xml` for the address passed in `SITE_URL`.
 - `npm run images:build` / `npm run images:clean` — generate and clean images in `assets/img/`.
 - `npm run check:links` — validates internal links, external links, and anchors across HTML files.
@@ -386,17 +386,16 @@ npm run watch:js
 - `npm run check:html` — runs `check:links` and `check:assets`.
 - `npm run qa:a11y` — axe-core scan in a headless browser.
 - `npm run check:predeploy` — runs `check:html` and `qa:a11y` as the local pre-deploy gate.
-- `npm run qa:lhci` — runs `build`, `build:dist`, and `lhci autorun` with the `lighthouserc.json` configuration.
+- `npm run qa:lhci` — runs `build:dist` (which itself runs `build`) and `lhci autorun` with the `lighthouserc.json` configuration.
 - `npm run format` / `npm run format:check` — Prettier in write and verify modes.
 
 ### Production Build
 
 ```bash
-npm run build
 npm run build:dist
 ```
 
-`npm run build` generates the minified artifacts (`css/style.min.css`, `js/script.min.js`, `js/theme-init.min.js`). `npm run build:dist` removes and recreates the `dist/` directory, copies all HTML files, the required minified assets, the `assets/` directory (excluding `assets/img-src/`), and the optional files (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), then rewrites `css/style.css`, `js/script.js`, and `js/theme-init.js` references to their minified variants in the HTML copies. The build fails when the required production assets are missing.
+`npm run build:dist` starts with `npm run build`, which generates the minified artifacts (`css/style.min.css`, `js/script.min.js`, `js/theme-init.min.js`) from the current sources. It then removes and recreates the `dist/` directory, copies all HTML files, the required minified assets, the `assets/` directory (excluding `assets/img-src/`), and the optional files (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), then rewrites `css/style.css`, `js/script.js`, and `js/theme-init.js` references to their minified variants in the HTML copies. The build fails when a required production asset is missing after the `build` step.
 
 `build:sitemap` requires the `SITE_URL` variable and exits non-zero when it is not set. The `build:dist` script in `package.json` passes `SITE_URL=https://construction-pr01-solidcraft.netlify.app` through `cross-env`. `404.html`, `offline.html`, and `thank-you.html` are excluded from the sitemap.
 
@@ -415,7 +414,7 @@ These commands are configured in the repository; running them was not part of pr
 
 The repository includes Netlify deployment configuration:
 
-- `netlify.toml` — build command `npm run build:dist`, publish directory `dist`.
+- `netlify.toml` — build command `npm run build:dist`, publish directory `dist`. Because `build:dist` runs `npm run build`, the deploy regenerates the minified assets from the current sources instead of publishing the versions committed to the repository.
 - `_redirects` — 301 redirects for extensionless and trailing-slash paths, plus a 404 rule pointing to `/404.html`.
 - `_headers` — `Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, and `X-Robots-Tag` headers.
 - The contact form is marked up for Netlify Forms (`netlify`, `netlify-honeypot="bot-field"` attributes and a hidden `form-name` field). The repository contains no custom submission handling implementation.
@@ -473,7 +472,8 @@ The repository contains no recorded performance measurement results.
 
 - Editable source files: `css/style.css` and `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/modules/**`, `assets/img-src/**`.
 - Generated artifacts that must not be edited manually: `css/style.min.css`, `js/script.min.js`, `js/theme-init.min.js`, `assets/img/**`, and the `dist/` directory.
-- After changing CSS/JS sources run `npm run build`; after changing source images run `npm run images:build`.
+- After changing CSS/JS sources, `npm run build` refreshes the minified artifacts locally; the deploy does not require that step manually, because `npm run build:dist` runs `build` before assembling `dist/`.
+- After changing source images run `npm run images:build` — that step stays manual and is not part of the deploy path.
 - The precache list and the `CACHE_VERSION` value in `sw.js` are maintained manually — bump the version after changing the cached assets.
 - Pipeline and tooling rules are documented in `settings.md`, which remains the single source of truth for that layer; the change history is kept in `CHANGELOG.md`.
 

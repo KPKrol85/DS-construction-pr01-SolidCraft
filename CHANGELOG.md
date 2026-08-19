@@ -32,6 +32,7 @@ All significant changes to this project are documented in this file.
 - Added Netlify deployment configuration: `netlify.toml` with the `npm run build:dist` command and `dist` publish directory, `_redirects` for canonical paths and the 404 fallback, and `_headers` with security headers including a Content-Security-Policy.
 - Added a `sharp`-based image pipeline (`scripts/images.js`) that generates responsive AVIF, WebP, and JPG variants from `assets/img-src/`.
 - Added a local development workflow based on `live-server` with separate CSS and JS watch tasks, and Prettier formatting scripts.
+- Made the deploy command regenerate the assets it publishes. `build:dist` is now `npm run build && node scripts/build-dist.js && npm run build:sitemap`, so the Netlify build command runs the PostCSS and esbuild steps with their verification scripts before `dist/` is assembled; previously it copied whichever `css/style.min.css`, `js/script.min.js` and `js/theme-init.min.js` happened to be committed, and a commit touching `css/modules/**` or `js/modules/**` without a local `npm run build` deployed stale assets silently. `ensureRequiredFilesExist()` in `scripts/build-dist.js` is unchanged and now checks freshly built artefacts. `qa:lhci` dropped its leading `npm run build`, which `build:dist` now performs, leaving its expanded chain identical.
 
 ### Testing
 
