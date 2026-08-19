@@ -21,6 +21,10 @@ All significant changes to this project are documented in this file.
 
 - **Breaking:** Replaced the MIT license with the proprietary KP_Code Proprietary Project License v1.0 and set the `license` field in `package.json` to `SEE LICENSE IN LICENSE`. Reuse, redistribution, and public deployment now require prior written permission from the copyright owner.
 
+### Fixed
+
+- Fixed the three legal-document links in the first-visit project modal on the home page. They pointed at `regulamin.html`, `polityka-prywatnosci.html` and `cookies.html`, which resolve against the site root where no such files exist, and returned HTTP 404. They now point at `doc/regulamin.html`, `doc/polityka-prywatnosci.html` and `doc/cookies.html`, matching the convention already used by the footer of the same page, and `npm run check:links` reports no internal failures.
+
 ### Build and Tooling
 
 - Added a production asset pipeline that builds `css/style.min.css` with PostCSS and bundles `js/script.min.js` and `js/theme-init.min.js` with esbuild, each followed by a build verification script (`scripts/verify-css-build.js`, `scripts/verify-js-build.js`).

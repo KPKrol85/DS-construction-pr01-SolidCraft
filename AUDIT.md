@@ -78,6 +78,7 @@ None detected.
 - **Impact:** The modal states that using the site constitutes acceptance of the Terms, and the link to those Terms does not resolve. The two other legal links are equally unreachable from the modal. Because `check:predeploy` chains `check:links`, the project's own documented pre-deploy gate currently fails on `main`.
 - **Recommended direction:** Point the three modal links at the `doc/` documents using the same path convention already used by the footer, and re-run the link checker.
 - **Verification criteria:** `npm run check:links` reports PASS with no internal failures, and all three modal links open the corresponding `doc/` page.
+- **Status:** Addressed. The three modal links now point at `doc/regulamin.html` (`index.html:986`), `doc/polityka-prywatnosci.html` (`index.html:990`) and `doc/cookies.html` (`index.html:991`), using the same document-relative `doc/<file>.html` convention the footer of the same page already uses (`index.html:889-892`). `npm run check:links` now reports `PASS check:links (13 HTML files scanned)` with no internal failures. Only the three `href` values changed; the modal structure, text and ARIA attributes are unchanged.
 
 ### [P1-02] First-visit modal blocks the page but has no focus management, Escape handling, focus trap or scroll lock
 

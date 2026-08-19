@@ -32,9 +32,9 @@
   - **Blocked on:** the re-baseline subtask requires `npm run qa:a11y`, which cannot run while `node_modules` is absent from the checkout (`playwright` and `axe-core` fail to load). Run `npm install` first, then complete the re-baseline and record it in `AUDIT.md` — P1-07.
   - **Source:** `AUDIT.md` — P1-07
 
-- [ ] **PH1-02 — Repair the first-visit modal's legal-document links** — **Priority:** High
-  - [ ] point the `Regulamin`, `Polityka prywatności` and `Cookies` links in the project modal at the documents in `doc/`, using the root-relative convention already used by the footer
-  - [ ] re-run the link checker and confirm no internal failures remain
+- [x] **PH1-02 — Repair the first-visit modal's legal-document links** — **Priority:** High
+  - [x] point the `Regulamin`, `Polityka prywatności` and `Cookies` links in the project modal at the documents in `doc/`, using the document-relative `doc/<file>.html` convention already used by the footer
+  - [x] re-run the link checker and confirm no internal failures remain
   - **Completion condition:** `npm run check:links` reports no internal failures and all three modal links open the corresponding `doc/` page
   - **Source:** `AUDIT.md` — P1-01
 
