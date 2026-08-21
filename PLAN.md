@@ -81,10 +81,10 @@
 
 **Goal:** Bring the primary controls and the contact form's feedback text to WCAG AA against their real rendered backgrounds, in both themes.
 
-- [ ] **PH3-01 — Bind button labels to a theme-stable on-brand foreground token** — **Priority:** High
-  - [ ] add a dedicated on-brand foreground token in `css/modules/tokens.css` that does not invert with the theme
-  - [ ] bind `.btn` and `.project-modal__actions .btn` in `css/modules/components.css` to that token instead of `--fg` / `--bg`
-  - [ ] re-measure the affected controls in both themes: hero CTAs, contact submit, subpage CTAs, modal accept
+- [x] **PH3-01 — Bind button labels to a theme-stable on-brand foreground token** — **Priority:** High
+  - [x] add a dedicated on-brand foreground token in `css/modules/tokens.css` that does not invert with the theme
+  - [x] bind `.btn` and `.project-modal__actions .btn` in `css/modules/components.css` to that token instead of `--fg` / `--bg`
+  - [x] re-measure the affected controls in both themes: hero CTAs, contact submit, subpage CTAs, modal accept
   - **Completion condition:** in both themes every `.btn` label measures at least 4.5:1 against its rendered background
   - **Source:** `AUDIT.md` — P1-05
 

@@ -185,7 +185,6 @@ body.has-project-modal {
   max-width: 220px;
   width: 100%;
   margin: 0 auto;
-  color: var(--bg);
   text-transform: uppercase;
   letter-spacing: var(--ls-2);
 }
@@ -208,7 +207,7 @@ body.has-project-modal {
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-pill);
   background: var(--brand);
-  color: var(--fg);
+  color: var(--on-brand);
   font-weight: 700;
   font-size: var(--fs-3);
   line-height: var(--lh-tight);
