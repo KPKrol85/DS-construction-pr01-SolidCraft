@@ -201,7 +201,6 @@ function initContactForm() {
             "Wymagana zgoda na kontakt w celu wyceny.",
           );
         }
-        form.reportValidity();
         form
           .querySelector(':invalid, [aria-invalid="true"]')
           ?.focus({ preventScroll: true });
@@ -217,7 +216,6 @@ function initContactForm() {
             phoneInput,
             "Podaj poprawny numer (np. 533 537 091 lub +48 533 537 091).",
           );
-          form.reportValidity();
           phoneInput.focus({ preventScroll: true });
           showNote("Sprawdź format numeru telefonu.", false);
           return;

@@ -6,6 +6,7 @@ All significant changes to this project are documented in this file.
 
 ### Fixed
 
+- Let the contact-form submit handler own validation by adding `novalidate`, preserving native constraints and the Netlify Forms contract, and avoiding native validation bubbles that conflict with the custom error UI.
 - Gave contact-form status and field-error feedback opaque, high-contrast surfaces for the orange contact section, with distinct success and error border treatments.
 - Bound button labels to a theme-stable on-brand foreground token, restoring WCAG AA contrast in both themes.
 - Made the offer submenu's `open` class authoritative across the mobile drawer and desktop dropdown, keeping `aria-expanded` and the six mobile service links in sync with the rendered state.

@@ -100,10 +100,10 @@
 
 **Goal:** Make the implemented and documented validation, accessible error messaging and anti-spam behaviour actually execute without destroying user input.
 
-- [ ] **PH4-01 — Let the submit handler own contact form validation** — **Priority:** High
-  - [ ] add `novalidate` to the contact form in `index.html`, keeping the native constraint attributes for semantics and the no-JavaScript fallback
-  - [ ] confirm the existing branch in `js/modules/forms.js` then runs for missing, too-short, too-long and unchecked-consent cases
-  - [ ] verify the Netlify Forms submission path (`name="contact"`, `netlify-honeypot`, `action="/thank-you.html"`) is unaffected
+- [x] **PH4-01 — Let the submit handler own contact form validation** — **Priority:** High
+  - [x] add `novalidate` to the contact form in `index.html`, keeping the native constraint attributes for semantics and the no-JavaScript fallback
+  - [x] confirm the existing branch in `js/modules/forms.js` then runs for missing, too-short, too-long and unchecked-consent cases
+  - [x] verify the Netlify Forms submission path (`name="contact"`, `netlify-honeypot`, `action="/thank-you.html"`) is unaffected
   - **Completion condition:** submitting the empty form suppresses the browser bubble, sets `aria-invalid="true"` on each invalid field, renders the matching `.form-error` text, and announces the summary in the `role="status"` region
   - **Source:** `AUDIT.md` — P1-04
 
