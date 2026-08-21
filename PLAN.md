@@ -123,11 +123,11 @@
 
 **Goal:** Make the recovery pages and the service worker work in the nested-URL and offline situations they exist for.
 
-- [ ] **PH5-01 — Convert `404.html` and `offline.html` to root-relative references** — **Priority:** High
-  - [ ] rewrite stylesheet, script, favicon and navigation references in both documents to root-relative paths, matching the convention already used for `/manifest.webmanifest` and the `sw.js` precache list
-  - [ ] re-run `npm run check:assets` and `npm run check:links`
+- [x] **PH5-01 — Convert `404.html` and `offline.html` to root-relative references** — **Priority:** High
+  - [x] rewrite stylesheet, script, favicon and navigation references in both documents to root-relative paths, matching the convention already used for `/manifest.webmanifest` and the `sw.js` precache list
+  - [x] re-run `npm run check:assets` and `npm run check:links`
   - **Completion condition:** requesting a non-existent nested path renders the styled 404 page with working recovery links, and an offline navigation to a subpage renders the styled offline page
-  - **Source:** `AUDIT.md` — P1-06
+  - **Source:** PH5-01 verification
 
 - [ ] **PH5-02 — Complete the service-worker precache list and secure its runtime cache writes** — **Priority:** Medium
   - [ ] add `js/theme-init.min.js`, `js/sw-register.js` and the six `assets/fonts/*.woff2` files to the `ASSETS` list in `sw.js`
