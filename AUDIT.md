@@ -160,16 +160,6 @@ None detected.
 
 
 
-### [P2-04] Submitting within two seconds of load silently discards everything the user typed
-
-- **Classification:** Defect
-- **Affected area:** Contact form, anti-spam handling
-- **Evidence:** `js/modules/forms.js:38-39`, `js/modules/forms.js:173-180`
-- **Current behaviour:** Reproduced in headless Chromium. When the honeypot is filled, the message looks spammy, or less than 2000 ms have elapsed since `initContactForm` ran, the handler calls `form.reset()` and returns without touching the status region. A form completed and submitted inside that window came back with every field cleared and an empty status note.
-- **Impact:** A user whose browser autofills the form and who clicks promptly loses their input with no explanation and no indication that anything was sent or rejected. Silently destroying user input is worse than rejecting it.
-- **Recommended direction:** Keep the heuristics, but stop clearing the user's input on the timing branch — leave the values in place and surface a short retry message in the existing status region.
-- **Verification criteria:** A submission rejected by the timing heuristic preserves all entered values and produces a visible, announced message.
-
 ### [P2-05] Service-worker precache omits assets the cached pages require
 
 - **Classification:** Contract mismatch

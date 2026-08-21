@@ -107,10 +107,10 @@
   - **Completion condition:** submitting the empty form suppresses the browser bubble, sets `aria-invalid="true"` on each invalid field, renders the matching `.form-error` text, and announces the summary in the `role="status"` region
   - **Source:** `AUDIT.md` — P1-04
 
-- [ ] **PH4-02 — Stop discarding user input on the anti-spam timing branch** — **Priority:** Medium
-  - [ ] keep the honeypot, content heuristic and 2000 ms timing checks
-  - [ ] remove the `form.reset()` call from the timing rejection path so entered values are preserved
-  - [ ] surface a short retry message in the existing status region instead of returning silently
+- [x] **PH4-02 — Stop discarding user input on the anti-spam timing branch** — **Priority:** Medium
+  - [x] keep the honeypot, content heuristic and 2000 ms timing checks
+  - [x] remove the `form.reset()` call from the timing rejection path so entered values are preserved
+  - [x] surface a short retry message in the existing status region instead of returning silently
   - **Completion condition:** a submission rejected by the timing heuristic preserves all entered values and produces a visible, announced message
   - **Source:** `AUDIT.md` — P2-04
 

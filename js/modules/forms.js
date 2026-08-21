@@ -170,12 +170,12 @@ function initContactForm() {
       e.preventDefault();
       if (submitting) return;
 
-      if (
-        (hpInput && hpInput.value.trim() !== "") ||
-        isTooFast() ||
-        looksSpammy(msgInput?.value)
-      ) {
+      if ((hpInput && hpInput.value.trim() !== "") || looksSpammy(msgInput?.value)) {
         form.reset();
+        return;
+      }
+      if (isTooFast()) {
+        showNote("Odczekaj chwilę i spróbuj ponownie.", false);
         return;
       }
       if (!form.checkValidity()) {
