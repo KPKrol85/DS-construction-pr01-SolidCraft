@@ -177,16 +177,6 @@ None detected.
 
 ## 6. P2 — Minor refinements
 
-### [P2-01] Navigation breakpoints disagree: JavaScript uses 992 px, CSS uses 1024 px
-
-- **Classification:** Contract mismatch
-- **Affected area:** Navigation, responsive behaviour
-- **Evidence:** `js/modules/nav.js:59`, `js/modules/nav.js:119`, `js/modules/nav.js:157`; `css/modules/layout.css:336`
-- **Current behaviour:** The JavaScript treats `min-width: 992px` as desktop and `max-width: 991.98px` as mobile; the CSS switches the header to its desktop layout only at `min-width: 1024px`. Confirmed at a 1000 px viewport: the hamburger button is still displayed and `.nav-menu` is still `display: none` (mobile CSS), while `openMobileOnce()` and the drawer-closing handler both take their desktop branch.
-- **Impact:** In the 992–1023 px band the drawer UI is shown but driven by desktop logic, so hover handlers are live for a menu that is opened by tapping and the mobile submenu branch is skipped entirely. It is a 32 px window, but it is a real tablet-landscape range.
-- **Recommended direction:** Define the navigation breakpoint once and reference the same value from both layers.
-- **Verification criteria:** The viewport width at which the header switches between drawer and inline navigation is identical in CSS and JavaScript.
-
 ### [P2-02] Repository hygiene controls are absent
 
 - **Classification:** Maintenance risk

@@ -22,6 +22,10 @@ function initNav() {
 
   const OPEN_CLASS = "is-nav-open";
   const OUTSIDE_EVT = "pointerdown" in window ? "pointerdown" : "click";
+  const NAVIGATION_BREAKPOINT = 1024;
+  const mqDesktop = window.matchMedia(
+    `(min-width: ${NAVIGATION_BREAKPOINT}px)`,
+  );
 
   let lastFocus = null;
 
@@ -56,8 +60,7 @@ function initNav() {
     (e) => {
       const a = e.target.closest('a[href^="#"]');
       if (!a) return;
-      const isMobile = window.matchMedia("(max-width: 991.98px)").matches;
-      if (isMobile) setOpen(false);
+      if (!mqDesktop.matches) setOpen(false);
     },
     { signal },
   );
@@ -116,7 +119,6 @@ function initNav() {
 
   if (ddTrigger && ddMenu) {
     let ddOpen = ddMenu.classList.contains("open");
-    const mqDesktop = window.matchMedia("(min-width: 992px)");
     const parentLi =
       ddTrigger.closest(".has-dropdown") || ddTrigger.parentElement;
     ddTrigger.setAttribute("aria-expanded", String(ddOpen));
@@ -154,8 +156,7 @@ function initNav() {
     }
 
     const openMobileOnce = () => {
-      const isMobile = window.matchMedia("(max-width: 991.98px)").matches;
-      if (!isMobile) return false;
+      if (mqDesktop.matches) return false;
       if (!ddOpen) {
         setDd(true, { focusFirst: true });
         return true;

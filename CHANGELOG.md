@@ -4,6 +4,10 @@ All significant changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- Aligned the JavaScript navigation state with the 1024 px header breakpoint so drawer and inline navigation switch together.
+
 ### Added
 
 - Added the initial project implementation as a dedicated repository, covering the home page, six service subpages in `oferta/`, three legal document pages in `doc/`, and the `thank-you.html`, `404.html`, and `offline.html` pages.

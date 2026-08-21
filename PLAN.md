@@ -64,9 +64,9 @@
   - **Completion condition:** with the modal open, focus starts inside the dialog, Tab cycles only within it, Escape dismisses it, background scrolling is locked, focus returns after dismissal, and the modal is still dismissible when `localStorage` access throws
   - **Source:** `AUDIT.md` — P1-02, P2-12
 
-- [ ] **PH2-02 — Define the navigation breakpoint once** — **Priority:** Medium
-  - [ ] reconcile the `992px` / `991.98px` media queries in `js/modules/nav.js` with the `1024px` header breakpoint in `css/modules/layout.css`
-  - [ ] reference the single agreed value from both layers so the drawer UI and the drawer logic switch at the same width
+- [x] **PH2-02 — Define the navigation breakpoint once** — **Priority:** Medium
+  - [x] reconcile the `992px` / `991.98px` media queries in `js/modules/nav.js` with the `1024px` header breakpoint in `css/modules/layout.css`
+  - [x] reference the single agreed value from both layers so the drawer UI and the drawer logic switch at the same width
   - **Completion condition:** the viewport width at which the header switches between drawer and inline navigation is identical in CSS and JavaScript, verified at the boundary and at 1000 px
   - **Source:** `AUDIT.md` — P2-01
 
