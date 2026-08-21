@@ -118,10 +118,10 @@ function initNav() {
   const ddMenu = document.querySelector("#dd-oferta");
 
   if (ddTrigger && ddMenu) {
-    let ddOpen = ddMenu.classList.contains("open");
     const parentLi =
       ddTrigger.closest(".has-dropdown") || ddTrigger.parentElement;
-    ddTrigger.setAttribute("aria-expanded", String(ddOpen));
+    const isDdOpen = () => ddMenu.classList.contains("open");
+    ddTrigger.setAttribute("aria-expanded", String(isDdOpen()));
     ddTrigger.setAttribute("aria-haspopup", "true");
     if (!ddTrigger.getAttribute("aria-controls"))
       ddTrigger.setAttribute("aria-controls", "dd-oferta");
@@ -134,10 +134,10 @@ function initNav() {
     const setDd = (open, { returnFocus = false, focusFirst = false } = {}) => {
       ddMenu.classList.toggle("open", open);
       ddTrigger.setAttribute("aria-expanded", String(open));
-      ddOpen = open;
       if (open && focusFirst) focusFirstItem();
       else if (!open && returnFocus) ddTrigger.focus({ preventScroll: true });
     };
+
     if (parentLi) {
       parentLi.addEventListener(
         "mouseenter",
@@ -153,11 +153,26 @@ function initNav() {
         },
         { signal },
       );
+      parentLi.addEventListener(
+        "focusin",
+        () => {
+          if (mqDesktop.matches) setDd(true);
+        },
+        { signal },
+      );
+      parentLi.addEventListener(
+        "focusout",
+        (e) => {
+          if (mqDesktop.matches && !parentLi.contains(e.relatedTarget))
+            setDd(false);
+        },
+        { signal },
+      );
     }
 
     const openMobileOnce = () => {
       if (mqDesktop.matches) return false;
-      if (!ddOpen) {
+      if (!isDdOpen()) {
         setDd(true, { focusFirst: true });
         return true;
       }
@@ -167,7 +182,10 @@ function initNav() {
     ddTrigger.addEventListener(
       "click",
       (e) => {
-        if (openMobileOnce()) e.preventDefault();
+        if (openMobileOnce()) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+        }
       },
       { signal },
     );
@@ -187,7 +205,7 @@ function initNav() {
       OUTSIDE_EVT,
       (e) => {
         if (
-          ddOpen &&
+          isDdOpen() &&
           !ddMenu.contains(e.target) &&
           !ddTrigger.contains(e.target)
         ) {
@@ -200,7 +218,7 @@ function initNav() {
     document.addEventListener(
       "keydown",
       (e) => {
-        if (e.key !== "Escape" || !ddOpen) return;
+        if (e.key !== "Escape" || !isDdOpen()) return;
         const active = document.activeElement;
         const inside =
           active && (ddMenu.contains(active) || ddTrigger.contains(active));
@@ -212,11 +230,10 @@ function initNav() {
       { signal },
     );
 
-    toggle.addEventListener(
-      "click",
-      () => {
-        const willClose = menu.classList.contains("open");
-        if (willClose) setDd(false);
+    window.addEventListener(
+      "nav:toggle",
+      (e) => {
+        if (!e.detail.open) setDd(false);
       },
       { signal },
     );

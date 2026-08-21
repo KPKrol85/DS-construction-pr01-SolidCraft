@@ -17,8 +17,7 @@
 1. `PH1-01` — Serve correct MIME types in the accessibility gate so it scans the real rendering.
 2. `PH1-02` — Repair the three broken legal links in the first-visit modal and return `check:predeploy` to a passing state.
 3. `PH2-01` — Make the first-visit modal keyboard-operable and reliably dismissible.
-4. `PH2-03` — Make one mechanism authoritative for the offer submenu and synchronise `aria-expanded`.
-5. `PH3-01` — Bind button label colour to a theme-stable on-brand token that meets WCAG AA.
+4. `PH3-01` — Bind button label colour to a theme-stable on-brand token that meets WCAG AA.
 
 ## Phase 1 — Quality gates and build contracts
 
@@ -70,14 +69,13 @@
   - **Completion condition:** the viewport width at which the header switches between drawer and inline navigation is identical in CSS and JavaScript, verified at the boundary and at 1000 px
   - **Source:** `AUDIT.md` — P2-01
 
-- [ ] **PH2-03 — Make one mechanism authoritative for the offer submenu state** — **Priority:** High
-  - [ ] decide whether the `open` class toggled by `setDd()` in `js/modules/nav.js` or the CSS `:hover` / `:focus-within` rules own submenu visibility
-  - [ ] implement the chosen mechanism in both layers: either add real `.dropdown.open` styles for the drawer and drive desktop visibility from the same class, or drop the class and synchronise `aria-expanded` with the CSS-driven state
-  - [ ] ensure `focusFirstItem()` only targets elements that can actually receive focus
-  - [ ] make the six service subpages reachable from the header below the navigation breakpoint
+- [x] **PH2-03 — Make one mechanism authoritative for the offer submenu state** — **Priority:** High
+  - [x] select the `open` class on `#dd-oferta` as the authoritative visible-state mechanism
+  - [x] drive the mobile drawer and desktop dropdown from that class, synchronising `aria-expanded` in `setDd()`
+  - [x] open the rendered mobile submenu before moving focus to its first link
+  - [x] retain all six service subpages in the header below the navigation breakpoint
   - **Depends on:** `PH2-02`
   - **Completion condition:** below the navigation breakpoint, activating "Oferta" reveals the six submenu links and focus lands on the first one; at every viewport `aria-expanded` on the trigger matches the submenu's rendered visibility
-  - **Source:** `AUDIT.md` — P1-03
 
 ## Phase 3 — Contrast and visible feedback states
 

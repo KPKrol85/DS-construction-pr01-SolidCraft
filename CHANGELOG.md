@@ -6,6 +6,7 @@ All significant changes to this project are documented in this file.
 
 ### Fixed
 
+- Made the offer submenu's `open` class authoritative across the mobile drawer and desktop dropdown, keeping `aria-expanded` and the six mobile service links in sync with the rendered state.
 - Aligned the JavaScript navigation state with the 1024 px header breakpoint so drawer and inline navigation switch together.
 
 ### Added
