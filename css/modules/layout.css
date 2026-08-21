@@ -710,18 +710,42 @@
 @media (min-width: 760px) {
   .ft-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-inline: var(--space-6);
+  }
+  /* From the column grid up, the informational columns share one left reading
+     edge. The contact bar and copyright keep the footer's centered layout. */
+  .ft-col {
+    text-align: left;
+  }
+  .brand-footer {
+    justify-content: flex-start;
+  }
+  .ft-logo {
+    padding-inline-start: 0;
+  }
+  .ft-lead {
+    margin-inline: 0;
+    text-align: left;
+  }
+  .ft-links {
+    justify-items: start;
+  }
+  .ft-map {
+    max-width: 100%;
+    margin-inline: 0;
+  }
+  .ft-social {
+    justify-content: flex-start;
+    /* cancels the 3px inset of the 30px icon inside its 36px hit area */
+    margin-inline: -3px 0;
   }
 }
 @media (min-width: 1024px) {
   .ft-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    margin-inline: var(--space-6);
   }
   .ft-lead {
     max-width: 22ch;
-  }
-  .ft-map {
-    max-width: 80%;
   }
 
   .ft-map .map-placeholder__text {
