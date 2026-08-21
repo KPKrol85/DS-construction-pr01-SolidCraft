@@ -663,10 +663,35 @@
   min-height: 1.6em;
   margin-top: var(--space-1);
 }
+.form .form-note:is(.is-ok, .is-err) {
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid;
+  border-inline-start-width: 4px;
+  border-radius: var(--radius-2);
+  font-weight: 700;
+}
+.form .form-note.is-ok {
+  color: var(--feedback-ok-fg);
+  background: var(--feedback-ok-bg);
+  border-color: var(--feedback-ok-border);
+  border-style: dashed;
+}
+.form .form-note.is-err {
+  color: var(--feedback-err-fg);
+  background: var(--feedback-err-bg);
+  border-color: var(--feedback-err-border);
+  border-style: solid;
+}
 .form .form-error {
   display: block;
   font-size: var(--fs-2);
-  color: #dc2626;
+  padding: var(--space-1) var(--space-2);
+  color: var(--feedback-err-fg);
+  background: var(--feedback-err-bg);
+  border: 1px solid var(--feedback-err-border);
+  border-inline-start-width: 3px;
+  border-radius: var(--radius-1);
+  font-weight: 700;
 }
 .form .muted {
   color: var(--c-ink);

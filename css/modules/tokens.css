@@ -20,6 +20,12 @@
   --brand-grad: linear-gradient(135deg, var(--brand), var(--brand-2));
   --brand-weak: color-mix(in oklab, var(--brand) 14%, var(--bg));
   --ring: color-mix(in oklab, var(--brand) 45%, transparent);
+  --feedback-ok-bg: #ecfdf5;
+  --feedback-ok-fg: #065f46;
+  --feedback-ok-border: #047857;
+  --feedback-err-bg: #fef2f2;
+  --feedback-err-fg: #991b1b;
+  --feedback-err-border: #b91c1c;
 
   --radius-1: 4px;
   --radius-2: 8px;

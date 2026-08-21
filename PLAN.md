@@ -88,10 +88,10 @@
   - **Completion condition:** in both themes every `.btn` label measures at least 4.5:1 against its rendered background
   - **Source:** `AUDIT.md` — P1-05
 
-- [ ] **PH3-02 — Style the contact form's status and error states for the orange section background** — **Priority:** Medium
-  - [ ] add explicit `.is-ok` and `.is-err` rules, which `showNote()` toggles but which have no CSS anywhere in `css/`
-  - [ ] choose status-note and field-error colours that clear 4.5:1 across the `--brand-grad` gradient rendered by `.cta`
-  - [ ] distinguish success from failure by more than hue alone
+- [x] **PH3-02 — Style the contact form's status and error states for the orange section background** — **Priority:** Medium
+  - [x] add explicit `.is-ok` and `.is-err` rules, which `showNote()` toggles but which have no CSS anywhere in `css/`
+  - [x] choose status-note and field-error colours that clear 4.5:1 across the `--brand-grad` gradient rendered by `.cta`
+  - [x] distinguish success from failure by more than hue alone
   - **Completion condition:** success and error states are visually distinct, and both the status note and the field errors measure at least 4.5:1 against the contact section's rendered background
   - **Note:** the states reachable today are the phone-format error, the send-failure error and the success confirmation; the remaining required-field error cases become reachable with `PH4-01`
   - **Source:** `AUDIT.md` — P2-03
