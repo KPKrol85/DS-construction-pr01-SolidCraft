@@ -3,7 +3,7 @@ const path = require("path");
 const { createLogger } = require("./utils/logger");
 
 const logger = createLogger();
-const outputPath = path.join(process.cwd(), "css", "style.min.css");
+const outputPath = path.join(process.cwd(), "dist", "css", "style.min.css");
 
 logger.debug(`verify-css-build: checking ${outputPath}`);
 
@@ -16,7 +16,7 @@ const css = fs.readFileSync(outputPath, "utf8");
 
 if (/@import\b/i.test(css)) {
   logger.error(
-    "CSS build verification failed: '@import' found in css/style.min.css",
+    "CSS build verification failed: '@import' found in dist/css/style.min.css",
   );
   process.exit(1);
 }

@@ -8,7 +8,7 @@
 
 - The plan reflects the current verified repository state; every item is backed by current source, configuration, or a re-verified `AUDIT.md` finding.
 - Main items are checked only when all required subtasks are complete and the stated completion condition holds.
-- Canonical sources are `css/style.css` + `css/modules/**`, `js/script.js` + `js/modules/**`, `js/theme-init.js`, `assets/img-src/**`; `css/style.min.css`, `js/*.min.js` and `assets/img/**` are generated and are never edited directly (`settings.md` — "Source vs Generated Assets").
+- Canonical sources are `css/style.css` + `css/modules/**`, `js/script.js` + `js/modules/**`, `js/theme-init.js`, `assets/img-src/**`; `dist/css/style.min.css`, `dist/js/*.min.js` and `assets/img/**` are generated and are never edited directly — the minified assets exist only under `dist/`, produced by the production build (`settings.md` — "Source vs Generated Assets").
 - Significant completed changes are recorded separately in `CHANGELOG.md`; pending items stay only in this file.
 - This plan is created from the current project state. No prior `PLAN.md` existed, so no completed planning history is reconstructed here.
 

@@ -9,11 +9,6 @@ const distDir = path.join(rootDir, "dist");
 
 const EXCLUDED_TOP_LEVEL_DIRS = new Set([".git", "node_modules", "dist"]);
 
-const REQUIRED_FILES = [
-  "css/style.min.css",
-  "js/script.min.js",
-  "js/theme-init.min.js",
-];
 const OPTIONAL_FILES = [
   "_headers",
   "_redirects",
@@ -32,17 +27,6 @@ async function pathExists(absPath) {
     return true;
   } catch {
     return false;
-  }
-}
-
-async function ensureRequiredFilesExist() {
-  for (const relPath of REQUIRED_FILES) {
-    const absPath = path.join(rootDir, relPath);
-    if (!(await pathExists(absPath))) {
-      throw new Error(
-        `Missing required production asset: ${relPath}. Run "npm run build" first.`,
-      );
-    }
   }
 }
 
@@ -113,15 +97,9 @@ async function copyRuntimeFilesToDist() {
   await fs.rm(distDir, { recursive: true, force: true });
   await fs.mkdir(distDir, { recursive: true });
 
-  await ensureRequiredFilesExist();
-
   const htmlFiles = await listHtmlFilesRecursively(rootDir);
   logger.debug(`build-dist: discovered ${htmlFiles.length} HTML file(s)`);
   for (const relPath of htmlFiles) {
-    await copyFileByRelativePath(relPath);
-  }
-
-  for (const relPath of REQUIRED_FILES) {
     await copyFileByRelativePath(relPath);
   }
 
@@ -182,12 +160,12 @@ async function build() {
   await copyRuntimeFilesToDist();
   const rewrittenCount = await rewriteHtmlReferencesInDist(distDir);
   logger.summary(
-    `OK: dist build completed (rewrote ${rewrittenCount} HTML file(s)).`,
+    `OK: dist staged (rewrote ${rewrittenCount} HTML file(s)); production CSS/JS are generated into dist/ by "npm run build".`,
   );
 }
 
 build().catch((error) => {
-  logger.error("FAIL: dist build failed.");
+  logger.error("FAIL: dist staging failed.");
   logger.error(error.stack || String(error));
   process.exit(1);
 });

@@ -47,10 +47,10 @@ Adres skonfigurowany jako `homepage` w `package.json` oraz jako adres kanoniczny
 ### Architektura
 
 - Warstwa prezentacji to statyczne pliki HTML — każda podstrona jest osobnym dokumentem z własnymi metadanymi i danymi strukturalnymi.
-- CSS jest podzielony na moduły (`tokens`, `base`, `layout`, `components`, `sections`, `utilities`, `subpages`) scalane przez `@import` w `css/style.css`; build PostCSS rozwija importy do jednego pliku `css/style.min.css`.
+- CSS jest podzielony na moduły (`tokens`, `base`, `layout`, `components`, `sections`, `utilities`, `subpages`) scalane przez `@import` w `css/style.css`; build PostCSS rozwija importy do jednego pliku produkcyjnego `dist/css/style.min.css`.
 - JavaScript jest podzielony na moduły ES (`nav`, `ui-core`, `forms`, `lightbox`, `map-consent`, `prefetch`, `home`, `project-banner`, `utils`). `js/script.js` eksponuje je w przestrzeni `window.SC` i uruchamia inicjalizatory warunkowo, na podstawie obecności selektorów na stronie.
 - `js/theme-init.js` jest ładowany synchronicznie w `<head>`, aby ustawić motyw przed pierwszym renderem; `js/sw-register.js` rejestruje Service Workera w zakresie `/`.
-- Build produkcyjny nie modyfikuje plików źródłowych HTML — `scripts/build-dist.js` tworzy katalog `dist/` i dopiero w kopiach podmienia odwołania na assety minifikowane.
+- Build produkcyjny nie modyfikuje plików źródłowych — `scripts/build-dist.js` tworzy katalog `dist/` i dopiero w kopiach HTML podmienia odwołania na assety minifikowane, a PostCSS i esbuild zapisują pliki minifikowane wyłącznie do `dist/`. Drzewo źródłowe nie zawiera artefaktów `.min.css` ani `.min.js`.
 - Skrypty narzędziowe w `scripts/` korzystają ze wspólnego loggera (`scripts/utils/logger.js`) z trybem `--verbose`.
 
 ### Struktura projektu
@@ -65,13 +65,10 @@ DS-construction-pr01-SolidCraft/
 ├── doc/                       # regulamin, polityka prywatności, cookies
 ├── css/
 │   ├── style.css              # źródło (@import modułów)
-│   ├── style.min.css          # artefakt generowany
 │   └── modules/
 ├── js/
 │   ├── script.js              # źródło (ES modules)
-│   ├── script.min.js          # artefakt generowany
 │   ├── theme-init.js
-│   ├── theme-init.min.js      # artefakt generowany
 │   ├── sw-register.js
 │   └── modules/
 ├── assets/
@@ -100,7 +97,12 @@ DS-construction-pr01-SolidCraft/
 ├── settings.md
 ├── CHANGELOG.md
 ├── LICENSE
-└── package.json
+├── package.json
+└── dist/                      # wyjście produkcyjne (generowane, poza Git)
+    ├── css/style.min.css      # artefakt generowany
+    └── js/
+        ├── script.min.js      # artefakt generowany
+        └── theme-init.min.js  # artefakt generowany
 ```
 
 ### Instalacja
@@ -119,7 +121,9 @@ npm run dev
 
 `live-server` uruchamia projekt na porcie `15500` i otwiera `index.html`. Serwer HTTP jest konieczny — strony korzystają z modułów ES, Service Workera i manifestu wskazywanego ścieżką bezwzględną, więc otwarcie pliku przez `file://` nie odwzoruje zachowania produkcyjnego.
 
-Przebudowa assetów w tle:
+Development lokalny korzysta wyłącznie ze źródeł nieminifikowanych (`css/style.css` z modułami i `js/script.js` jako moduły ES) — build produkcyjny nie jest do niego potrzebny.
+
+Przebudowa assetów produkcyjnych w tle (zapis do `dist/`):
 
 ```bash
 npm run watch:css
@@ -129,10 +133,10 @@ npm run watch:js
 ### Dostępne skrypty
 
 - `npm run dev` — lokalny serwer `live-server` (port `15500`); `npm start` jest aliasem.
-- `npm run build:css` — PostCSS buduje `css/style.min.css`, następnie `scripts/verify-css-build.js` sprawdza brak pozostałych `@import`.
-- `npm run build:js` — esbuild buduje `js/theme-init.min.js` i `js/script.min.js`, następnie `scripts/verify-js-build.js` sprawdza brak składni `import`/`export`.
-- `npm run build` — `build:css` i `build:js`.
-- `npm run build:dist` — uruchamia `build`, tworzy katalog `dist/` i uruchamia `build:sitemap`.
+- `npm run build:css` — PostCSS buduje `dist/css/style.min.css`, następnie `scripts/verify-css-build.js` sprawdza brak pozostałych `@import`.
+- `npm run build:js` — esbuild buduje `dist/js/theme-init.min.js` i `dist/js/script.min.js`, następnie `scripts/verify-js-build.js` sprawdza brak składni `import`/`export` w obu plikach.
+- `npm run build` — `build:css` i `build:js`; obydwa zapisują wyłącznie do `dist/`.
+- `npm run build:dist` — składa katalog `dist/`, uruchamia `build` i `build:sitemap`.
 - `npm run build:sitemap` — generuje `dist/sitemap.xml` dla adresu przekazanego w `SITE_URL`.
 - `npm run images:build` / `npm run images:clean` — generowanie i czyszczenie obrazów w `assets/img/`.
 - `npm run check:links` — walidacja linków wewnętrznych, zewnętrznych i kotwic w plikach HTML.
@@ -149,7 +153,7 @@ npm run watch:js
 npm run build:dist
 ```
 
-`npm run build:dist` zaczyna od `npm run build`, który generuje artefakty minifikowane (`css/style.min.css`, `js/script.min.js`, `js/theme-init.min.js`) z bieżących źródeł. Następnie usuwa i odtwarza katalog `dist/`, kopiuje wszystkie pliki HTML, wymagane assety minifikowane, katalog `assets/` (z pominięciem `assets/img-src/`) oraz pliki opcjonalne (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), a następnie w kopiach HTML podmienia odwołania `css/style.css`, `js/script.js` i `js/theme-init.js` na warianty minifikowane. Build kończy się błędem, gdy po kroku `build` brakuje wymaganych assetów produkcyjnych.
+`npm run build:dist` wykonuje kolejno trzy kroki. Najpierw `scripts/build-dist.js` usuwa i odtwarza katalog `dist/`, kopiuje wszystkie pliki HTML, katalog `assets/` (z pominięciem `assets/img-src/`) oraz pliki opcjonalne (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), a w kopiach HTML podmienia odwołania `css/style.css`, `js/script.js` i `js/theme-init.js` na warianty minifikowane. Następnie `npm run build` generuje z bieżących źródeł `dist/css/style.min.css`, `dist/js/theme-init.min.js` i `dist/js/script.min.js`, a skrypty weryfikacyjne kończą build błędem, gdy któregoś z tych artefaktów brakuje. Na końcu `build:sitemap` zapisuje `dist/sitemap.xml`. Kolejność jest wiążąca: czyszczenie `dist/` poprzedza generowanie assetów produkcyjnych, więc żaden krok nie kasuje wcześniej zbudowanych plików.
 
 `build:sitemap` wymaga zmiennej `SITE_URL` i kończy się kodem różnym od zera, gdy jej nie ustawiono. Skrypt `build:dist` w `package.json` przekazuje `SITE_URL=https://construction-pr01-solidcraft.netlify.app` przez `cross-env`. Z sitemapy wykluczone są `404.html`, `offline.html` i `thank-you.html`.
 
@@ -225,8 +229,8 @@ Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 ### Utrzymanie projektu
 
 - Pliki źródłowe do edycji: `css/style.css` i `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/modules/**`, `assets/img-src/**`.
-- Artefakty generowane, których nie należy edytować ręcznie: `css/style.min.css`, `js/script.min.js`, `js/theme-init.min.js`, `assets/img/**` oraz katalog `dist/`.
-- Po zmianie plików źródłowych CSS/JS `npm run build` odświeża artefakty minifikowane lokalnie; wdrożenie nie wymaga tego kroku ręcznie, ponieważ `npm run build:dist` uruchamia `build` przed złożeniem katalogu `dist/`.
+- Artefakty generowane, których nie należy edytować ręcznie: `dist/css/style.min.css`, `dist/js/script.min.js`, `dist/js/theme-init.min.js`, `assets/img/**` oraz cały katalog `dist/`. Katalog `dist/` jest w całości generowany, nie jest utrzymywany ręcznie i pozostaje poza kontrolą wersji.
+- Zmiany w źródłach CSS/JS nie wymagają żadnego kroku buildu w developmencie — `npm run dev` serwuje pliki źródłowe. Artefakty minifikowane powstają dopiero w `dist/` podczas `npm run build:dist` (lokalnie i na wdrożeniu).
 - Po zmianie obrazów źródłowych należy uruchomić `npm run images:build` — ten krok pozostaje ręczny i nie jest częścią ścieżki wdrożenia.
 - Lista precache’owanych zasobów i wartość `CACHE_VERSION` w `sw.js` są utrzymywane ręcznie — po zmianie zasobów wchodzących do cache należy podnieść wersję.
 - Zasady pipeline’u i narzędzi są opisane w `settings.md`, który pozostaje jedynym źródłem prawdy dla tej warstwy; historia zmian jest prowadzona w `CHANGELOG.md`.
@@ -293,10 +297,10 @@ The address configured as `homepage` in `package.json` and as the canonical URL 
 ### Architecture
 
 - The presentation layer consists of static HTML files — each subpage is a separate document with its own metadata and structured data.
-- CSS is split into modules (`tokens`, `base`, `layout`, `components`, `sections`, `utilities`, `subpages`) composed via `@import` in `css/style.css`; the PostCSS build inlines those imports into a single `css/style.min.css`.
+- CSS is split into modules (`tokens`, `base`, `layout`, `components`, `sections`, `utilities`, `subpages`) composed via `@import` in `css/style.css`; the PostCSS build inlines those imports into a single production file, `dist/css/style.min.css`.
 - JavaScript is split into ES modules (`nav`, `ui-core`, `forms`, `lightbox`, `map-consent`, `prefetch`, `home`, `project-banner`, `utils`). `js/script.js` exposes them under `window.SC` and runs initializers conditionally, based on the presence of selectors on the page.
 - `js/theme-init.js` is loaded synchronously in `<head>` to set the theme before the first render; `js/sw-register.js` registers the Service Worker with scope `/`.
-- The production build does not modify HTML source files — `scripts/build-dist.js` creates the `dist/` directory and rewrites references to minified assets only in the copies.
+- The production build does not modify the source files — `scripts/build-dist.js` creates the `dist/` directory and rewrites references to minified assets only in the HTML copies, while PostCSS and esbuild write their minified output exclusively into `dist/`. The source tree holds no `.min.css` or `.min.js` artifacts.
 - Tooling scripts in `scripts/` share a logger (`scripts/utils/logger.js`) with a `--verbose` mode.
 
 ### Project Structure
@@ -311,13 +315,10 @@ DS-construction-pr01-SolidCraft/
 ├── doc/                       # terms, privacy policy, cookies
 ├── css/
 │   ├── style.css              # source (module @imports)
-│   ├── style.min.css          # generated artifact
 │   └── modules/
 ├── js/
 │   ├── script.js              # source (ES modules)
-│   ├── script.min.js          # generated artifact
 │   ├── theme-init.js
-│   ├── theme-init.min.js      # generated artifact
 │   ├── sw-register.js
 │   └── modules/
 ├── assets/
@@ -346,7 +347,12 @@ DS-construction-pr01-SolidCraft/
 ├── settings.md
 ├── CHANGELOG.md
 ├── LICENSE
-└── package.json
+├── package.json
+└── dist/                      # production output (generated, not in Git)
+    ├── css/style.min.css      # generated artifact
+    └── js/
+        ├── script.min.js      # generated artifact
+        └── theme-init.min.js  # generated artifact
 ```
 
 ### Installation
@@ -365,7 +371,9 @@ npm run dev
 
 `live-server` serves the project on port `15500` and opens `index.html`. An HTTP server is required — the pages rely on ES modules, a Service Worker, and a manifest referenced by an absolute path, so opening files over `file://` will not reproduce production behavior.
 
-Rebuilding assets in the background:
+Local development uses the non-minified sources only (`css/style.css` with its modules and `js/script.js` as ES modules) — it never needs a production build.
+
+Rebuilding the production assets in the background (written into `dist/`):
 
 ```bash
 npm run watch:css
@@ -375,10 +383,10 @@ npm run watch:js
 ### Available Scripts
 
 - `npm run dev` — local `live-server` (port `15500`); `npm start` is an alias.
-- `npm run build:css` — PostCSS builds `css/style.min.css`, then `scripts/verify-css-build.js` checks that no `@import` remains.
-- `npm run build:js` — esbuild builds `js/theme-init.min.js` and `js/script.min.js`, then `scripts/verify-js-build.js` checks that no `import`/`export` syntax remains.
-- `npm run build` — runs `build:css` and `build:js`.
-- `npm run build:dist` — runs `build`, creates the `dist/` directory, and runs `build:sitemap`.
+- `npm run build:css` — PostCSS builds `dist/css/style.min.css`, then `scripts/verify-css-build.js` checks that no `@import` remains.
+- `npm run build:js` — esbuild builds `dist/js/theme-init.min.js` and `dist/js/script.min.js`, then `scripts/verify-js-build.js` checks that no `import`/`export` syntax remains in either file.
+- `npm run build` — runs `build:css` and `build:js`; both write into `dist/` only.
+- `npm run build:dist` — assembles the `dist/` directory, then runs `build` and `build:sitemap`.
 - `npm run build:sitemap` — generates `dist/sitemap.xml` for the address passed in `SITE_URL`.
 - `npm run images:build` / `npm run images:clean` — generate and clean images in `assets/img/`.
 - `npm run check:links` — validates internal links, external links, and anchors across HTML files.
@@ -395,7 +403,7 @@ npm run watch:js
 npm run build:dist
 ```
 
-`npm run build:dist` starts with `npm run build`, which generates the minified artifacts (`css/style.min.css`, `js/script.min.js`, `js/theme-init.min.js`) from the current sources. It then removes and recreates the `dist/` directory, copies all HTML files, the required minified assets, the `assets/` directory (excluding `assets/img-src/`), and the optional files (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), then rewrites `css/style.css`, `js/script.js`, and `js/theme-init.js` references to their minified variants in the HTML copies. The build fails when a required production asset is missing after the `build` step.
+`npm run build:dist` runs three steps in order. First `scripts/build-dist.js` removes and recreates the `dist/` directory, copies all HTML files, the `assets/` directory (excluding `assets/img-src/`), and the optional files (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), and rewrites `css/style.css`, `js/script.js`, and `js/theme-init.js` references to their minified variants in the HTML copies. Then `npm run build` generates `dist/css/style.min.css`, `dist/js/theme-init.min.js`, and `dist/js/script.min.js` from the current sources, and the verification scripts fail the build when one of those artifacts is missing. Finally `build:sitemap` writes `dist/sitemap.xml`. The order is binding: `dist/` is cleaned before the production assets are generated, so no step deletes previously built files.
 
 `build:sitemap` requires the `SITE_URL` variable and exits non-zero when it is not set. The `build:dist` script in `package.json` passes `SITE_URL=https://construction-pr01-solidcraft.netlify.app` through `cross-env`. `404.html`, `offline.html`, and `thank-you.html` are excluded from the sitemap.
 
@@ -471,8 +479,8 @@ The repository contains no recorded performance measurement results.
 ### Project Maintenance
 
 - Editable source files: `css/style.css` and `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/modules/**`, `assets/img-src/**`.
-- Generated artifacts that must not be edited manually: `css/style.min.css`, `js/script.min.js`, `js/theme-init.min.js`, `assets/img/**`, and the `dist/` directory.
-- After changing CSS/JS sources, `npm run build` refreshes the minified artifacts locally; the deploy does not require that step manually, because `npm run build:dist` runs `build` before assembling `dist/`.
+- Generated artifacts that must not be edited manually: `dist/css/style.min.css`, `dist/js/script.min.js`, `dist/js/theme-init.min.js`, `assets/img/**`, and the whole `dist/` directory. `dist/` is generated in full, is never maintained by hand, and stays out of version control.
+- Changing CSS/JS sources requires no build step during development — `npm run dev` serves the source files. The minified artifacts are produced in `dist/` by `npm run build:dist` only, locally and on deploy alike.
 - After changing source images run `npm run images:build` — that step stays manual and is not part of the deploy path.
 - The precache list and the `CACHE_VERSION` value in `sw.js` are maintained manually — bump the version after changing the cached assets.
 - Pipeline and tooling rules are documented in `settings.md`, which remains the single source of truth for that layer; the change history is kept in `CHANGELOG.md`.
