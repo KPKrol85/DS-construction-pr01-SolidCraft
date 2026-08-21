@@ -4,6 +4,9 @@ import { createServer } from "node:http";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { resolveContentType } from "./utils/mime-types.mjs";
+import partials from "./utils/partials.js";
+
+const { renderHtmlFile } = partials;
 
 const projectRoot = process.cwd();
 const thresholds = {
@@ -129,8 +132,16 @@ async function startStaticServer() {
       return;
     }
 
-    const data = await fs.readFile(filePath);
     const ext = path.extname(filePath).toLowerCase();
+    // Serve pages with their shared header/footer expanded, so axe audits the
+    // same document a browser receives from dist/.
+    const data =
+      ext === ".html"
+        ? Buffer.from(
+            (await renderHtmlFile(filePath, { rootDir: projectRoot })).html,
+            "utf8",
+          )
+        : await fs.readFile(filePath);
     res.writeHead(200, { "Content-Type": resolveContentType(ext) });
     res.end(data);
   });

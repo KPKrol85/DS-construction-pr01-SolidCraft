@@ -3,12 +3,18 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
+import partials from './utils/partials.js';
+
+const { PARTIALS_DIR_NAME, renderHtmlFile } = partials;
+
 const projectRoot = process.cwd();
 const htmlFiles = await collectHtmlFiles(projectRoot);
 const failures = [];
 
 for (const file of htmlFiles) {
-  const html = await fs.readFile(file, 'utf8');
+  // Shared header/footer references are validated through the rendered page,
+  // so the partial architecture never hides a broken asset path.
+  const { html } = await renderHtmlFile(file, { rootDir: projectRoot });
   const refs = extractAssetReferences(html);
 
   for (const ref of refs) {
@@ -46,7 +52,7 @@ async function collectHtmlFiles(dir) {
   const files = [];
 
   for (const entry of entries) {
-    if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'dist') continue;
+    if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'dist' || entry.name === PARTIALS_DIR_NAME) continue;
 
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {

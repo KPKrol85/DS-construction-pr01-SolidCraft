@@ -51,7 +51,29 @@ Adres skonfigurowany jako `homepage` w `package.json` oraz jako adres kanoniczny
 - JavaScript jest podzielony na moduły ES (`nav`, `ui-core`, `forms`, `lightbox`, `map-consent`, `prefetch`, `home`, `project-banner`, `utils`). `js/script.js` eksponuje je w przestrzeni `window.SC` i uruchamia inicjalizatory warunkowo, na podstawie obecności selektorów na stronie.
 - `js/theme-init.js` jest ładowany synchronicznie w `<head>`, aby ustawić motyw przed pierwszym renderem; `js/sw-register.js` rejestruje Service Workera w zakresie `/`.
 - Build produkcyjny nie modyfikuje plików źródłowych — `scripts/build-dist.js` tworzy katalog `dist/` i dopiero w kopiach HTML podmienia odwołania na assety minifikowane, a PostCSS i esbuild zapisują pliki minifikowane wyłącznie do `dist/`. Drzewo źródłowe nie zawiera artefaktów `.min.css` ani `.min.js`.
+- Wspólny nagłówek i stopka mają jedno źródło — `partials/header.html` i `partials/footer.html`. Strony osadzają je dyrektywą `<!-- @include partials/... -->`, a `scripts/utils/partials.js` rozwija je w czasie builda. Wygenerowany HTML zawiera pełny nagłówek i stopkę, więc przeglądarka nie potrzebuje `fetch()` ani JavaScriptu, aby je otrzymać.
 - Skrypty narzędziowe w `scripts/` korzystają ze wspólnego loggera (`scripts/utils/logger.js`) z trybem `--verbose`.
+
+### Wspólne partiale layoutu
+
+Każda z 13 utrzymywanych stron deklaruje swój kontekst jedną dyrektywą tuż pod `<body>` i osadza partiale:
+
+```html
+<body class="page-sub">
+  <!-- @layout base="../" home="../index.html" active-home="" -->
+  <!-- @include partials/header.html -->
+  ...
+  <!-- @include partials/footer.html -->
+</body>
+```
+
+- `base` — przedrostek odwołań liczonych od katalogu głównego (`assets/`, `oferta/`, `doc/`).
+- `home` — przedrostek kotwic strony głównej; strona główna zostawia go pustym, więc zachowuje czyste `#kotwice` wymagane przez scroll-spy i menu rozwijane.
+- `active-home` — niepuste wyłącznie w `index.html`, gdzie steruje `aria-current="page"`.
+
+Wartości dla poszczególnych grup stron: `index.html` → `base=""`, `home=""`, `active-home="true"`; `thank-you.html` → `base=""`, `home="index.html"`; `oferta/` i `doc/` → `base="../"`, `home="../index.html"`; `404.html` i `offline.html` → `base="/"`, `home="/"` (te dokumenty mogą być serwowane spod dowolnej ścieżki).
+
+W partialach dostępne są `{{nazwa}}` oraz `{{#if nazwa}}...{{/if}}`. Nierozpoznana zmienna, brakujący partial lub token pozostały po renderowaniu przerywają build błędem — `dist/` nigdy nie otrzyma strony bez nagłówka lub stopki. Katalog `partials/` jest wykluczony z `dist/`, sitemapy i Prettiera (zawiera składnię szablonu).
 
 ### Struktura projektu
 
@@ -63,6 +85,9 @@ DS-construction-pr01-SolidCraft/
 ├── thank-you.html
 ├── oferta/                    # 6 podstron usług
 ├── doc/                       # regulamin, polityka prywatności, cookies
+├── partials/                  # wspólny layout (jedyne źródło)
+│   ├── header.html
+│   └── footer.html
 ├── css/
 │   ├── style.css              # źródło (@import modułów)
 │   └── modules/
@@ -77,6 +102,7 @@ DS-construction-pr01-SolidCraft/
 │   └── img/                   # warianty generowane przez sharp
 ├── scripts/
 │   ├── build-dist.js
+│   ├── dev-server.js
 │   ├── images.js
 │   ├── check-links.mjs
 │   ├── check-html-assets.mjs
@@ -84,7 +110,10 @@ DS-construction-pr01-SolidCraft/
 │   ├── qa-a11y.mjs
 │   ├── verify-css-build.js
 │   ├── verify-js-build.js
-│   └── utils/logger.js
+│   └── utils/
+│       ├── logger.js
+│       ├── mime-types.mjs
+│       └── partials.js        # renderer partiali (build i dev)
 ├── sw.js
 ├── manifest.webmanifest
 ├── robots.txt
@@ -119,7 +148,7 @@ Wymagania: Node.js w wersji `>=18`. Wszystkie zależności są zależnościami d
 npm run dev
 ```
 
-`live-server` uruchamia projekt na porcie `15500` i otwiera `index.html`. Serwer HTTP jest konieczny — strony korzystają z modułów ES, Service Workera i manifestu wskazywanego ścieżką bezwzględną, więc otwarcie pliku przez `file://` nie odwzoruje zachowania produkcyjnego.
+`scripts/dev-server.js` uruchamia `live-server` na porcie `15500` i otwiera `index.html`. Żądania HTML obsługuje middleware, który rozwija partiale przy każdym żądaniu — zmiana w `partials/header.html` lub `partials/footer.html` jest widoczna po odświeżeniu strony i trafia od razu do wszystkich 13 stron. Przeładowanie na żywo (`live-reload`) działa bez zmian. Serwer HTTP jest konieczny — strony korzystają z modułów ES, Service Workera i manifestu wskazywanego ścieżką bezwzględną, więc otwarcie pliku przez `file://` nie odwzoruje zachowania produkcyjnego.
 
 Development lokalny korzysta wyłącznie ze źródeł nieminifikowanych (`css/style.css` z modułami i `js/script.js` jako moduły ES) — build produkcyjny nie jest do niego potrzebny.
 
@@ -132,7 +161,7 @@ npm run watch:js
 
 ### Dostępne skrypty
 
-- `npm run dev` — lokalny serwer `live-server` (port `15500`); `npm start` jest aliasem.
+- `npm run dev` — lokalny serwer `live-server` z renderowaniem partiali (`scripts/dev-server.js`, port `15500`); `npm start` jest aliasem.
 - `npm run build:css` — PostCSS buduje `dist/css/style.min.css`, następnie `scripts/verify-css-build.js` sprawdza brak pozostałych `@import`.
 - `npm run build:js` — esbuild buduje `dist/js/theme-init.min.js` i `dist/js/script.min.js`, następnie `scripts/verify-js-build.js` sprawdza brak składni `import`/`export` w obu plikach.
 - `npm run build` — `build:css` i `build:js`; obydwa zapisują wyłącznie do `dist/`.
@@ -153,7 +182,7 @@ npm run watch:js
 npm run build:dist
 ```
 
-`npm run build:dist` wykonuje kolejno trzy kroki. Najpierw `scripts/build-dist.js` usuwa i odtwarza katalog `dist/`, kopiuje wszystkie pliki HTML, katalog `assets/` (z pominięciem `assets/img-src/`) oraz pliki opcjonalne (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), a w kopiach HTML podmienia odwołania `css/style.css`, `js/script.js` i `js/theme-init.js` na warianty minifikowane. Następnie `npm run build` generuje z bieżących źródeł `dist/css/style.min.css`, `dist/js/theme-init.min.js` i `dist/js/script.min.js`, a skrypty weryfikacyjne kończą build błędem, gdy któregoś z tych artefaktów brakuje. Na końcu `build:sitemap` zapisuje `dist/sitemap.xml`. Kolejność jest wiążąca: czyszczenie `dist/` poprzedza generowanie assetów produkcyjnych, więc żaden krok nie kasuje wcześniej zbudowanych plików.
+`npm run build:dist` wykonuje kolejno trzy kroki. Najpierw `scripts/build-dist.js` usuwa i odtwarza katalog `dist/`, renderuje wszystkie pliki HTML wraz z partialami z `partials/`, kopiuje katalog `assets/` (z pominięciem `assets/img-src/`) oraz pliki opcjonalne (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), a w kopiach HTML podmienia odwołania `css/style.css`, `js/script.js` i `js/theme-init.js` na warianty minifikowane. Następnie `npm run build` generuje z bieżących źródeł `dist/css/style.min.css`, `dist/js/theme-init.min.js` i `dist/js/script.min.js`, a skrypty weryfikacyjne kończą build błędem, gdy któregoś z tych artefaktów brakuje. Na końcu `build:sitemap` zapisuje `dist/sitemap.xml`. Kolejność jest wiążąca: czyszczenie `dist/` poprzedza generowanie assetów produkcyjnych, więc żaden krok nie kasuje wcześniej zbudowanych plików.
 
 `build:sitemap` wymaga zmiennej `SITE_URL` i kończy się kodem różnym od zera, gdy jej nie ustawiono. Skrypt `build:dist` w `package.json` przekazuje `SITE_URL=https://construction-pr01-solidcraft.netlify.app` przez `cross-env`. Z sitemapy wykluczone są `404.html`, `offline.html` i `thank-you.html`.
 
@@ -301,7 +330,29 @@ The address configured as `homepage` in `package.json` and as the canonical URL 
 - JavaScript is split into ES modules (`nav`, `ui-core`, `forms`, `lightbox`, `map-consent`, `prefetch`, `home`, `project-banner`, `utils`). `js/script.js` exposes them under `window.SC` and runs initializers conditionally, based on the presence of selectors on the page.
 - `js/theme-init.js` is loaded synchronously in `<head>` to set the theme before the first render; `js/sw-register.js` registers the Service Worker with scope `/`.
 - The production build does not modify the source files — `scripts/build-dist.js` creates the `dist/` directory and rewrites references to minified assets only in the HTML copies, while PostCSS and esbuild write their minified output exclusively into `dist/`. The source tree holds no `.min.css` or `.min.js` artifacts.
+- The shared header and footer have a single source each — `partials/header.html` and `partials/footer.html`. Pages embed them with a `<!-- @include partials/... -->` directive, and `scripts/utils/partials.js` expands them at build time. The generated HTML already contains the complete header and footer, so the browser needs no `fetch()` and no JavaScript to obtain them.
 - Tooling scripts in `scripts/` share a logger (`scripts/utils/logger.js`) with a `--verbose` mode.
+
+### Shared Layout Partials
+
+Each of the 13 maintained pages declares its context with one directive right below `<body>` and embeds the partials:
+
+```html
+<body class="page-sub">
+  <!-- @layout base="../" home="../index.html" active-home="" -->
+  <!-- @include partials/header.html -->
+  ...
+  <!-- @include partials/footer.html -->
+</body>
+```
+
+- `base` — prefix for references resolved from the project root (`assets/`, `oferta/`, `doc/`).
+- `home` — prefix for homepage anchors; the homepage leaves it empty so it keeps the bare `#anchors` its scroll-spy and dropdown scripts depend on.
+- `active-home` — non-empty only in `index.html`, where it drives `aria-current="page"`.
+
+Values per page group: `index.html` → `base=""`, `home=""`, `active-home="true"`; `thank-you.html` → `base=""`, `home="index.html"`; `oferta/` and `doc/` → `base="../"`, `home="../index.html"`; `404.html` and `offline.html` → `base="/"`, `home="/"` (those documents can be served from any path).
+
+Partials support `{{name}}` and `{{#if name}}...{{/if}}`. An undeclared variable, a missing partial, or any token left after rendering fails the build — `dist/` never receives a page without its header or footer. The `partials/` directory is excluded from `dist/`, from the sitemap, and from Prettier (it holds template syntax).
 
 ### Project Structure
 
@@ -313,6 +364,9 @@ DS-construction-pr01-SolidCraft/
 ├── thank-you.html
 ├── oferta/                    # 6 service subpages
 ├── doc/                       # terms, privacy policy, cookies
+├── partials/                  # shared layout (single source of truth)
+│   ├── header.html
+│   └── footer.html
 ├── css/
 │   ├── style.css              # source (module @imports)
 │   └── modules/
@@ -327,6 +381,7 @@ DS-construction-pr01-SolidCraft/
 │   └── img/                   # variants generated by sharp
 ├── scripts/
 │   ├── build-dist.js
+│   ├── dev-server.js
 │   ├── images.js
 │   ├── check-links.mjs
 │   ├── check-html-assets.mjs
@@ -334,7 +389,10 @@ DS-construction-pr01-SolidCraft/
 │   ├── qa-a11y.mjs
 │   ├── verify-css-build.js
 │   ├── verify-js-build.js
-│   └── utils/logger.js
+│   └── utils/
+│       ├── logger.js
+│       ├── mime-types.mjs
+│       └── partials.js        # partial renderer (build and dev)
 ├── sw.js
 ├── manifest.webmanifest
 ├── robots.txt
@@ -369,7 +427,7 @@ Requirements: Node.js `>=18`. All dependencies are development dependencies — 
 npm run dev
 ```
 
-`live-server` serves the project on port `15500` and opens `index.html`. An HTTP server is required — the pages rely on ES modules, a Service Worker, and a manifest referenced by an absolute path, so opening files over `file://` will not reproduce production behavior.
+`scripts/dev-server.js` starts `live-server` on port `15500` and opens `index.html`. HTML requests go through a middleware that expands the partials per request — editing `partials/header.html` or `partials/footer.html` shows up on a plain refresh and reaches all 13 pages at once. Live reload keeps working as before. An HTTP server is required — the pages rely on ES modules, a Service Worker, and a manifest referenced by an absolute path, so opening files over `file://` will not reproduce production behavior.
 
 Local development uses the non-minified sources only (`css/style.css` with its modules and `js/script.js` as ES modules) — it never needs a production build.
 
@@ -382,7 +440,7 @@ npm run watch:js
 
 ### Available Scripts
 
-- `npm run dev` — local `live-server` (port `15500`); `npm start` is an alias.
+- `npm run dev` — local `live-server` with partial rendering (`scripts/dev-server.js`, port `15500`); `npm start` is an alias.
 - `npm run build:css` — PostCSS builds `dist/css/style.min.css`, then `scripts/verify-css-build.js` checks that no `@import` remains.
 - `npm run build:js` — esbuild builds `dist/js/theme-init.min.js` and `dist/js/script.min.js`, then `scripts/verify-js-build.js` checks that no `import`/`export` syntax remains in either file.
 - `npm run build` — runs `build:css` and `build:js`; both write into `dist/` only.
@@ -403,7 +461,7 @@ npm run watch:js
 npm run build:dist
 ```
 
-`npm run build:dist` runs three steps in order. First `scripts/build-dist.js` removes and recreates the `dist/` directory, copies all HTML files, the `assets/` directory (excluding `assets/img-src/`), and the optional files (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), and rewrites `css/style.css`, `js/script.js`, and `js/theme-init.js` references to their minified variants in the HTML copies. Then `npm run build` generates `dist/css/style.min.css`, `dist/js/theme-init.min.js`, and `dist/js/script.min.js` from the current sources, and the verification scripts fail the build when one of those artifacts is missing. Finally `build:sitemap` writes `dist/sitemap.xml`. The order is binding: `dist/` is cleaned before the production assets are generated, so no step deletes previously built files.
+`npm run build:dist` runs three steps in order. First `scripts/build-dist.js` removes and recreates the `dist/` directory, renders every HTML file with its `partials/` header and footer expanded, copies the `assets/` directory (excluding `assets/img-src/`), and the optional files (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), and rewrites `css/style.css`, `js/script.js`, and `js/theme-init.js` references to their minified variants in the HTML copies. Then `npm run build` generates `dist/css/style.min.css`, `dist/js/theme-init.min.js`, and `dist/js/script.min.js` from the current sources, and the verification scripts fail the build when one of those artifacts is missing. Finally `build:sitemap` writes `dist/sitemap.xml`. The order is binding: `dist/` is cleaned before the production assets are generated, so no step deletes previously built files.
 
 `build:sitemap` requires the `SITE_URL` variable and exits non-zero when it is not set. The `build:dist` script in `package.json` passes `SITE_URL=https://construction-pr01-solidcraft.netlify.app` through `cross-env`. `404.html`, `offline.html`, and `thank-you.html` are excluded from the sitemap.
 

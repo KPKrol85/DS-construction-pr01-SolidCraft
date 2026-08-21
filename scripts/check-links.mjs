@@ -4,6 +4,9 @@ import { createServer } from 'node:http';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { resolveContentType } from './utils/mime-types.mjs';
+import partials from './utils/partials.js';
+
+const { PARTIALS_DIR_NAME, renderHtmlFile } = partials;
 
 const projectRoot = process.cwd();
 const htmlFiles = await collectHtmlFiles(projectRoot);
@@ -13,10 +16,17 @@ if (htmlFiles.length === 0) {
   process.exit(0);
 }
 
+// Pages are validated after their shared header/footer partials are expanded,
+// so navigation, document and anchor targets stay covered by this check.
+const renderedHtml = new Map();
+for (const file of htmlFiles) {
+  const { html } = await renderHtmlFile(file, { rootDir: projectRoot });
+  renderedHtml.set(file, html);
+}
+
 const anchorIndex = new Map();
 for (const file of htmlFiles) {
-  const html = await fs.readFile(file, 'utf8');
-  anchorIndex.set(file, extractAnchors(html));
+  anchorIndex.set(file, extractAnchors(renderedHtml.get(file)));
 }
 
 const server = await startStaticServer(projectRoot);
@@ -25,8 +35,7 @@ const warnings = [];
 const externalCache = new Map();
 
 for (const file of htmlFiles) {
-  const html = await fs.readFile(file, 'utf8');
-  const links = extractAnchorHrefs(html);
+  const links = extractAnchorHrefs(renderedHtml.get(file));
 
   for (const link of links) {
     const href = link.value.trim();
@@ -79,7 +88,7 @@ async function collectHtmlFiles(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
-    if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'dist') continue;
+    if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'dist' || entry.name === PARTIALS_DIR_NAME) continue;
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) files.push(...(await collectHtmlFiles(fullPath)));
     else if (entry.isFile() && entry.name.endsWith('.html')) files.push(fullPath);

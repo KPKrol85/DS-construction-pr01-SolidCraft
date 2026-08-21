@@ -1,10 +1,14 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
+import partials from "./utils/partials.js";
+
+const { PARTIALS_DIR_NAME } = partials;
+
 const rootDir = process.cwd();
 const publishDir = path.join(rootDir, "dist");
 
-const EXCLUDED_DIRS = new Set([".git", ".claude", ".codex", "node_modules", "dist", "build"]);
+const EXCLUDED_DIRS = new Set([".git", ".claude", ".codex", "node_modules", "dist", "build", PARTIALS_DIR_NAME]);
 const EXCLUDED_FILES = new Set(["404.html", "offline.html", "thank-you.html"]);
 const EXCLUDED_PREFIXES = [];
 

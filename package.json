@@ -11,7 +11,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "start": "npm run dev",
-    "dev": "live-server --port=15500 --open=index.html --quiet",
+    "dev": "node scripts/dev-server.js",
     "build:css": "postcss css/style.css --no-map -o dist/css/style.min.css && node scripts/verify-css-build.js",
     "build:js": "esbuild js/theme-init.js --bundle --minify --target=es2018 --format=iife --outfile=dist/js/theme-init.min.js && esbuild js/script.js --bundle --minify --target=es2018 --format=iife --outfile=dist/js/script.min.js && node scripts/verify-js-build.js",
     "build": "npm run build:css && npm run build:js",

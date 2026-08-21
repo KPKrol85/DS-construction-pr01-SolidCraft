@@ -1,6 +1,7 @@
 const fs = require("fs/promises");
 const path = require("path");
 const { createLogger } = require("./utils/logger");
+const { PARTIALS_DIR_NAME, renderHtmlFile } = require("./utils/partials");
 
 const logger = createLogger();
 
@@ -13,6 +14,7 @@ const EXCLUDED_TOP_LEVEL_DIRS = new Set([
   ".codex",
   "node_modules",
   "dist",
+  PARTIALS_DIR_NAME,
 ]);
 
 const OPTIONAL_FILES = [
@@ -41,6 +43,17 @@ async function copyFileByRelativePath(relPath) {
   const dest = path.join(distDir, relPath);
   await fs.mkdir(path.dirname(dest), { recursive: true });
   await fs.copyFile(src, dest);
+}
+
+/* Stages one maintained page with its shared header/footer already expanded,
+   so dist/ only ever contains complete standalone HTML documents. */
+async function renderHtmlFileToDist(relPath) {
+  const src = path.join(rootDir, relPath);
+  const dest = path.join(distDir, relPath);
+  const { html, partials } = await renderHtmlFile(src, { rootDir });
+  await fs.mkdir(path.dirname(dest), { recursive: true });
+  await fs.writeFile(dest, html, "utf8");
+  return partials;
 }
 
 async function listHtmlFilesRecursively(dir) {
@@ -105,9 +118,16 @@ async function copyRuntimeFilesToDist() {
 
   const htmlFiles = await listHtmlFilesRecursively(rootDir);
   logger.debug(`build-dist: discovered ${htmlFiles.length} HTML file(s)`);
+
+  const usedPartials = new Set();
   for (const relPath of htmlFiles) {
-    await copyFileByRelativePath(relPath);
+    for (const partial of await renderHtmlFileToDist(relPath)) {
+      usedPartials.add(partial);
+    }
   }
+  logger.debug(
+    `build-dist: rendered ${usedPartials.size} shared partial(s): ${[...usedPartials].sort().join(", ") || "none"}`,
+  );
 
   for (const relPath of OPTIONAL_FILES) {
     const absPath = path.join(rootDir, relPath);
@@ -126,6 +146,8 @@ async function copyRuntimeFilesToDist() {
       skipRelDirNames: new Set(["img-src"]),
     });
   }
+
+  return htmlFiles.length;
 }
 
 async function rewriteHtmlReferencesInDist(dir) {
@@ -163,10 +185,10 @@ async function rewriteHtmlReferencesInDist(dir) {
 
 async function build() {
   logger.debug("build-dist: start");
-  await copyRuntimeFilesToDist();
+  const renderedCount = await copyRuntimeFilesToDist();
   const rewrittenCount = await rewriteHtmlReferencesInDist(distDir);
   logger.summary(
-    `OK: dist staged (rewrote ${rewrittenCount} HTML file(s)); production CSS/JS are generated into dist/ by "npm run build".`,
+    `OK: dist staged (rendered ${renderedCount} HTML file(s) from source + ${PARTIALS_DIR_NAME}/, rewrote ${rewrittenCount}); production CSS/JS are generated into dist/ by "npm run build".`,
   );
 }
 
