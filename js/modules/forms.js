@@ -149,8 +149,7 @@ function initContactForm() {
       const t = e.target;
       if (t.matches('input[type="text"], textarea')) t.value = t.value.trim();
     },
-    true,
-    { signal },
+    { capture: true, signal },
   );
   form.addEventListener(
     "reset",

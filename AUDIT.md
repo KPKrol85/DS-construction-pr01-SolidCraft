@@ -200,16 +200,6 @@ None detected.
 - **Recommended direction:** Correct the width to match the icon's intended size.
 - **Verification criteria:** `.ft-contact-icon` declares a width consistent with its height and flex basis.
 
-### [P2-09] `addEventListener` is called with four arguments, so an abort signal is silently dropped
-
-- **Classification:** Defect
-- **Affected area:** Contact form, listener lifecycle
-- **Evidence:** `js/modules/forms.js:146-154`
-- **Current behaviour:** The trimming `blur` listener is registered as `form.addEventListener("blur", handler, true, { signal })`. `addEventListener` accepts three arguments; the third (`true`) is interpreted as `useCapture` and the fourth object is ignored, so this listener alone is not tied to the module's `AbortController`.
-- **Impact:** It is the single exception to an otherwise consistent teardown pattern. Re-initialising the form would leave a stale capture-phase listener attached, and the inconsistency invites the same mistake elsewhere.
-- **Recommended direction:** Pass a single options object containing both `capture` and `signal`.
-- **Verification criteria:** Every listener in `js/modules/forms.js` is registered with the module's abort signal.
-
 ### [P2-10] `preventDefault()` is called inside a passive touch listener
 
 - **Classification:** Defect

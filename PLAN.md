@@ -114,8 +114,8 @@
   - **Completion condition:** a submission rejected by the timing heuristic preserves all entered values and produces a visible, announced message
   - **Source:** `AUDIT.md` — P2-04
 
-- [ ] **PH4-03 — Tie the capture-phase trim listener to the module's abort signal** — **Priority:** Low
-  - [ ] replace the four-argument `form.addEventListener("blur", handler, true, { signal })` call in `js/modules/forms.js` with a single options object carrying both `capture` and `signal`
+- [x] **PH4-03 — Tie the capture-phase trim listener to the module's abort signal** — **Priority:** Low
+  - [x] replace the four-argument `form.addEventListener("blur", handler, true, { signal })` call in `js/modules/forms.js` with a single options object carrying both `capture` and `signal`
   - **Completion condition:** every listener registered in `js/modules/forms.js` is bound to the module's `AbortController` signal
   - **Source:** `AUDIT.md` — P2-09
 

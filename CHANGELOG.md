@@ -6,6 +6,7 @@ All significant changes to this project are documented in this file.
 
 ### Fixed
 
+- Bound the contact-form capture-phase trim listener to its existing abort signal, so reinitialisation now tears it down with the rest of the module.
 - Preserved contact-form values and consent when the 2000 ms anti-spam timing check rejects a fast submission, and now provide a retry message in the existing status region.
 - Let the contact-form submit handler own validation by adding `novalidate`, preserving native constraints and the Netlify Forms contract, and avoiding native validation bubbles that conflict with the custom error UI.
 - Gave contact-form status and field-error feedback opaque, high-contrast surfaces for the orange contact section, with distinct success and error border treatments.
