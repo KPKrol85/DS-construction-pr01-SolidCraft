@@ -7,7 +7,13 @@ const logger = createLogger();
 const rootDir = process.cwd();
 const distDir = path.join(rootDir, "dist");
 
-const EXCLUDED_TOP_LEVEL_DIRS = new Set([".git", "node_modules", "dist"]);
+const EXCLUDED_TOP_LEVEL_DIRS = new Set([
+  ".git",
+  ".claude",
+  ".codex",
+  "node_modules",
+  "dist",
+]);
 
 const OPTIONAL_FILES = [
   "_headers",

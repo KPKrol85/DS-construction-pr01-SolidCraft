@@ -4,7 +4,7 @@ import path from "node:path";
 const rootDir = process.cwd();
 const publishDir = path.join(rootDir, "dist");
 
-const EXCLUDED_DIRS = new Set([".git", "node_modules", "dist", "build"]);
+const EXCLUDED_DIRS = new Set([".git", ".claude", ".codex", "node_modules", "dist", "build"]);
 const EXCLUDED_FILES = new Set(["404.html", "offline.html", "thank-you.html"]);
 const EXCLUDED_PREFIXES = [];
 
