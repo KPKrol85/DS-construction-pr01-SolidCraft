@@ -150,16 +150,6 @@ None detected.
 
 
 
-### [P2-05] Service-worker precache omits assets the cached pages require
-
-- **Classification:** Contract mismatch
-- **Affected area:** Service worker, offline behaviour
-- **Evidence:** `sw.js:5-29` (`ASSETS`); `index.html:17` and `index.html:1000-1001`; `css/modules/layout.css:180-185`, `css/modules/layout.css:261-272`
-- **Current behaviour:** The precache list contains the HTML pages, the manifest, `css/style.min.css`, `js/script.min.js` and the favicons — but not `js/theme-init.min.js`, `js/sw-register.js` or any of the six `woff2` files. Static assets are served cache-first with no offline fallback, so those requests fail when offline. `theme-init` is the script that removes the `no-js` class and applies the stored theme, and `css/modules/layout.css` has dedicated `.no-js` navigation rules.
-- **Impact:** An offline visit to a cached page renders in the no-JavaScript navigation fallback with the stored theme ignored and system fonts substituted. Additionally, the cache write inside the fetch handler (`sw.js:61`, `sw.js:77`) is a floating promise that is not passed to `event.waitUntil`, so it can be dropped if the worker is terminated first.
-- **Recommended direction:** Add the theme-init bundle, the registration script and the font files to the precache list, keep `CACHE_VERSION` bumped alongside, and hand the runtime cache writes to `event.waitUntil`.
-- **Verification criteria:** With the network disabled, a cached page renders with the correct theme, the enhanced navigation and the project fonts.
-
 ### [P2-06] Lightbox controls are rendered outside the dialog they operate
 
 - **Classification:** Source-visible risk

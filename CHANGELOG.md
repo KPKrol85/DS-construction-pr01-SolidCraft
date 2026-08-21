@@ -6,6 +6,7 @@ All significant changes to this project are documented in this file.
 
 ### Fixed
 
+- Completed the service-worker precache contract for the theme bootstrap, registration script and production fonts, with runtime cache writes now tied to fetch-event lifetime.
 - Made the `404.html` and `offline.html` recovery pages URL-depth independent by resolving their project-owned styles, scripts, favicons, assets and internal navigation from the site root.
 - Bound the contact-form capture-phase trim listener to its existing abort signal, so reinitialisation now tears it down with the rest of the module.
 - Preserved contact-form values and consent when the 2000 ms anti-spam timing check rejects a fast submission, and now provide a retry message in the existing status region.

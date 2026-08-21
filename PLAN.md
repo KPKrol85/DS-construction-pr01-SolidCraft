@@ -129,13 +129,13 @@
   - **Completion condition:** requesting a non-existent nested path renders the styled 404 page with working recovery links, and an offline navigation to a subpage renders the styled offline page
   - **Source:** PH5-01 verification
 
-- [ ] **PH5-02 — Complete the service-worker precache list and secure its runtime cache writes** — **Priority:** Medium
-  - [ ] add `js/theme-init.min.js`, `js/sw-register.js` and the six `assets/fonts/*.woff2` files to the `ASSETS` list in `sw.js`
-  - [ ] bump `CACHE_VERSION` alongside the precache change
-  - [ ] pass the runtime cache writes in the fetch handler to `event.waitUntil` instead of leaving them as floating promises
+- [x] **PH5-02 — Complete the service-worker precache list and secure its runtime cache writes** — **Priority:** Medium
+  - [x] add `js/theme-init.min.js`, `js/sw-register.js` and the six `assets/fonts/*.woff2` files to the `ASSETS` list in `sw.js`
+  - [x] bump `CACHE_VERSION` alongside the precache change
+  - [x] pass the runtime cache writes in the fetch handler to `event.waitUntil` instead of leaving them as floating promises
   - **Depends on:** `PH5-01`
   - **Completion condition:** with the network disabled, a cached page renders with the stored theme, the enhanced (non-`no-js`) navigation and the project fonts
-  - **Source:** `AUDIT.md` — P2-05
+  - **Source:** PH5-02 verification
 
 ## Phase 6 — Gallery and lightbox interaction
 
