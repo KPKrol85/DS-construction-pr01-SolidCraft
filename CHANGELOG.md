@@ -6,6 +6,7 @@ All significant changes to this project are documented in this file.
 
 ### Fixed
 
+- Made each service-gallery anchor the sole lightbox trigger, preserving its raw-image destination without JavaScript and removing the nested image control.
 - Completed the service-worker precache contract for the theme bootstrap, registration script and production fonts, with runtime cache writes now tied to fetch-event lifetime.
 - Made the `404.html` and `offline.html` recovery pages URL-depth independent by resolving their project-owned styles, scripts, favicons, assets and internal navigation from the site root.
 - Bound the contact-form capture-phase trim listener to its existing abort signal, so reinitialisation now tears it down with the rest of the module.

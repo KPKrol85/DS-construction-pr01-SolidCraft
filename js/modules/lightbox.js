@@ -7,11 +7,26 @@ function initOfertaLightbox() {
   const { signal } = ac;
   initOfertaLightbox._abort = ac;
 
-  const thumbs = Array.from(
-    document.querySelectorAll(
-      "#oferta .card picture img, .gallery .gallery-item picture img",
-    ),
+  const offerImages = Array.from(
+    document.querySelectorAll("#oferta .card picture img"),
   );
+  const galleryTriggers = Array.from(
+    document.querySelectorAll(".gallery a.gallery-item"),
+  );
+  const thumbs = [
+    ...offerImages.map((image) => ({
+      trigger: image,
+      image,
+      isGallery: false,
+    })),
+    ...galleryTriggers
+      .map((trigger) => ({
+        trigger,
+        image: trigger.querySelector("picture img"),
+        isGallery: true,
+      }))
+      .filter(({ image }) => image),
+  ];
 
   if (!thumbs.length) return;
 
@@ -118,7 +133,7 @@ function initOfertaLightbox() {
   const preload = (i) => {
     if (i < 0 || i >= thumbs.length) return;
 
-    const url = bestUrlFor(thumbs[i]);
+    const url = bestUrlFor(thumbs[i].image);
 
     if (!url) return;
 
@@ -131,7 +146,7 @@ function initOfertaLightbox() {
   let lastFocus = null;
 
   const applyImage = () => {
-    const el = thumbs[index];
+    const el = thumbs[index].image;
     const url = bestUrlFor(el);
 
     if (!url) return;
@@ -145,7 +160,7 @@ function initOfertaLightbox() {
 
   const focusables = () => [btnClose, btnPrev, btnNext].filter(Boolean);
 
-  const setOpen = (open) => {
+  const setOpen = (open, opener = null) => {
     isOpen = open;
 
     backdrop.classList.toggle("is-open", open);
@@ -163,7 +178,7 @@ function initOfertaLightbox() {
     } catch {}
 
     if (open) {
-      lastFocus = document.activeElement;
+      lastFocus = opener || document.activeElement;
 
       applyImage();
 
@@ -201,28 +216,30 @@ function initOfertaLightbox() {
     applyImage();
   };
 
-  thumbs.forEach((el, i) => {
-    el.setAttribute("tabindex", "0");
-    el.setAttribute("role", "button");
-    el.setAttribute("aria-label", "Powiększ zdjęcie");
+  thumbs.forEach(({ trigger, isGallery }, i) => {
+    const openFromTrigger = (e) => {
+      e.preventDefault();
+      index = i;
+      setOpen(true, trigger);
+    };
 
-    el.addEventListener(
-      "click",
-      (e) => {
-        e.preventDefault();
-        index = i;
-        setOpen(true);
-      },
-      { signal },
-    );
+    if (!isGallery) {
+      trigger.setAttribute("tabindex", "0");
+      trigger.setAttribute("role", "button");
+      trigger.setAttribute("aria-label", "Powiększ zdjęcie");
+    }
 
-    el.addEventListener(
+    trigger.addEventListener("click", openFromTrigger, { signal });
+
+    trigger.addEventListener(
       "keydown",
       (e) => {
-        if (e.key === "Enter" || e.key === " " || e.code === "Space") {
-          e.preventDefault();
-          index = i;
-          setOpen(true);
+        if (
+          (!isGallery && e.key === "Enter") ||
+          e.key === " " ||
+          e.code === "Space"
+        ) {
+          openFromTrigger(e);
         }
       },
       { signal },

@@ -141,13 +141,12 @@
 
 **Goal:** Make each gallery item a single, correct tab stop and give the lightbox an accessible structure that matches its `aria-modal` contract.
 
-- [ ] **PH6-01 — Bind gallery activation to the anchor instead of the inner image** — **Priority:** High
-  - [ ] bind the lightbox click and Enter/Space handlers to `a.gallery-item` and prevent its default navigation
-  - [ ] stop promoting the inner `<img>` to a focusable control with `tabindex="0"` and `role="button"`
-  - [ ] keep the raw-image `href` as the no-JavaScript fallback
-  - [ ] confirm the corrected pattern across all six `oferta/` subpages
+- [x] **PH6-01 — Bind gallery activation to the anchor instead of the inner image** — **Priority:** High
+  - [x] bind the lightbox click and Enter/Space handlers to `a.gallery-item` and prevent its default navigation
+  - [x] stop promoting the inner `<img>` to a focusable control with `tabindex="0"` and `role="button"`
+  - [x] keep the raw-image `href` as the no-JavaScript fallback
+  - [x] confirm the corrected pattern across all six `oferta/` subpages
   - **Completion condition:** each gallery item is a single tab stop, Enter and Space open the lightbox without navigating, and with JavaScript disabled the link still opens the full-size image
-  - **Source:** `AUDIT.md` — P1-09
 
 - [ ] **PH6-02 — Correct the lightbox's accessible structure** — **Priority:** Medium
   - [ ] append `.lb-close`, `.lb-prev` and `.lb-next` inside `.lb-wrap` so the `aria-modal` dialog contains its own controls, keeping the current fixed positioning
