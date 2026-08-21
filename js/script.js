@@ -8,6 +8,7 @@ import {
   initRipple,
   initHeroBlurSync,
 } from "./modules/ui-core.js";
+import { createIcon, initIcons } from "./modules/icons.js";
 import { initContactForm } from "./modules/forms.js";
 import { initOfertaLightbox } from "./modules/lightbox.js";
 import { initOfferPrefetch } from "./modules/prefetch.js";
@@ -30,6 +31,7 @@ window.SC.ui = {
   initRipple,
   initHeroBlurSync,
 };
+window.SC.icons = { init: initIcons, create: createIcon };
 window.SC.forms = { init: initContactForm };
 window.SC.lightbox = { init: initOfertaLightbox };
 window.SC.prefetch = { init: initOfferPrefetch };
@@ -42,6 +44,8 @@ const runInit = () => {
   utils.syncHeaderCssVar?.();
 
   const has = (selector) => !!document.querySelector(selector);
+
+  if (has("[data-icon]")) initIcons?.();
 
   if (has(".nav-toggle") && has("#navMenu")) initNav?.();
   if (has('.site-header, header[role="banner"]')) initHeaderShrink?.();

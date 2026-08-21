@@ -628,11 +628,21 @@
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
+/* Placeholder for the registry-injected icon; colour follows currentColor. */
 .contact-icon {
+  display: inline-flex;
   width: 18px;
   height: 18px;
   flex: 0 0 18px;
   opacity: 0.9;
+}
+.contact-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.no-js .contact-icon {
+  display: none;
 }
 .contact__details {
   font-weight: 600;
