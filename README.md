@@ -42,7 +42,7 @@ Adres skonfigurowany jako `homepage` w `package.json` oraz jako adres kanoniczny
 - sharp (generowanie wariantów obrazów)
 - live-server (lokalny serwer developerski)
 - Prettier (formatowanie)
-- Playwright + axe-core (skrypt QA dostępności)
+- Playwright + axe-core (skrypty QA: dostępność i testy funkcjonalne)
 - Lighthouse CI (`@lhci/cli`)
 - cross-env (przekazanie `SITE_URL` do generatora sitemapy)
 
@@ -111,11 +111,14 @@ DS-construction-pr01-SolidCraft/
 │   ├── check-html-assets.mjs
 │   ├── generate-sitemap.mjs
 │   ├── qa-a11y.mjs
+│   ├── qa-functional.mjs
+│   ├── functional/            # scenariusze testów funkcjonalnych
 │   ├── verify-css-build.js
 │   ├── verify-js-build.js
 │   └── utils/
 │       ├── logger.js
 │       ├── mime-types.mjs
+│       ├── static-server.mjs  # serwer statyczny testów funkcjonalnych
 │       └── partials.js        # renderer partiali (build i dev)
 ├── sw.js
 ├── manifest.webmanifest
@@ -175,6 +178,7 @@ npm run watch:js
 - `npm run check:assets` — walidacja lokalnych odwołań do zasobów w HTML.
 - `npm run check:html` — `check:links` i `check:assets`.
 - `npm run qa:a11y` — skan axe-core w przeglądarce headless.
+- `npm run qa:functional` — funkcjonalne scenariusze przeglądarkowe (nawigacja, podmenu `Oferta`, lightbox, formularz kontaktowy) w headless Chromium.
 - `npm run check:predeploy` — `check:html` i `qa:a11y` jako lokalna bramka przed wdrożeniem.
 - `npm run qa:lhci` — `build:dist` (który sam uruchamia `build`) i `lhci autorun` z konfiguracją `lighthouserc.json`.
 - `npm run format` / `npm run format:check` — Prettier w trybie zapisu i weryfikacji.
@@ -191,14 +195,15 @@ npm run build:dist
 
 ### Testy i walidacja
 
-Repozytorium nie zawiera zestawu testów jednostkowych ani funkcjonalnych. Skonfigurowane są następujące mechanizmy kontroli:
+Repozytorium nie zawiera testów jednostkowych. Skonfigurowane są następujące mechanizmy kontroli:
 
 - `scripts/check-links.mjs` i `scripts/check-html-assets.mjs` — statyczna walidacja linków i odwołań do zasobów w HTML.
 - `scripts/qa-a11y.mjs` — axe-core uruchamiany przez Playwright na lokalnym serwerze statycznym; skanowane są `/index.html`, `/404.html`, wszystkie sześć podstron oferty (`/oferta/elektryka.html`, `/oferta/hydraulika.html`, `/oferta/kafelkowanie.html`, `/oferta/lazienki.html`, `/oferta/malowanie.html`, `/oferta/remonty.html`), wszystkie trzy strony dokumentów (`/doc/cookies.html`, `/doc/polityka-prywatnosci.html`, `/doc/regulamin.html`) oraz `/offline.html`, jeśli plik istnieje — łącznie 12 tras. Jedenaście tras wymaganych: brak którejkolwiek przerywa bieg komunikatem `Required page not found`. Skrypt kończy się błędem przy naruszeniach o wadze `serious` lub `critical`.
+- `scripts/qa-functional.mjs` — funkcjonalny zestaw przeglądarkowy uruchamiany przez Playwright na tym samym lokalnym serwerze statycznym i tym samym rendererze partiali; dziewięć scenariuszy pokrywa mobilną szufladę nawigacji, podmenu `Oferta`, lightbox galerii na `/oferta/lazienki.html` oraz cztery ścieżki formularza kontaktowego (walidacja, odrzucenie przez próg antyspamowy, udane wysłanie, nieudane wysłanie). Każdy scenariusz działa w osobnym kontekście przeglądarki, a wysyłka formularza jest przechwytywana i obsługiwana lokalnie przez Playwright — żadne żądanie nie opuszcza `127.0.0.1`. Skrypt kończy się kodem różnym od zera przy pierwszym niespełnionym warunku. Opcjonalna flaga `--only=<fragment nazwy scenariusza>` zawęża bieg do wybranych scenariuszy.
 - `scripts/verify-css-build.js` i `scripts/verify-js-build.js` — weryfikacja artefaktów wbudowana w komendy build.
 - `lighthouserc.json` — Lighthouse CI na katalogu `dist` dla `/`, `/oferta/remonty.html` i `/doc/polityka-prywatnosci.html`, z progami: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
-Powyższe komendy są skonfigurowane w repozytorium; ich wykonanie nie było elementem przygotowania tej dokumentacji.
+Powyższe komendy są skonfigurowane w repozytorium; poza `qa:functional` i `qa:a11y`, uruchomionymi przy dodawaniu zestawu funkcjonalnego, ich wykonanie nie było elementem przygotowania tej dokumentacji.
 
 ### Wdrożenie
 
@@ -275,7 +280,6 @@ Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 
 Na podstawie otwartych punktów odnotowanych w repozytorium:
 
-- rozszerzenie testów automatycznych o scenariusze funkcjonalne (formularz, lightbox, nawigacja) z wykorzystaniem obecnego zaplecza Playwright,
 - włączenie `check:predeploy` jako obowiązkowej bramki w workflow CI,
 - automatyzacja wersjonowania cache Service Workera w procesie build,
 - ujednolicenie źródła sitemapy — śledzony `sitemap.xml` w katalogu głównym jest kopiowany do `dist/`, a następnie nadpisywany przez `build:sitemap`.
@@ -328,7 +332,7 @@ The address configured as `homepage` in `package.json` and as the canonical URL 
 - sharp (image variant generation)
 - live-server (local development server)
 - Prettier (formatting)
-- Playwright + axe-core (accessibility QA script)
+- Playwright + axe-core (accessibility and functional QA scripts)
 - Lighthouse CI (`@lhci/cli`)
 - cross-env (passing `SITE_URL` to the sitemap generator)
 
@@ -397,11 +401,14 @@ DS-construction-pr01-SolidCraft/
 │   ├── check-html-assets.mjs
 │   ├── generate-sitemap.mjs
 │   ├── qa-a11y.mjs
+│   ├── qa-functional.mjs
+│   ├── functional/            # functional test scenarios
 │   ├── verify-css-build.js
 │   ├── verify-js-build.js
 │   └── utils/
 │       ├── logger.js
 │       ├── mime-types.mjs
+│       ├── static-server.mjs  # functional-test static server
 │       └── partials.js        # partial renderer (build and dev)
 ├── sw.js
 ├── manifest.webmanifest
@@ -461,6 +468,7 @@ npm run watch:js
 - `npm run check:assets` — validates local asset references in HTML.
 - `npm run check:html` — runs `check:links` and `check:assets`.
 - `npm run qa:a11y` — axe-core scan in a headless browser.
+- `npm run qa:functional` — functional browser scenarios (navigation, the `Oferta` submenu, the lightbox, the contact form) in headless Chromium.
 - `npm run check:predeploy` — runs `check:html` and `qa:a11y` as the local pre-deploy gate.
 - `npm run qa:lhci` — runs `build:dist` (which itself runs `build`) and `lhci autorun` with the `lighthouserc.json` configuration.
 - `npm run format` / `npm run format:check` — Prettier in write and verify modes.
@@ -477,14 +485,15 @@ npm run build:dist
 
 ### Testing and Validation
 
-The repository contains no unit or functional test suite. The following checks are configured:
+The repository contains no unit test suite. The following checks are configured:
 
 - `scripts/check-links.mjs` and `scripts/check-html-assets.mjs` — static validation of links and asset references in HTML.
 - `scripts/qa-a11y.mjs` — axe-core executed through Playwright against a local static server; the scanned routes are `/index.html`, `/404.html`, all six service subpages (`/oferta/elektryka.html`, `/oferta/hydraulika.html`, `/oferta/kafelkowanie.html`, `/oferta/lazienki.html`, `/oferta/malowanie.html`, `/oferta/remonty.html`), all three document pages (`/doc/cookies.html`, `/doc/polityka-prywatnosci.html`, `/doc/regulamin.html`), and `/offline.html` when the file exists — 12 routes in total. Eleven of them are required: a missing one aborts the run with `Required page not found`. The script fails on `serious` or `critical` violations.
+- `scripts/qa-functional.mjs` — the functional browser suite, executed through Playwright against the same local static server and the same partial renderer; nine scenarios cover the mobile navigation drawer, the `Oferta` submenu, the gallery lightbox on `/oferta/lazienki.html`, and the four contact-form paths (validation, anti-spam rejection, successful submission, failed submission). Each scenario runs in its own browser context, and the form submission is intercepted and answered locally by Playwright — no request leaves `127.0.0.1`. The script exits non-zero on the first unmet condition. The optional `--only=<substring of a scenario name>` flag narrows a run to selected scenarios.
 - `scripts/verify-css-build.js` and `scripts/verify-js-build.js` — artifact verification embedded in the build commands.
 - `lighthouserc.json` — Lighthouse CI over the `dist` directory for `/`, `/oferta/remonty.html`, and `/doc/polityka-prywatnosci.html`, with thresholds: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
-These commands are configured in the repository; running them was not part of preparing this documentation.
+These commands are configured in the repository; apart from `qa:functional` and `qa:a11y`, which were run when the functional suite was added, running them was not part of preparing this documentation.
 
 ### Deployment
 
@@ -561,7 +570,6 @@ The repository contains no recorded performance measurement results.
 
 Based on the open items recorded in the repository:
 
-- extend automated testing with functional scenarios (form, lightbox, navigation) using the existing Playwright setup,
 - adopt `check:predeploy` as a required gate in a CI workflow,
 - automate Service Worker cache versioning in the build process,
 - consolidate the sitemap source of truth — the tracked root `sitemap.xml` is copied into `dist/` and then overwritten by `build:sitemap`.

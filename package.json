@@ -23,6 +23,7 @@
     "check:assets": "node scripts/check-html-assets.mjs",
     "check:html": "npm run check:links && npm run check:assets",
     "qa:a11y": "node scripts/qa-a11y.mjs",
+    "qa:functional": "node scripts/qa-functional.mjs",
     "qa:lhci": "npm run build:dist && lhci autorun --config=./lighthouserc.json",
     "check:predeploy": "npm run check:html && npm run qa:a11y",
     "images:build": "node scripts/images.js build",
