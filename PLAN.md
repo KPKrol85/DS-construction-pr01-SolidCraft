@@ -172,8 +172,8 @@
 
 **Goal:** Remove the contained code-level defects that produce latent traps, console warnings and redundant work at runtime.
 
-- [ ] **PH8-01 — Correct the `.ft-contact-icon` width declaration** — **Priority:** Low
-  - [ ] replace the `width: 3318px` declaration in `css/modules/layout.css` with a value consistent with its `18px` height and flex basis
+- [x] **PH8-01 — Correct the `.ft-contact-icon` width declaration** — **Priority:** Low
+  - [x] replace the `width: 3318px` declaration in `css/modules/layout.css` with a value consistent with its `18px` height and flex basis
   - **Completion condition:** `.ft-contact-icon` declares a width consistent with its height, and the footer renders unchanged
   - **Source:** `AUDIT.md` — P2-08
 
