@@ -34,7 +34,15 @@ const persistRuntimeResponse = (event, request, responsePromise) => {
       ({ response, fromNetwork }) => {
         if (!fromNetwork || !isCacheableResponse(response)) return;
 
-        return caches.open(CACHE_NAME).then((cache) => cache.put(request, response.clone()));
+        /* Clone here rather than inside the caches.open() callback. This
+           handler is registered on responsePromise before the one
+           event.respondWith() adds, so it runs first, while the body is still
+           untouched. Past that asynchronous boundary the page already owns the
+           response: clone() throws "Response body is already used" and the
+           put() below is never reached. */
+        const copy = response.clone();
+
+        return caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
       },
       () => undefined,
     ),
