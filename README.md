@@ -50,7 +50,8 @@ Adres skonfigurowany jako `homepage` w `package.json` oraz jako adres kanoniczny
 
 - Warstwa prezentacji to statyczne pliki HTML — każda podstrona jest osobnym dokumentem z własnymi metadanymi i danymi strukturalnymi.
 - CSS jest podzielony na moduły (`tokens`, `base`, `layout`, `components`, `sections`, `utilities`, `subpages`) scalane przez `@import` w `css/style.css`; build PostCSS rozwija importy do jednego pliku produkcyjnego `dist/css/style.min.css`.
-- JavaScript jest podzielony na moduły ES (`nav`, `ui-core`, `forms`, `lightbox`, `map-consent`, `prefetch`, `home`, `project-banner`, `utils`). `js/script.js` eksponuje je w przestrzeni `window.SC` i uruchamia inicjalizatory warunkowo, na podstawie obecności selektorów na stronie.
+- JavaScript jest podzielony na moduły ES (`nav`, `ui-core`, `icons`, `forms`, `lightbox`, `map-consent`, `prefetch`, `home`, `project-banner`, `utils`). `js/script.js` eksponuje je w przestrzeni `window.SC` i uruchamia inicjalizatory warunkowo, na podstawie obecności selektorów na stronie.
+- Ikony SVG mają jedno źródło — rejestr w `js/modules/icons.js`. Utrzymywany HTML deklaruje wyłącznie stabilne klucze `[data-icon]`, a `initIcons()` wstawia geometrię z rejestru; kolor jest dziedziczony przez `currentColor`, więc CSS odpowiada tylko za rozmiar i interakcję.
 - `js/theme-init.js` jest ładowany synchronicznie w `<head>`, aby ustawić motyw przed pierwszym renderem; `js/sw-register.js` rejestruje Service Workera w zakresie `/`.
 - Build produkcyjny nie modyfikuje plików źródłowych — `scripts/build-dist.js` tworzy katalog `dist/` i dopiero w kopiach HTML podmienia odwołania na assety minifikowane, a PostCSS i esbuild zapisują pliki minifikowane wyłącznie do `dist/`. Drzewo źródłowe nie zawiera artefaktów `.min.css` ani `.min.js`.
 - Wspólny nagłówek i stopka mają jedno źródło — `partials/header.html` i `partials/footer.html`. Strony osadzają je dyrektywą `<!-- @include partials/... -->`, a `scripts/utils/partials.js` rozwija je w czasie builda. Wygenerowany HTML zawiera pełny nagłówek i stopkę, więc przeglądarka nie potrzebuje `fetch()` ani JavaScriptu, aby je otrzymać.
@@ -216,8 +217,10 @@ Zaimplementowane mechanizmy obejmują:
 
 - semantyczne sekcje z `aria-labelledby` i `aria-describedby` oraz link „Pomiń do treści” prowadzący do `#main`,
 - synchronizację stanu ARIA w nawigacji (`aria-expanded`, `aria-haspopup`, `aria-controls`, `aria-current`) i w przełączniku motywu (`aria-pressed`),
-- obsługę klawiatury i pułapkę fokusa w lightboxie oraz przywracanie fokusa po zamknięciu,
-- komunikaty błędów formularza powiązane z polami, ustawianie `aria-invalid` i obszar statusu `role="status"` z `aria-live="polite"`,
+- obsługę klawiatury i pułapkę fokusa w lightboxie oraz przywracanie fokusa po zamknięciu; wszystkie przyciski lightboxa (zamknij, poprzednie, następne) są elementami potomnymi kontenera `aria-modal`, a nazwę dostępną każdej miniatury tworzy jej własny `alt`,
+- te same mechanizmy w modalu startowym: przeniesienie fokusa do okna, cykl Tab wyłącznie w jego obrębie, zamykanie klawiszem Escape, blokada przewijania tła i przywrócenie fokusa po zamknięciu,
+- pojedynczy punkt zatrzymania Tab na każdej pozycji galerii — aktywacja Enter/Spacją otwiera lightbox zamiast nawigować do pliku obrazu,
+- komunikaty błędów formularza powiązane z polami, ustawianie `aria-invalid` i obszar statusu `role="status"` z `aria-live="polite"`; walidację prowadzi wyłącznie skrypt (`novalidate`), więc komunikaty pojawiają się także dla pól pustych i braku zgody,
 - reakcję na `prefers-reduced-motion` w CSS oraz w skryptach animacji i przewijania,
 - skrypt QA `npm run qa:a11y` oparty o axe-core.
 
@@ -234,7 +237,7 @@ Dokumentacja nie zawiera potwierdzenia zgodności z konkretnym poziomem WCAG —
 
 - `manifest.webmanifest` definiuje `id`, `start_url` i `scope` `/`, tryb `standalone`, kolory motywu, ikony (w tym `maskable`), trzy skróty aplikacji oraz zrzuty ekranu dla widoku wąskiego i szerokiego.
 - `js/sw-register.js` rejestruje `/sw.js` w zakresie `/` po zdarzeniu `load`.
-- `sw.js` używa wersjonowanej nazwy cache (`solidcraft-v1.2`), precache’uje listę stron HTML i kluczowych zasobów, obsługuje dokumenty HTML strategią network-first z fallbackiem na `/offline.html`, a zasoby statyczne strategią cache-first; nieaktualne cache tego samego prefiksu są usuwane przy aktywacji.
+- `sw.js` używa wersjonowanej nazwy cache (`solidcraft-v1.3`), precache’uje wszystkie 13 stron HTML, manifest, `css/style.min.css`, `js/theme-init.min.js`, `js/script.min.js`, `js/sw-register.js`, sześć plików `woff2` i favikony, obsługuje dokumenty HTML strategią network-first z fallbackiem na `/offline.html`, a zasoby statyczne strategią cache-first; zapisy do cache w obsłudze `fetch` są przekazywane do `event.waitUntil`, a nieaktualne cache tego samego prefiksu są usuwane przy aktywacji.
 
 Manifest i Service Worker są wskazywane ścieżkami bezwzględnymi, więc działają przy serwowaniu serwisu z katalogu głównego domeny. Repozytorium nie zawiera weryfikacji instalowalności ani testów działania offline.
 
@@ -259,8 +262,10 @@ Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 
 ### Utrzymanie projektu
 
-- Pliki źródłowe do edycji: `css/style.css` i `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/modules/**`, `assets/img-src/**`.
-- Artefakty generowane, których nie należy edytować ręcznie: `dist/css/style.min.css`, `dist/js/script.min.js`, `dist/js/theme-init.min.js`, `assets/img/**` oraz cały katalog `dist/`. Katalog `dist/` jest w całości generowany, nie jest utrzymywany ręcznie i pozostaje poza kontrolą wersji.
+- Pliki źródłowe do edycji: `css/style.css` i `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/sw-register.js`, `js/modules/**`, `partials/header.html` i `partials/footer.html`, `assets/img-src/**` oraz utrzymywane strony HTML.
+- Artefakty generowane, których nie należy edytować ręcznie: `dist/css/style.min.css`, `dist/js/script.min.js`, `dist/js/theme-init.min.js`, strony HTML i `sitemap.xml` w `dist/`, `assets/img/**` oraz cały katalog `dist/`. Katalog `dist/` jest w całości generowany, nie jest utrzymywany ręcznie i pozostaje poza kontrolą wersji.
+- Wspólny nagłówek i stopkę zmienia się w `partials/`, nigdy w wyrenderowanej kopii — jedna zmiana obejmuje wszystkie 13 stron.
+- Higiena repozytorium: `.gitignore` trzyma poza Gitem `node_modules/`, `/dist/`, artefakty `*.min.css`/`*.min.js`, katalogi raportów oraz lokalne katalogi agentów (`.claude/`, `.codex/`); `.gitattributes` normalizuje pliki tekstowe do LF i oznacza jako `binary` rozszerzenia binarne obecne w projekcie. Renormalizacja już śledzonych plików (`git add --renormalize .`) to osobna operacja Gita wykonywana przez opiekuna projektu i nie jest częścią żadnego skryptu npm.
 - Zmiany w źródłach CSS/JS nie wymagają żadnego kroku buildu w developmencie — `npm run dev` serwuje pliki źródłowe. Artefakty minifikowane powstają dopiero w `dist/` podczas `npm run build:dist` (lokalnie i na wdrożeniu).
 - Po zmianie obrazów źródłowych należy uruchomić `npm run images:build` — ten krok pozostaje ręczny i nie jest częścią ścieżki wdrożenia.
 - Lista precache’owanych zasobów i wartość `CACHE_VERSION` w `sw.js` są utrzymywane ręcznie — po zmianie zasobów wchodzących do cache należy podnieść wersję.
@@ -273,7 +278,9 @@ Na podstawie otwartych punktów odnotowanych w repozytorium:
 - rozszerzenie testów automatycznych o scenariusze funkcjonalne (formularz, lightbox, nawigacja) z wykorzystaniem obecnego zaplecza Playwright,
 - włączenie `check:predeploy` jako obowiązkowej bramki w workflow CI,
 - rozszerzenie pokrycia `qa:a11y` o pozostałe podstrony oferty i dokumentów,
-- automatyzacja wersjonowania cache Service Workera w procesie build.
+- automatyzacja wersjonowania cache Service Workera w procesie build,
+- ujednolicenie źródła sitemapy — śledzony `sitemap.xml` w katalogu głównym jest kopiowany do `dist/`, a następnie nadpisywany przez `build:sitemap`,
+- usunięcie spekulatywnych żądań `modules/*.css` (404) z renderowania developerskiego; dotyczy wyłącznie `npm run dev` i `npm run qa:a11y`, build produkcyjny ich nie wykonuje.
 
 ### Licencja
 
@@ -331,7 +338,8 @@ The address configured as `homepage` in `package.json` and as the canonical URL 
 
 - The presentation layer consists of static HTML files — each subpage is a separate document with its own metadata and structured data.
 - CSS is split into modules (`tokens`, `base`, `layout`, `components`, `sections`, `utilities`, `subpages`) composed via `@import` in `css/style.css`; the PostCSS build inlines those imports into a single production file, `dist/css/style.min.css`.
-- JavaScript is split into ES modules (`nav`, `ui-core`, `forms`, `lightbox`, `map-consent`, `prefetch`, `home`, `project-banner`, `utils`). `js/script.js` exposes them under `window.SC` and runs initializers conditionally, based on the presence of selectors on the page.
+- JavaScript is split into ES modules (`nav`, `ui-core`, `icons`, `forms`, `lightbox`, `map-consent`, `prefetch`, `home`, `project-banner`, `utils`). `js/script.js` exposes them under `window.SC` and runs initializers conditionally, based on the presence of selectors on the page.
+- SVG icons have a single source — the registry in `js/modules/icons.js`. Maintained HTML declares only stable `[data-icon]` keys, and `initIcons()` injects the geometry from the registry; colour is inherited through `currentColor`, so CSS owns only size and interaction.
 - `js/theme-init.js` is loaded synchronously in `<head>` to set the theme before the first render; `js/sw-register.js` registers the Service Worker with scope `/`.
 - The production build does not modify the source files — `scripts/build-dist.js` creates the `dist/` directory and rewrites references to minified assets only in the HTML copies, while PostCSS and esbuild write their minified output exclusively into `dist/`. The source tree holds no `.min.css` or `.min.js` artifacts.
 - The shared header and footer have a single source each — `partials/header.html` and `partials/footer.html`. Pages embed them with a `<!-- @include partials/... -->` directive, and `scripts/utils/partials.js` expands them at build time. The generated HTML already contains the complete header and footer, so the browser needs no `fetch()` and no JavaScript to obtain them.
@@ -497,8 +505,10 @@ Implemented mechanisms include:
 
 - semantic sections with `aria-labelledby` and `aria-describedby`, and a skip link to `#main`,
 - ARIA state synchronization in navigation (`aria-expanded`, `aria-haspopup`, `aria-controls`, `aria-current`) and in the theme toggle (`aria-pressed`),
-- keyboard support and a focus trap in the lightbox, with focus restore on close,
-- form error messages linked to their fields, `aria-invalid` handling, and a `role="status"` region with `aria-live="polite"`,
+- keyboard support and a focus trap in the lightbox, with focus restore on close; the close, previous and next buttons are descendants of the `aria-modal` container, and each thumbnail control takes its accessible name from its own `alt`,
+- the same mechanisms in the first-visit modal: focus moved into the dialog, Tab cycling only within it, Escape dismissal, a background scroll lock, and focus restore on close,
+- one tab stop per gallery item — Enter/Space activation opens the lightbox instead of navigating to the image file,
+- form error messages linked to their fields, `aria-invalid` handling, and a `role="status"` region with `aria-live="polite"`; validation is owned entirely by the script (`novalidate`), so the messages also cover empty fields and missing consent,
 - `prefers-reduced-motion` handling in CSS and in the animation and scrolling scripts,
 - the `npm run qa:a11y` QA script based on axe-core.
 
@@ -515,7 +525,7 @@ This documentation makes no claim of conformance with a specific WCAG level — 
 
 - `manifest.webmanifest` defines `id`, `start_url` and `scope` `/`, `standalone` display, theme colors, icons (including `maskable`), three app shortcuts, and screenshots for narrow and wide form factors.
 - `js/sw-register.js` registers `/sw.js` with scope `/` after the `load` event.
-- `sw.js` uses a versioned cache name (`solidcraft-v1.2`), precaches a list of HTML pages and key assets, serves HTML documents network-first with an `/offline.html` fallback and static assets cache-first, and deletes outdated caches of the same prefix on activation.
+- `sw.js` uses a versioned cache name (`solidcraft-v1.3`), precaches all 13 HTML pages, the manifest, `css/style.min.css`, `js/theme-init.min.js`, `js/script.min.js`, `js/sw-register.js`, the six `woff2` files and the favicons, serves HTML documents network-first with an `/offline.html` fallback and static assets cache-first, hands the fetch handler's cache writes to `event.waitUntil`, and deletes outdated caches of the same prefix on activation.
 
 The manifest and Service Worker are referenced by absolute paths, so they work when the site is served from the domain root. The repository contains no installability verification or offline behavior tests.
 
@@ -540,8 +550,10 @@ The repository contains no recorded performance measurement results.
 
 ### Project Maintenance
 
-- Editable source files: `css/style.css` and `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/modules/**`, `assets/img-src/**`.
-- Generated artifacts that must not be edited manually: `dist/css/style.min.css`, `dist/js/script.min.js`, `dist/js/theme-init.min.js`, `assets/img/**`, and the whole `dist/` directory. `dist/` is generated in full, is never maintained by hand, and stays out of version control.
+- Editable source files: `css/style.css` and `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/sw-register.js`, `js/modules/**`, `partials/header.html` and `partials/footer.html`, `assets/img-src/**`, and the maintained HTML pages.
+- Generated artifacts that must not be edited manually: `dist/css/style.min.css`, `dist/js/script.min.js`, `dist/js/theme-init.min.js`, the HTML pages and `sitemap.xml` inside `dist/`, `assets/img/**`, and the whole `dist/` directory. `dist/` is generated in full, is never maintained by hand, and stays out of version control.
+- Change the shared header and footer in `partials/`, never in a rendered copy — one edit reaches all 13 pages.
+- Repository hygiene: `.gitignore` keeps `node_modules/`, `/dist/`, the `*.min.css` / `*.min.js` artifacts, the report directories and the local agent directories (`.claude/`, `.codex/`) out of Git; `.gitattributes` normalises text files to LF and marks the binary extensions present in the project as `binary`. Renormalising already-tracked files (`git add --renormalize .`) is a separate Git operation performed by the maintainer and is not part of any npm script.
 - Changing CSS/JS sources requires no build step during development — `npm run dev` serves the source files. The minified artifacts are produced in `dist/` by `npm run build:dist` only, locally and on deploy alike.
 - After changing source images run `npm run images:build` — that step stays manual and is not part of the deploy path.
 - The precache list and the `CACHE_VERSION` value in `sw.js` are maintained manually — bump the version after changing the cached assets.
@@ -554,7 +566,9 @@ Based on the open items recorded in the repository:
 - extend automated testing with functional scenarios (form, lightbox, navigation) using the existing Playwright setup,
 - adopt `check:predeploy` as a required gate in a CI workflow,
 - expand `qa:a11y` coverage to the remaining service and legal subpages,
-- automate Service Worker cache versioning in the build process.
+- automate Service Worker cache versioning in the build process,
+- consolidate the sitemap source of truth — the tracked root `sitemap.xml` is copied into `dist/` and then overwritten by `build:sitemap`,
+- remove the speculative `modules/*.css` 404s from the development rendering; they affect `npm run dev` and `npm run qa:a11y` only, never the production build.
 
 ### License
 

@@ -1,6 +1,6 @@
 # SolidCraft — Development Plan
 
-**Last reviewed:** 2026-08-18
+**Last reviewed:** 2026-08-22
 **Project type:** Static multi-page front-end website (HTML, CSS, vanilla ES modules) with a Node-based build and QA tooling layer; no backend in the repository
 **Plan status:** Active
 
@@ -8,16 +8,14 @@
 
 - The plan reflects the current verified repository state; every item is backed by current source, configuration, or a re-verified `AUDIT.md` finding.
 - Main items are checked only when all required subtasks are complete and the stated completion condition holds.
-- Canonical sources are `css/style.css` + `css/modules/**`, `js/script.js` + `js/modules/**`, `js/theme-init.js`, `assets/img-src/**`; `dist/css/style.min.css`, `dist/js/*.min.js` and `assets/img/**` are generated and are never edited directly — the minified assets exist only under `dist/`, produced by the production build (`settings.md` — "Source vs Generated Assets").
+- Canonical sources are `css/style.css` + `css/modules/**`, `js/script.js` + `js/modules/**`, `js/theme-init.js`, `js/sw-register.js`, `partials/header.html` + `partials/footer.html`, the maintained HTML pages, and `assets/img-src/**`; `dist/css/style.min.css`, `dist/js/*.min.js`, the rendered HTML and `sitemap.xml` under `dist/`, and `assets/img/**` are generated and are never edited directly — the minified assets exist only under `dist/`, produced by the production build (`settings.md` — "Source vs Generated Assets").
 - Significant completed changes are recorded separately in `CHANGELOG.md`; pending items stay only in this file.
 - This plan is created from the current project state. No prior `PLAN.md` existed, so no completed planning history is reconstructed here.
 
 ## Current priorities
 
-1. `PH1-01` — Serve correct MIME types in the accessibility gate so it scans the real rendering.
-2. `PH1-02` — Repair the three broken legal links in the first-visit modal and return `check:predeploy` to a passing state.
-3. `PH2-01` — Make the first-visit modal keyboard-operable and reliably dismissible.
-4. `PH3-01` — Bind button label colour to a theme-stable on-brand token that meets WCAG AA.
+1. `PH9-02` — Run the pre-deploy gate end to end against the corrected implementation and confirm the produced `dist/` matches the current canonical sources.
+2. `PH1-04` — Renormalise the working tree (`git add --renormalize .`) so `.gitattributes` takes effect for the already-tracked files. This is the single outstanding part of an otherwise complete task and is a Git operation run by the maintainer, not an npm script; `AUDIT.md` — `P2-02` records it as the reason that finding stays "Partially addressed".
 
 ## Phase 1 — Quality gates and build contracts
 
@@ -41,6 +39,7 @@
   - [x] keep the existing `ensureRequiredFilesExist()` presence check as a second guard
   - [x] update `settings.md` — "Scripts" / "Deployment Notes" and the `README.md` maintenance sections to describe the new contract
   - **Completion condition:** a commit that edits a file under `css/modules/` or `js/modules/` and is deployed without a manual local build either produces regenerated minified output or fails the build
+  - **Note:** the completion condition still holds, but the mechanics recorded in the subtasks were superseded later in the cycle, when the minified artefacts moved out of the source tree into `dist/`. `build:dist` now stages `dist/` before running the asset build, and the `ensureRequiredFilesExist()` presence check was dropped in favour of `scripts/verify-css-build.js` and `scripts/verify-js-build.js` validating the artefacts in `dist/`. See `AUDIT.md` — `P1-08` "Superseded detail" and `settings.md` — "Deployment Notes".
   - **Source:** `AUDIT.md` — P1-08
 
 - [x] **PH1-04 — Add the missing repository hygiene controls** — **Priority:** Medium
@@ -191,13 +190,14 @@
 
 **Goal:** Bring the project's canonical documents back in line with the corrected implementation and confirm the pre-deploy gate passes end to end.
 
-- [ ] **PH9-01 — Synchronise the canonical documents with the corrected contracts** — **Priority:** Medium
-  - [ ] update `settings.md` where the pipeline contract changed (`PH1-03`, `PH1-04`)
-  - [ ] update the `README.md` accessibility, PWA, testing and maintenance sections where the described behaviour changed
-  - [ ] record the significant completed changes in `CHANGELOG.md` under `[Unreleased]`
-  - [ ] mark the resolved `AUDIT.md` findings as addressed rather than deleting the audit record
+- [x] **PH9-01 — Synchronise the canonical documents with the corrected contracts** — **Priority:** Medium
+  - [x] update `settings.md` where the pipeline contract changed (`PH1-03`, `PH1-04`)
+  - [x] update the `README.md` accessibility, PWA, testing and maintenance sections where the described behaviour changed
+  - [x] record the significant completed changes in `CHANGELOG.md` under `[Unreleased]`
+  - [x] mark the resolved `AUDIT.md` findings as addressed rather than deleting the audit record
   - **Depends on:** `PH1-03`, `PH1-04`
   - **Completion condition:** no canonical document describes behaviour that the implementation no longer has
+  - **Note:** ten findings — `P1-03`, `P1-04`, `P1-05`, `P1-06`, `P1-09`, `P2-01`, `P2-03`, `P2-04`, `P2-05`, `P2-09` — had been deleted from `AUDIT.md` as they were fixed instead of being marked resolved. They were restored verbatim from the original audit and each now carries a `Status: Addressed` line, so the audit again records all 22 findings. `P2-02` deliberately stays "Partially addressed": the working-tree renormalisation is still outstanding, as recorded under `PH1-04`.
   - **Source:** `README.md`, `settings.md`, `CHANGELOG.md`, `AUDIT.md`
 
 - [ ] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation** — **Priority:** Medium
