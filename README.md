@@ -8,6 +8,8 @@ SolidCraft to statyczny, wielostronicowy serwis WWW firmy remontowo-budowlanej, 
 
 Serwis ma charakter demonstracyjny — informuje o tym modal startowy na stronie głównej, wskazujący KP_Code Digital Studio jako autora przykładowej realizacji dla branży budowlanej. Repozytorium nie zawiera backendu ani bazy danych; warstwa serwerowa ogranicza się do konfiguracji hostingu statycznego.
 
+**Decyzja projektowa — indeksowanie i treści budujące zaufanie.** Serwis pozostaje publicznie indeksowalny (`index, follow`, obecność w `sitemap.xml`) jako projekt portfolio; wariant `noindex` został rozpatrzony i odrzucony. Ponieważ SolidCraft nie jest rzeczywiście działającą firmą remontowo-budowlaną, konsekwencją tej decyzji jest wymóg, aby publiczne treści budujące zaufanie — ocena, logotypy klientów i opinie — były wprost oznaczone na stronie jako materiał przykładowy i nigdy nie były prezentowane jako zweryfikowane fakty. Dane strukturalne nie mogą przypisywać marce SolidCraft adresu pocztowego, numeru telefonu, adresu e-mail ani profili społecznościowych rzeczywistego przedsiębiorstwa. Oznaczenia te muszą być widoczne w samej treści sekcji — modal startowy jest zamykany na stałe i nie może być jedynym nośnikiem tej informacji.
+
 ### Wersja online
 
 Adres skonfigurowany jako `homepage` w `package.json` oraz jako adres kanoniczny stron: <https://construction-pr01-solidcraft.netlify.app/>
@@ -225,7 +227,7 @@ Dokumentacja nie zawiera potwierdzenia zgodności z konkretnym poziomem WCAG —
 
 - `title`, `meta description`, `canonical` i `meta robots` na stronach; `noindex` dla `404.html`, `offline.html` oraz `thank-you.html` (`noindex, follow`).
 - Metadane Open Graph i Twitter Card wraz z obrazami w `assets/img/og/`.
-- Dane strukturalne JSON-LD: `GeneralContractor`, `WebSite`, `CollectionPage` i `FAQPage`.
+- Dane strukturalne JSON-LD: `WebSite`, `CollectionPage` i `FAQPage`. Serwis celowo nie publikuje typu `GeneralContractor` ani innego typu `LocalBusiness` — SolidCraft jest fikcyjną marką demonstracyjną i nie ma adresu, telefonu, e-maila ani profili społecznościowych rzeczywistej firmy (patrz „Przegląd projektu" — decyzja projektowa).
 - `robots.txt` z odwołaniem do sitemapy oraz `sitemap.xml` w repozytorium; wersja wdrożeniowa jest generowana do `dist/sitemap.xml` podczas `build:dist`.
 
 ### PWA i obsługa offline
@@ -286,6 +288,8 @@ Projekt nie jest oprogramowaniem open source. Wykorzystanie komercyjne, redystry
 SolidCraft is a static, multi-page website for a construction and renovation company, built with HTML, CSS, and JavaScript, without a frontend framework. The repository contains the home page, six service subpages in `oferta/`, three legal pages in `doc/` (terms, privacy policy, cookies), and the `thank-you.html`, `404.html`, and `offline.html` pages. The interface language is Polish (`lang="pl"`).
 
 The site is demonstrational — a startup modal on the home page states this and credits KP_Code Digital Studio as the author of this sample implementation for the construction sector. The repository contains no backend and no database; the server-side layer is limited to static hosting configuration.
+
+**Project decision — indexing and trust content.** The site stays publicly indexable (`index, follow`, present in `sitemap.xml`) as a portfolio project; the `noindex` alternative was considered and rejected. Because SolidCraft is not a real operating construction company, that decision carries a requirement: the public trust content — the rating, the client logos and the testimonials — must be explicitly marked on the page as sample material and must never be presented as verified fact. Structured data must not attribute a postal address, telephone number, email address or social profile of a real business to the SolidCraft brand. These disclosures must be visible in the section content itself — the startup modal is dismissed permanently and cannot be the only carrier of this information.
 
 ### Live Version
 
@@ -504,7 +508,7 @@ This documentation makes no claim of conformance with a specific WCAG level — 
 
 - `title`, `meta description`, `canonical`, and `meta robots` across pages; `noindex` for `404.html`, `offline.html`, and `thank-you.html` (`noindex, follow`).
 - Open Graph and Twitter Card metadata with images in `assets/img/og/`.
-- JSON-LD structured data: `GeneralContractor`, `WebSite`, `CollectionPage`, and `FAQPage`.
+- JSON-LD structured data: `WebSite`, `CollectionPage`, and `FAQPage`. The site deliberately publishes no `GeneralContractor` or other `LocalBusiness` type — SolidCraft is a fictitious demo brand with no real address, telephone, email or social profiles (see "Project Overview" — project decision).
 - `robots.txt` referencing the sitemap and a `sitemap.xml` in the repository; the deployment version is generated into `dist/sitemap.xml` during `build:dist`.
 
 ### PWA and Offline Support

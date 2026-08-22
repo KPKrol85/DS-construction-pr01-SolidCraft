@@ -160,14 +160,12 @@
 
 **Goal:** Resolve the mismatch between the site's demonstrational purpose and the indexable business identity it publishes.
 
-- [ ] **PH7-01 — Align the published business identity with the project's demonstrational purpose** — **Status:** Blocked — **Priority:** High
-  - **Blocker:** no recorded decision on whether the demo site is intended to be indexed; the two remediation paths (neutralise the identity claims, or `noindex` the site) are mutually exclusive
-  - **Unblocks when:** the indexing intent is decided and recorded in `README.md`
-  - [ ] if indexed: remove the postal address, telephone and `sameAs` profile links from the `GeneralContractor` JSON-LD in `index.html`, or drop the `GeneralContractor` type
-  - [ ] if indexed: mark the 4.9/5 rating claim, the "Firmy, które nam zaufały" logo section and the testimonial cards as illustrative sample content
-  - [ ] if indexed: align the "Realizacje" navigation label with the heading of the section it opens
-  - [ ] if not indexed: set the pages to `noindex` and remove them from `sitemap.xml` and its generator
-  - **Completion condition:** no structured data asserts a physical business location or contact identity for SolidCraft, unsupported trust claims are visibly marked as sample content, and the navigation label matches its target section — or the site is consistently non-indexable
+- [x] **PH7-01 — Align the published business identity with the project's demonstrational purpose** — **Priority:** High
+  - **Decision (recorded in `README.md` — "Przegląd projektu" / "Project Overview"):** SolidCraft stays publicly indexable (`index, follow`, present in `sitemap.xml`) as a demonstrational portfolio project. The `noindex` path is rejected, so the identity claims are neutralised instead and the trust content carries visible sample-content disclosures; the previously blocking alternative is closed.
+  - [x] remove the postal address, telephone, email and `sameAs` profile links from the `GeneralContractor` JSON-LD — the type itself was dropped, because `GeneralContractor` (a `LocalBusiness`) plus `openingHours` still asserts an operating local business once the contact fields are gone; the same block was duplicated on all 11 pages carrying it, and all were corrected so the completion condition holds site-wide
+  - [x] mark the 4.9/5 rating claim, the client-logo section and the testimonial cards as illustrative sample content
+  - [x] align the "Realizacje" navigation label with the heading of the section it opens
+  - **Completion condition:** no structured data asserts a physical business location or contact identity for SolidCraft, unsupported trust claims are visibly marked as sample content, and the navigation label matches its target section
   - **Source:** `AUDIT.md` — P1-10
 
 ## Phase 8 — Runtime and styling corrections
