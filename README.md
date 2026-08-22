@@ -110,6 +110,7 @@ DS-construction-pr01-SolidCraft/
 │   ├── check-links.mjs
 │   ├── check-html-assets.mjs
 │   ├── generate-sitemap.mjs
+│   ├── generate-sw.js
 │   ├── qa-a11y.mjs
 │   ├── qa-functional.mjs
 │   ├── functional/            # scenariusze testów funkcjonalnych
@@ -120,7 +121,7 @@ DS-construction-pr01-SolidCraft/
 │       ├── mime-types.mjs
 │       ├── static-server.mjs  # serwer statyczny testów funkcjonalnych
 │       └── partials.js        # renderer partiali (build i dev)
-├── sw.js
+├── sw.js                      # logika SW; blok precache generuje build
 ├── manifest.webmanifest
 ├── robots.txt
 ├── _headers
@@ -170,8 +171,9 @@ npm run watch:js
 - `npm run build:css` — PostCSS buduje `dist/css/style.min.css`, następnie `scripts/verify-css-build.js` sprawdza brak pozostałych `@import`.
 - `npm run build:js` — esbuild buduje `dist/js/theme-init.min.js` i `dist/js/script.min.js`, następnie `scripts/verify-js-build.js` sprawdza brak składni `import`/`export` w obu plikach.
 - `npm run build` — `build:css` i `build:js`; obydwa zapisują wyłącznie do `dist/`.
-- `npm run build:dist` — składa katalog `dist/`, uruchamia `build` i `build:sitemap`.
+- `npm run build:dist` — składa katalog `dist/`, uruchamia `build`, `build:sitemap` i `build:sw`.
 - `npm run build:sitemap` — generuje `dist/sitemap.xml` dla adresu przekazanego w `SITE_URL`.
+- `npm run build:sw` — generuje `dist/sw.js`: listę precache i `CACHE_VERSION` wyprowadza z gotowego katalogu `dist/`.
 - `npm run images:build` / `npm run images:clean` — generowanie i czyszczenie obrazów w `assets/img/`.
 - `npm run check:links` — walidacja linków wewnętrznych, zewnętrznych i kotwic w plikach HTML.
 - `npm run check:assets` — walidacja lokalnych odwołań do zasobów w HTML.
@@ -188,7 +190,7 @@ npm run watch:js
 npm run build:dist
 ```
 
-`npm run build:dist` wykonuje kolejno trzy kroki. Najpierw `scripts/build-dist.js` usuwa i odtwarza katalog `dist/`, renderuje wszystkie pliki HTML wraz z partialami z `partials/`, kopiuje katalog `assets/` (z pominięciem `assets/img-src/`) oraz pliki opcjonalne (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), a w kopiach HTML podmienia odwołania `css/style.css`, `js/script.js` i `js/theme-init.js` na warianty minifikowane. Następnie `npm run build` generuje z bieżących źródeł `dist/css/style.min.css`, `dist/js/theme-init.min.js` i `dist/js/script.min.js`, a skrypty weryfikacyjne kończą build błędem, gdy któregoś z tych artefaktów brakuje. Na końcu `build:sitemap` zapisuje `dist/sitemap.xml` — jedyny plik sitemapy w projekcie; w katalogu głównym nie ma śledzonej kopii, którą ten krok mógłby nadpisać. Kolejność jest wiążąca: czyszczenie `dist/` poprzedza generowanie assetów produkcyjnych, więc żaden krok nie kasuje wcześniej zbudowanych plików.
+`npm run build:dist` wykonuje kolejno cztery kroki. Najpierw `scripts/build-dist.js` usuwa i odtwarza katalog `dist/`, renderuje wszystkie pliki HTML wraz z partialami z `partials/`, kopiuje katalog `assets/` (z pominięciem `assets/img-src/`) oraz pliki opcjonalne (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `manifest.webmanifest`, `js/sw-register.js`), a w kopiach HTML podmienia odwołania `css/style.css`, `js/script.js` i `js/theme-init.js` na warianty minifikowane. Następnie `npm run build` generuje z bieżących źródeł `dist/css/style.min.css`, `dist/js/theme-init.min.js` i `dist/js/script.min.js`, a skrypty weryfikacyjne kończą build błędem, gdy któregoś z tych artefaktów brakuje. Dalej `build:sitemap` zapisuje `dist/sitemap.xml` — jedyny plik sitemapy w projekcie; w katalogu głównym nie ma śledzonej kopii, którą ten krok mógłby nadpisać. Na końcu `build:sw` zapisuje `dist/sw.js` — jedyny Service Worker trafiający na produkcję; `build-dist.js` nie kopiuje tu `sw.js`, więc również tutaj nie ma kopii do nadpisania. Kolejność jest wiążąca: czyszczenie `dist/` poprzedza generowanie assetów produkcyjnych, a `build:sw` wykonuje się po nich, bo odczytuje pliki, które precache’uje.
 
 `build:sitemap` wymaga zmiennej `SITE_URL` i kończy się kodem różnym od zera, gdy jej nie ustawiono. Skrypt `build:dist` w `package.json` przekazuje `SITE_URL=https://construction-pr01-solidcraft.netlify.app` przez `cross-env`. Z sitemapy wykluczone są `404.html`, `offline.html` i `thank-you.html`.
 
@@ -241,7 +243,9 @@ Dokumentacja nie zawiera potwierdzenia zgodności z konkretnym poziomem WCAG —
 
 - `manifest.webmanifest` definiuje `id`, `start_url` i `scope` `/`, tryb `standalone`, kolory motywu, ikony (w tym `maskable`), trzy skróty aplikacji oraz zrzuty ekranu dla widoku wąskiego i szerokiego.
 - `js/sw-register.js` rejestruje `/sw.js` w zakresie `/` po zdarzeniu `load`.
-- `sw.js` używa wersjonowanej nazwy cache (`solidcraft-v1.3`), precache’uje wszystkie 13 stron HTML, manifest, `css/style.min.css`, `js/theme-init.min.js`, `js/script.min.js`, `js/sw-register.js`, sześć plików `woff2` i favikony, obsługuje dokumenty HTML strategią network-first z fallbackiem na `/offline.html`, a zasoby statyczne strategią cache-first; zapisy do cache w obsłudze `fetch` są przekazywane do `event.waitUntil`, a nieaktualne cache tego samego prefiksu są usuwane przy aktywacji.
+- `sw.js` obsługuje dokumenty HTML strategią network-first z fallbackiem na `/offline.html`, a zasoby statyczne strategią cache-first; zapisy do cache w obsłudze `fetch` są przekazywane do `event.waitUntil`, a przy aktywacji usuwane są nieaktualne cache o prefiksie `solidcraft-v` — cache spoza tego prefiksu nie są ruszane.
+- Kontrakt precache nie jest utrzymywany ręcznie. `npm run build:sw` (`scripts/generate-sw.js`) przepisuje w `sw.js` oznaczony blok na podstawie gotowego katalogu `dist/` i zapisuje wynik jako `dist/sw.js`: nazwa cache to `solidcraft-v<odcisk>`, gdzie odcisk to skrót SHA-256 par „URL + zawartość” wszystkich precache’owanych plików, a lista obejmuje wszystkie 13 stron HTML wraz z `/`, manifest, `css/style.min.css`, `js/theme-init.min.js`, `js/script.min.js`, `js/sw-register.js`, sześć plików `woff2` i komplet ikon z `assets/img/favicon/`. Zmiana któregokolwiek z tych plików zmienia wersję cache; pozostała zawartość `dist/` (galerie, hero, zrzuty ekranu, `sitemap.xml`, `robots.txt`) pozostaje w cache runtime.
+- W drzewie źródłowym ten blok jest celowo pusty, bo `css/style.min.css`, `js/theme-init.min.js` i `js/script.min.js` powstają dopiero w `dist/`. Dzięki temu Service Worker instaluje się poprawnie pod `npm run dev` zamiast przerywać `cache.addAll()` na plikach, których w źródłach nie ma.
 
 Manifest i Service Worker są wskazywane ścieżkami bezwzględnymi, więc działają przy serwowaniu serwisu z katalogu głównego domeny. Repozytorium nie zawiera weryfikacji instalowalności ani testów działania offline.
 
@@ -267,20 +271,19 @@ Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 ### Utrzymanie projektu
 
 - Pliki źródłowe do edycji: `css/style.css` i `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/sw-register.js`, `js/modules/**`, `partials/header.html` i `partials/footer.html`, `assets/img-src/**` oraz utrzymywane strony HTML.
-- Artefakty generowane, których nie należy edytować ręcznie: `dist/css/style.min.css`, `dist/js/script.min.js`, `dist/js/theme-init.min.js`, strony HTML i `sitemap.xml` w `dist/`, `assets/img/**` oraz cały katalog `dist/`. Katalog `dist/` jest w całości generowany, nie jest utrzymywany ręcznie i pozostaje poza kontrolą wersji.
+- Artefakty generowane, których nie należy edytować ręcznie: `dist/css/style.min.css`, `dist/js/script.min.js`, `dist/js/theme-init.min.js`, strony HTML, `sitemap.xml` i `sw.js` w `dist/`, `assets/img/**` oraz cały katalog `dist/`. Katalog `dist/` jest w całości generowany, nie jest utrzymywany ręcznie i pozostaje poza kontrolą wersji.
 - Wspólny nagłówek i stopkę zmienia się w `partials/`, nigdy w wyrenderowanej kopii — jedna zmiana obejmuje wszystkie 13 stron.
 - Higiena repozytorium: `.gitignore` trzyma poza Gitem `node_modules/`, `/dist/`, artefakty `*.min.css`/`*.min.js`, katalogi raportów oraz lokalne katalogi agentów (`.claude/`, `.codex/`); `.gitattributes` normalizuje pliki tekstowe do LF i oznacza jako `binary` rozszerzenia binarne obecne w projekcie. Renormalizacja już śledzonych plików (`git add --renormalize .`) to osobna operacja Gita wykonywana przez opiekuna projektu i nie jest częścią żadnego skryptu npm.
 - Zmiany w źródłach CSS/JS nie wymagają żadnego kroku buildu w developmencie — `npm run dev` serwuje pliki źródłowe. Artefakty minifikowane powstają dopiero w `dist/` podczas `npm run build:dist` (lokalnie i na wdrożeniu).
 - Po zmianie obrazów źródłowych należy uruchomić `npm run images:build` — ten krok pozostaje ręczny i nie jest częścią ścieżki wdrożenia.
-- Lista precache’owanych zasobów i wartość `CACHE_VERSION` w `sw.js` są utrzymywane ręcznie — po zmianie zasobów wchodzących do cache należy podnieść wersję.
+- Lista precache’owanych zasobów i `CACHE_VERSION` nie są utrzymywane ręcznie: generuje je `npm run build:sw` z gotowego `dist/`, a wersja jest odciskiem zawartości, więc zmiana precache’owanego pliku sama unieważnia cache. Ręcznie zmienia się tylko logikę runtime w `sw.js` poza oznaczonym blokiem.
 - Zasady pipeline’u i narzędzi są opisane w `settings.md`, który pozostaje jedynym źródłem prawdy dla tej warstwy; historia zmian jest prowadzona w `CHANGELOG.md`.
 
 ### Roadmap
 
 Na podstawie otwartych punktów odnotowanych w repozytorium:
 
-- włączenie `check:predeploy` jako obowiązkowej bramki w workflow CI,
-- automatyzacja wersjonowania cache Service Workera w procesie build.
+- włączenie `check:predeploy` jako obowiązkowej bramki w workflow CI.
 
 ### Licencja
 
@@ -398,6 +401,7 @@ DS-construction-pr01-SolidCraft/
 │   ├── check-links.mjs
 │   ├── check-html-assets.mjs
 │   ├── generate-sitemap.mjs
+│   ├── generate-sw.js
 │   ├── qa-a11y.mjs
 │   ├── qa-functional.mjs
 │   ├── functional/            # functional test scenarios
@@ -408,7 +412,7 @@ DS-construction-pr01-SolidCraft/
 │       ├── mime-types.mjs
 │       ├── static-server.mjs  # functional-test static server
 │       └── partials.js        # partial renderer (build and dev)
-├── sw.js
+├── sw.js                      # SW logic; the build generates its precache block
 ├── manifest.webmanifest
 ├── robots.txt
 ├── _headers
@@ -458,8 +462,9 @@ npm run watch:js
 - `npm run build:css` — PostCSS builds `dist/css/style.min.css`, then `scripts/verify-css-build.js` checks that no `@import` remains.
 - `npm run build:js` — esbuild builds `dist/js/theme-init.min.js` and `dist/js/script.min.js`, then `scripts/verify-js-build.js` checks that no `import`/`export` syntax remains in either file.
 - `npm run build` — runs `build:css` and `build:js`; both write into `dist/` only.
-- `npm run build:dist` — assembles the `dist/` directory, then runs `build` and `build:sitemap`.
+- `npm run build:dist` — assembles the `dist/` directory, then runs `build`, `build:sitemap` and `build:sw`.
 - `npm run build:sitemap` — generates `dist/sitemap.xml` for the address passed in `SITE_URL`.
+- `npm run build:sw` — generates `dist/sw.js`, deriving the precache list and `CACHE_VERSION` from the finished `dist/` tree.
 - `npm run images:build` / `npm run images:clean` — generate and clean images in `assets/img/`.
 - `npm run check:links` — validates internal links, external links, and anchors across HTML files.
 - `npm run check:assets` — validates local asset references in HTML.
@@ -476,7 +481,7 @@ npm run watch:js
 npm run build:dist
 ```
 
-`npm run build:dist` runs three steps in order. First `scripts/build-dist.js` removes and recreates the `dist/` directory, renders every HTML file with its `partials/` header and footer expanded, copies the `assets/` directory (excluding `assets/img-src/`), and the optional files (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), and rewrites `css/style.css`, `js/script.js`, and `js/theme-init.js` references to their minified variants in the HTML copies. Then `npm run build` generates `dist/css/style.min.css`, `dist/js/theme-init.min.js`, and `dist/js/script.min.js` from the current sources, and the verification scripts fail the build when one of those artifacts is missing. Finally `build:sitemap` writes `dist/sitemap.xml` — the only sitemap file in the project; no tracked copy exists at the root for this step to overwrite. The order is binding: `dist/` is cleaned before the production assets are generated, so no step deletes previously built files.
+`npm run build:dist` runs four steps in order. First `scripts/build-dist.js` removes and recreates the `dist/` directory, renders every HTML file with its `partials/` header and footer expanded, copies the `assets/` directory (excluding `assets/img-src/`), and the optional files (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `manifest.webmanifest`, `js/sw-register.js`), and rewrites `css/style.css`, `js/script.js`, and `js/theme-init.js` references to their minified variants in the HTML copies. Then `npm run build` generates `dist/css/style.min.css`, `dist/js/theme-init.min.js`, and `dist/js/script.min.js` from the current sources, and the verification scripts fail the build when one of those artifacts is missing. Next `build:sitemap` writes `dist/sitemap.xml` — the only sitemap file in the project; no tracked copy exists at the root for this step to overwrite. Finally `build:sw` writes `dist/sw.js` — the only Service Worker that reaches production; `build-dist.js` stages no `sw.js`, so there is no copy for this step to overwrite either. The order is binding: `dist/` is cleaned before the production assets are generated, and `build:sw` runs after them because it reads the files it precaches.
 
 `build:sitemap` requires the `SITE_URL` variable and exits non-zero when it is not set. The `build:dist` script in `package.json` passes `SITE_URL=https://construction-pr01-solidcraft.netlify.app` through `cross-env`. `404.html`, `offline.html`, and `thank-you.html` are excluded from the sitemap.
 
@@ -529,7 +534,9 @@ This documentation makes no claim of conformance with a specific WCAG level — 
 
 - `manifest.webmanifest` defines `id`, `start_url` and `scope` `/`, `standalone` display, theme colors, icons (including `maskable`), three app shortcuts, and screenshots for narrow and wide form factors.
 - `js/sw-register.js` registers `/sw.js` with scope `/` after the `load` event.
-- `sw.js` uses a versioned cache name (`solidcraft-v1.3`), precaches all 13 HTML pages, the manifest, `css/style.min.css`, `js/theme-init.min.js`, `js/script.min.js`, `js/sw-register.js`, the six `woff2` files and the favicons, serves HTML documents network-first with an `/offline.html` fallback and static assets cache-first, hands the fetch handler's cache writes to `event.waitUntil`, and deletes outdated caches of the same prefix on activation.
+- `sw.js` serves HTML documents network-first with an `/offline.html` fallback and static assets cache-first, hands the fetch handler's cache writes to `event.waitUntil`, and on activation deletes outdated caches carrying the `solidcraft-v` prefix — caches outside that prefix are never touched.
+- The precache contract is not maintained by hand. `npm run build:sw` (`scripts/generate-sw.js`) rewrites the marked block in `sw.js` from the finished `dist/` tree and writes the result as `dist/sw.js`: the cache name is `solidcraft-v<fingerprint>`, where the fingerprint is a SHA-256 over the URL-and-content pairs of every precached file, and the list covers all 13 HTML pages plus `/`, the manifest, `css/style.min.css`, `js/theme-init.min.js`, `js/script.min.js`, `js/sw-register.js`, the six `woff2` files and the full icon set in `assets/img/favicon/`. Changing any of those files changes the cache version; the rest of `dist/` — galleries, hero, screenshots, `sitemap.xml`, `robots.txt` — stays runtime-cached.
+- In the source tree that block is deliberately empty, because `css/style.min.css`, `js/theme-init.min.js` and `js/script.min.js` only exist in `dist/`. The worker therefore installs cleanly under `npm run dev` instead of aborting `cache.addAll()` on files the sources do not contain.
 
 The manifest and Service Worker are referenced by absolute paths, so they work when the site is served from the domain root. The repository contains no installability verification or offline behavior tests.
 
@@ -555,20 +562,19 @@ The repository contains no recorded performance measurement results.
 ### Project Maintenance
 
 - Editable source files: `css/style.css` and `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/sw-register.js`, `js/modules/**`, `partials/header.html` and `partials/footer.html`, `assets/img-src/**`, and the maintained HTML pages.
-- Generated artifacts that must not be edited manually: `dist/css/style.min.css`, `dist/js/script.min.js`, `dist/js/theme-init.min.js`, the HTML pages and `sitemap.xml` inside `dist/`, `assets/img/**`, and the whole `dist/` directory. `dist/` is generated in full, is never maintained by hand, and stays out of version control.
+- Generated artifacts that must not be edited manually: `dist/css/style.min.css`, `dist/js/script.min.js`, `dist/js/theme-init.min.js`, the HTML pages, `sitemap.xml` and `sw.js` inside `dist/`, `assets/img/**`, and the whole `dist/` directory. `dist/` is generated in full, is never maintained by hand, and stays out of version control.
 - Change the shared header and footer in `partials/`, never in a rendered copy — one edit reaches all 13 pages.
 - Repository hygiene: `.gitignore` keeps `node_modules/`, `/dist/`, the `*.min.css` / `*.min.js` artifacts, the report directories and the local agent directories (`.claude/`, `.codex/`) out of Git; `.gitattributes` normalises text files to LF and marks the binary extensions present in the project as `binary`. Renormalising already-tracked files (`git add --renormalize .`) is a separate Git operation performed by the maintainer and is not part of any npm script.
 - Changing CSS/JS sources requires no build step during development — `npm run dev` serves the source files. The minified artifacts are produced in `dist/` by `npm run build:dist` only, locally and on deploy alike.
 - After changing source images run `npm run images:build` — that step stays manual and is not part of the deploy path.
-- The precache list and the `CACHE_VERSION` value in `sw.js` are maintained manually — bump the version after changing the cached assets.
+- The precache list and `CACHE_VERSION` are not maintained by hand: `npm run build:sw` derives them from the finished `dist/`, and the version is a fingerprint of the cached content, so changing a precached file invalidates the cache by itself. Only the runtime logic in `sw.js` outside the marked block is edited manually.
 - Pipeline and tooling rules are documented in `settings.md`, which remains the single source of truth for that layer; the change history is kept in `CHANGELOG.md`.
 
 ### Roadmap
 
 Based on the open items recorded in the repository:
 
-- adopt `check:predeploy` as a required gate in a CI workflow,
-- automate Service Worker cache versioning in the build process.
+- adopt `check:predeploy` as a required gate in a CI workflow.
 
 ### License
 
