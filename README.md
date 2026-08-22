@@ -279,8 +279,7 @@ Na podstawie otwartych punktów odnotowanych w repozytorium:
 - włączenie `check:predeploy` jako obowiązkowej bramki w workflow CI,
 - rozszerzenie pokrycia `qa:a11y` o pozostałe podstrony oferty i dokumentów,
 - automatyzacja wersjonowania cache Service Workera w procesie build,
-- ujednolicenie źródła sitemapy — śledzony `sitemap.xml` w katalogu głównym jest kopiowany do `dist/`, a następnie nadpisywany przez `build:sitemap`,
-- usunięcie spekulatywnych żądań `modules/*.css` (404) z renderowania developerskiego; dotyczy wyłącznie `npm run dev` i `npm run qa:a11y`, build produkcyjny ich nie wykonuje.
+- ujednolicenie źródła sitemapy — śledzony `sitemap.xml` w katalogu głównym jest kopiowany do `dist/`, a następnie nadpisywany przez `build:sitemap`.
 
 ### Licencja
 
@@ -567,8 +566,7 @@ Based on the open items recorded in the repository:
 - adopt `check:predeploy` as a required gate in a CI workflow,
 - expand `qa:a11y` coverage to the remaining service and legal subpages,
 - automate Service Worker cache versioning in the build process,
-- consolidate the sitemap source of truth — the tracked root `sitemap.xml` is copied into `dist/` and then overwritten by `build:sitemap`,
-- remove the speculative `modules/*.css` 404s from the development rendering; they affect `npm run dev` and `npm run qa:a11y` only, never the production build.
+- consolidate the sitemap source of truth — the tracked root `sitemap.xml` is copied into `dist/` and then overwritten by `build:sitemap`.
 
 ### License
 
