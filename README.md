@@ -194,7 +194,7 @@ npm run build:dist
 Repozytorium nie zawiera zestawu testów jednostkowych ani funkcjonalnych. Skonfigurowane są następujące mechanizmy kontroli:
 
 - `scripts/check-links.mjs` i `scripts/check-html-assets.mjs` — statyczna walidacja linków i odwołań do zasobów w HTML.
-- `scripts/qa-a11y.mjs` — axe-core uruchamiany przez Playwright na lokalnym serwerze statycznym; skanowane są `/index.html`, `/404.html`, `/oferta/lazienki.html`, `/doc/polityka-prywatnosci.html` oraz `/offline.html`, jeśli plik istnieje. Skrypt kończy się błędem przy naruszeniach o wadze `serious` lub `critical`.
+- `scripts/qa-a11y.mjs` — axe-core uruchamiany przez Playwright na lokalnym serwerze statycznym; skanowane są `/index.html`, `/404.html`, wszystkie sześć podstron oferty (`/oferta/elektryka.html`, `/oferta/hydraulika.html`, `/oferta/kafelkowanie.html`, `/oferta/lazienki.html`, `/oferta/malowanie.html`, `/oferta/remonty.html`), wszystkie trzy strony dokumentów (`/doc/cookies.html`, `/doc/polityka-prywatnosci.html`, `/doc/regulamin.html`) oraz `/offline.html`, jeśli plik istnieje — łącznie 12 tras. Jedenaście tras wymaganych: brak którejkolwiek przerywa bieg komunikatem `Required page not found`. Skrypt kończy się błędem przy naruszeniach o wadze `serious` lub `critical`.
 - `scripts/verify-css-build.js` i `scripts/verify-js-build.js` — weryfikacja artefaktów wbudowana w komendy build.
 - `lighthouserc.json` — Lighthouse CI na katalogu `dist` dla `/`, `/oferta/remonty.html` i `/doc/polityka-prywatnosci.html`, z progami: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
@@ -277,7 +277,6 @@ Na podstawie otwartych punktów odnotowanych w repozytorium:
 
 - rozszerzenie testów automatycznych o scenariusze funkcjonalne (formularz, lightbox, nawigacja) z wykorzystaniem obecnego zaplecza Playwright,
 - włączenie `check:predeploy` jako obowiązkowej bramki w workflow CI,
-- rozszerzenie pokrycia `qa:a11y` o pozostałe podstrony oferty i dokumentów,
 - automatyzacja wersjonowania cache Service Workera w procesie build,
 - ujednolicenie źródła sitemapy — śledzony `sitemap.xml` w katalogu głównym jest kopiowany do `dist/`, a następnie nadpisywany przez `build:sitemap`.
 
@@ -481,7 +480,7 @@ npm run build:dist
 The repository contains no unit or functional test suite. The following checks are configured:
 
 - `scripts/check-links.mjs` and `scripts/check-html-assets.mjs` — static validation of links and asset references in HTML.
-- `scripts/qa-a11y.mjs` — axe-core executed through Playwright against a local static server; the scanned routes are `/index.html`, `/404.html`, `/oferta/lazienki.html`, `/doc/polityka-prywatnosci.html`, and `/offline.html` when the file exists. The script fails on `serious` or `critical` violations.
+- `scripts/qa-a11y.mjs` — axe-core executed through Playwright against a local static server; the scanned routes are `/index.html`, `/404.html`, all six service subpages (`/oferta/elektryka.html`, `/oferta/hydraulika.html`, `/oferta/kafelkowanie.html`, `/oferta/lazienki.html`, `/oferta/malowanie.html`, `/oferta/remonty.html`), all three document pages (`/doc/cookies.html`, `/doc/polityka-prywatnosci.html`, `/doc/regulamin.html`), and `/offline.html` when the file exists — 12 routes in total. Eleven of them are required: a missing one aborts the run with `Required page not found`. The script fails on `serious` or `critical` violations.
 - `scripts/verify-css-build.js` and `scripts/verify-js-build.js` — artifact verification embedded in the build commands.
 - `lighthouserc.json` — Lighthouse CI over the `dist` directory for `/`, `/oferta/remonty.html`, and `/doc/polityka-prywatnosci.html`, with thresholds: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
@@ -564,7 +563,6 @@ Based on the open items recorded in the repository:
 
 - extend automated testing with functional scenarios (form, lightbox, navigation) using the existing Playwright setup,
 - adopt `check:predeploy` as a required gate in a CI workflow,
-- expand `qa:a11y` coverage to the remaining service and legal subpages,
 - automate Service Worker cache versioning in the build process,
 - consolidate the sitemap source of truth — the tracked root `sitemap.xml` is copied into `dist/` and then overwritten by `build:sitemap`.
 
