@@ -361,6 +361,9 @@ function initOfertaLightbox() {
     { signal },
   );
 
+  /* Non-passive: the second tap calls preventDefault() to suppress the
+     compatibility mouse events, so the dblclick handler above does not
+     toggle fullscreen a second time on the same gesture. */
   viewportEl.addEventListener(
     "touchend",
     (e) => {
@@ -375,7 +378,7 @@ function initOfertaLightbox() {
 
       lastTap = now;
     },
-    { passive: true, signal },
+    { passive: false, signal },
   );
 
   window.addEventListener("pagehide", () => ac.abort(), { once: true, signal });

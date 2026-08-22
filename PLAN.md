@@ -177,8 +177,8 @@
   - **Completion condition:** `.ft-contact-icon` declares a width consistent with its height, and the footer renders unchanged
   - **Source:** `AUDIT.md` — P2-08
 
-- [ ] **PH8-02 — Resolve the passive double-tap listener in the lightbox** — **Priority:** Low
-  - [ ] either register the `touchend` listener as non-passive so its `preventDefault()` applies, or drop the call and accept the browser default
+- [x] **PH8-02 — Resolve the passive double-tap listener in the lightbox** — **Priority:** Low
+  - [x] either register the `touchend` listener as non-passive so its `preventDefault()` applies, or drop the call and accept the browser default
   - **Completion condition:** double-tapping the lightbox viewport produces the intended behaviour with no passive-listener warning in the console
   - **Source:** `AUDIT.md` — P2-10
 
