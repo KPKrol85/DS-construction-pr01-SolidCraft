@@ -1,5 +1,5 @@
 {
-  "name": "solidcraft-construction-website",
+  "name": "ds-construction-pr01-solidcraft",
   "version": "1.0.0",
   "private": true,
   "description": "SolidCraft — static front-end implementation of a construction company website (HTML, CSS, JavaScript, PostCSS).",
