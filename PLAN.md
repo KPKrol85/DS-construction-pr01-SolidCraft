@@ -182,8 +182,8 @@
   - **Completion condition:** double-tapping the lightbox viewport produces the intended behaviour with no passive-listener warning in the console
   - **Source:** `AUDIT.md` — P2-10
 
-- [ ] **PH8-03 — Register the ScrollSpy `scrollend` listener once** — **Priority:** Low
-  - [ ] register the `scrollend` listener for the module's lifetime, or guard `scheduleComputeAfterScroll()` so at most one pending listener exists
+- [x] **PH8-03 — Register the ScrollSpy `scrollend` listener once** — **Priority:** Low
+  - [x] register the `scrollend` listener for the module's lifetime, or guard `scheduleComputeAfterScroll()` so at most one pending listener exists
   - **Completion condition:** at most one pending `scrollend` listener exists at any moment during continuous scrolling
   - **Source:** `AUDIT.md` — P2-11
 

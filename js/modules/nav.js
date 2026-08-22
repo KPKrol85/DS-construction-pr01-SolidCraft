@@ -358,11 +358,15 @@ function initScrollSpy() {
   };
 
   let scrollTimeout = 0;
+  let scrollEndPending = false;
   const scheduleComputeAfterScroll = () => {
     if ("onscrollend" in window) {
+      if (scrollEndPending) return;
+      scrollEndPending = true;
       const once = () => {
-        compute();
+        scrollEndPending = false;
         window.removeEventListener("scrollend", once);
+        compute();
       };
       window.addEventListener("scrollend", once, { signal });
     } else {
@@ -370,6 +374,9 @@ function initScrollSpy() {
       scrollTimeout = setTimeout(compute, 120);
     }
   };
+  signal.addEventListener("abort", () => {
+    scrollEndPending = false;
+  });
 
   let ticking = false;
   const onScroll = () => {
