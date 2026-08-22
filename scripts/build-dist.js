@@ -17,12 +17,14 @@ const EXCLUDED_TOP_LEVEL_DIRS = new Set([
   PARTIALS_DIR_NAME,
 ]);
 
+/* sitemap.xml is deliberately absent: dist/sitemap.xml is produced by
+   scripts/generate-sitemap.mjs in the build:sitemap step that follows,
+   so staging a tracked copy here would only be overwritten. */
 const OPTIONAL_FILES = [
   "_headers",
   "_redirects",
   "netlify.toml",
   "robots.txt",
-  "sitemap.xml",
   "manifest.webmanifest",
   "sw.js",
   "js/sw-register.js",

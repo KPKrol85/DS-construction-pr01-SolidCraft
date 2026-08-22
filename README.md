@@ -123,7 +123,6 @@ DS-construction-pr01-SolidCraft/
 ├── sw.js
 ├── manifest.webmanifest
 ├── robots.txt
-├── sitemap.xml
 ├── _headers
 ├── _redirects
 ├── netlify.toml
@@ -189,7 +188,7 @@ npm run watch:js
 npm run build:dist
 ```
 
-`npm run build:dist` wykonuje kolejno trzy kroki. Najpierw `scripts/build-dist.js` usuwa i odtwarza katalog `dist/`, renderuje wszystkie pliki HTML wraz z partialami z `partials/`, kopiuje katalog `assets/` (z pominięciem `assets/img-src/`) oraz pliki opcjonalne (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), a w kopiach HTML podmienia odwołania `css/style.css`, `js/script.js` i `js/theme-init.js` na warianty minifikowane. Następnie `npm run build` generuje z bieżących źródeł `dist/css/style.min.css`, `dist/js/theme-init.min.js` i `dist/js/script.min.js`, a skrypty weryfikacyjne kończą build błędem, gdy któregoś z tych artefaktów brakuje. Na końcu `build:sitemap` zapisuje `dist/sitemap.xml`. Kolejność jest wiążąca: czyszczenie `dist/` poprzedza generowanie assetów produkcyjnych, więc żaden krok nie kasuje wcześniej zbudowanych plików.
+`npm run build:dist` wykonuje kolejno trzy kroki. Najpierw `scripts/build-dist.js` usuwa i odtwarza katalog `dist/`, renderuje wszystkie pliki HTML wraz z partialami z `partials/`, kopiuje katalog `assets/` (z pominięciem `assets/img-src/`) oraz pliki opcjonalne (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), a w kopiach HTML podmienia odwołania `css/style.css`, `js/script.js` i `js/theme-init.js` na warianty minifikowane. Następnie `npm run build` generuje z bieżących źródeł `dist/css/style.min.css`, `dist/js/theme-init.min.js` i `dist/js/script.min.js`, a skrypty weryfikacyjne kończą build błędem, gdy któregoś z tych artefaktów brakuje. Na końcu `build:sitemap` zapisuje `dist/sitemap.xml` — jedyny plik sitemapy w projekcie; w katalogu głównym nie ma śledzonej kopii, którą ten krok mógłby nadpisać. Kolejność jest wiążąca: czyszczenie `dist/` poprzedza generowanie assetów produkcyjnych, więc żaden krok nie kasuje wcześniej zbudowanych plików.
 
 `build:sitemap` wymaga zmiennej `SITE_URL` i kończy się kodem różnym od zera, gdy jej nie ustawiono. Skrypt `build:dist` w `package.json` przekazuje `SITE_URL=https://construction-pr01-solidcraft.netlify.app` przez `cross-env`. Z sitemapy wykluczone są `404.html`, `offline.html` i `thank-you.html`.
 
@@ -236,7 +235,7 @@ Dokumentacja nie zawiera potwierdzenia zgodności z konkretnym poziomem WCAG —
 - `title`, `meta description`, `canonical` i `meta robots` na stronach; `noindex` dla `404.html`, `offline.html` oraz `thank-you.html` (`noindex, follow`).
 - Metadane Open Graph i Twitter Card wraz z obrazami w `assets/img/og/`.
 - Dane strukturalne JSON-LD: `WebSite`, `CollectionPage` i `FAQPage`. Serwis celowo nie publikuje typu `GeneralContractor` ani innego typu `LocalBusiness` — SolidCraft jest fikcyjną marką demonstracyjną i nie ma adresu, telefonu, e-maila ani profili społecznościowych rzeczywistej firmy (patrz „Przegląd projektu" — decyzja projektowa).
-- `robots.txt` z odwołaniem do sitemapy oraz `sitemap.xml` w repozytorium; wersja wdrożeniowa jest generowana do `dist/sitemap.xml` podczas `build:dist`.
+- `robots.txt` z odwołaniem do publicznego adresu sitemapy. Sama sitemapa nie jest utrzymywana ręcznie w repozytorium — `dist/sitemap.xml` generuje `scripts/generate-sitemap.mjs` podczas `build:dist`.
 
 ### PWA i obsługa offline
 
@@ -281,8 +280,7 @@ Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 Na podstawie otwartych punktów odnotowanych w repozytorium:
 
 - włączenie `check:predeploy` jako obowiązkowej bramki w workflow CI,
-- automatyzacja wersjonowania cache Service Workera w procesie build,
-- ujednolicenie źródła sitemapy — śledzony `sitemap.xml` w katalogu głównym jest kopiowany do `dist/`, a następnie nadpisywany przez `build:sitemap`.
+- automatyzacja wersjonowania cache Service Workera w procesie build.
 
 ### Licencja
 
@@ -413,7 +411,6 @@ DS-construction-pr01-SolidCraft/
 ├── sw.js
 ├── manifest.webmanifest
 ├── robots.txt
-├── sitemap.xml
 ├── _headers
 ├── _redirects
 ├── netlify.toml
@@ -479,7 +476,7 @@ npm run watch:js
 npm run build:dist
 ```
 
-`npm run build:dist` runs three steps in order. First `scripts/build-dist.js` removes and recreates the `dist/` directory, renders every HTML file with its `partials/` header and footer expanded, copies the `assets/` directory (excluding `assets/img-src/`), and the optional files (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), and rewrites `css/style.css`, `js/script.js`, and `js/theme-init.js` references to their minified variants in the HTML copies. Then `npm run build` generates `dist/css/style.min.css`, `dist/js/theme-init.min.js`, and `dist/js/script.min.js` from the current sources, and the verification scripts fail the build when one of those artifacts is missing. Finally `build:sitemap` writes `dist/sitemap.xml`. The order is binding: `dist/` is cleaned before the production assets are generated, so no step deletes previously built files.
+`npm run build:dist` runs three steps in order. First `scripts/build-dist.js` removes and recreates the `dist/` directory, renders every HTML file with its `partials/` header and footer expanded, copies the `assets/` directory (excluding `assets/img-src/`), and the optional files (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `manifest.webmanifest`, `sw.js`, `js/sw-register.js`), and rewrites `css/style.css`, `js/script.js`, and `js/theme-init.js` references to their minified variants in the HTML copies. Then `npm run build` generates `dist/css/style.min.css`, `dist/js/theme-init.min.js`, and `dist/js/script.min.js` from the current sources, and the verification scripts fail the build when one of those artifacts is missing. Finally `build:sitemap` writes `dist/sitemap.xml` — the only sitemap file in the project; no tracked copy exists at the root for this step to overwrite. The order is binding: `dist/` is cleaned before the production assets are generated, so no step deletes previously built files.
 
 `build:sitemap` requires the `SITE_URL` variable and exits non-zero when it is not set. The `build:dist` script in `package.json` passes `SITE_URL=https://construction-pr01-solidcraft.netlify.app` through `cross-env`. `404.html`, `offline.html`, and `thank-you.html` are excluded from the sitemap.
 
@@ -526,7 +523,7 @@ This documentation makes no claim of conformance with a specific WCAG level — 
 - `title`, `meta description`, `canonical`, and `meta robots` across pages; `noindex` for `404.html`, `offline.html`, and `thank-you.html` (`noindex, follow`).
 - Open Graph and Twitter Card metadata with images in `assets/img/og/`.
 - JSON-LD structured data: `WebSite`, `CollectionPage`, and `FAQPage`. The site deliberately publishes no `GeneralContractor` or other `LocalBusiness` type — SolidCraft is a fictitious demo brand with no real address, telephone, email or social profiles (see "Project Overview" — project decision).
-- `robots.txt` referencing the sitemap and a `sitemap.xml` in the repository; the deployment version is generated into `dist/sitemap.xml` during `build:dist`.
+- `robots.txt` referencing the public sitemap URL. The sitemap itself is not maintained by hand in the repository — `dist/sitemap.xml` is generated by `scripts/generate-sitemap.mjs` during `build:dist`.
 
 ### PWA and Offline Support
 
@@ -571,8 +568,7 @@ The repository contains no recorded performance measurement results.
 Based on the open items recorded in the repository:
 
 - adopt `check:predeploy` as a required gate in a CI workflow,
-- automate Service Worker cache versioning in the build process,
-- consolidate the sitemap source of truth — the tracked root `sitemap.xml` is copied into `dist/` and then overwritten by `build:sitemap`.
+- automate Service Worker cache versioning in the build process.
 
 ### License
 
