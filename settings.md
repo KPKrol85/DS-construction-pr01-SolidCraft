@@ -16,6 +16,7 @@ This file is the canonical source of truth for the Solidcraft build/development 
 - Service Worker: `scripts/generate-sw.js`, which derives the production precache list and cache version from the finished `dist/` tree.
 - Formatting: `prettier`.
 - Lighthouse CI: `@lhci/cli` via `lighthouserc.json`.
+- Continuous integration: GitHub Actions, one workflow (`.github/workflows/ci.yml`).
 
 ## Scripts
 
@@ -73,6 +74,24 @@ This file is the canonical source of truth for the Solidcraft build/development 
 - `format:check` is the formatting gate.
 - A11y validation: `npm run qa:a11y` fails on `serious`/`critical` axe impacts, while `minor`/`moderate` are reported only.
 - Run local pre-deploy regressions with `npm run check:predeploy`.
+- `check:predeploy` and `qa:functional` also run automatically in CI; the contract is in "Continuous Integration" below.
+
+## Continuous Integration
+
+- One workflow: `.github/workflows/ci.yml`, workflow name `CI`, one job `quality-gate`. GitHub reports the status check as `CI / quality-gate`. Both names are part of the contract — branch protection selects a check by name, so renaming either silently detaches a required check.
+- Triggers: `push` to `main`, `pull_request` targeting `main`, and `workflow_dispatch`. Development branches are not built on every push: a pull request validates a branch before merge, and `main` is validated independently of it.
+- Runner: one `ubuntu-latest`. No OS matrix, no Node matrix, no browser matrix.
+- Node: `24` LTS, pinned in the workflow only, tracking the current Active LTS line. `engines` stays `">=18"` and is not narrowed to match CI; the repository pins no version elsewhere (no `.nvmrc`, and `netlify.toml` sets no `NODE_VERSION`).
+- Actions: `actions/checkout@v7` and `actions/setup-node@v7` only. `setup-node` supplies the npm cache, keyed on `package-lock.json`. No third-party action is used.
+- Permissions: `contents: read`. No secret is read, nothing is written back to the repository, no release is created, and nothing is deployed — deployment stays with Netlify.
+- Step order: `npm ci` → `npm run build:dist` → `npx playwright install --with-deps chromium` → `npm run check:predeploy` → `npm run qa:functional`. The build precedes the browser install because it needs no browser, so a broken build fails the job before the Chromium download is paid for.
+- Dependencies are installed deterministically with `npm ci` from `package-lock.json`. `npm install`, `npm update` and any other dependency mutation are not used.
+- Browsers: Chromium only, installed explicitly. The `playwright` package ships no install script, so `npm ci` downloads no browser on its own; Chromium is the only browser `qa:a11y` and `qa:functional` launch, so Firefox and WebKit are never installed.
+- The workflow invokes existing npm scripts and never reproduces their internals in YAML. `check:predeploy` and `qa:functional` are separate steps so a failed run identifies which gate broke, and `check:predeploy` is not widened to absorb `qa:functional`.
+- Concurrency: group `${{ github.workflow }}-${{ github.ref }}` with `cancel-in-progress: true`. Groups are already repository-scoped, and `refs/heads/main` and each `refs/pull/<n>/merge` are distinct, so a newer run cancels only the same ref's obsolete run and independent branches and pull requests never cancel each other.
+- Timeout: `timeout-minutes: 15`. No step uses `continue-on-error`, so the first non-zero exit code fails the run.
+- Deliberately absent from CI: `qa:lhci` and Lighthouse, `format:check`, Netlify deployment, artifact upload, coverage services, dependency-update automation, and any OS, Node or browser matrix.
+- Making `CI / quality-gate` a required status check is a GitHub branch-protection setting rather than a repository file. It is performed by the maintainer and is not part of any npm script.
 
 ## Deployment Notes
 

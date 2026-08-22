@@ -204,7 +204,7 @@ Repozytorium nie zawiera testów jednostkowych. Skonfigurowane są następujące
 - `scripts/verify-css-build.js` i `scripts/verify-js-build.js` — weryfikacja artefaktów wbudowana w komendy build.
 - `lighthouserc.json` — Lighthouse CI na katalogu `dist` dla `/`, `/oferta/remonty.html` i `/doc/polityka-prywatnosci.html`, z progami: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
-Powyższe komendy są skonfigurowane w repozytorium; poza `qa:functional` i `qa:a11y`, uruchomionymi przy dodawaniu zestawu funkcjonalnego, ich wykonanie nie było elementem przygotowania tej dokumentacji.
+Powyższe komendy są skonfigurowane w repozytorium. `build:dist`, `check:predeploy` (a więc `check:links`, `check:assets` i `qa:a11y`) oraz `qa:functional` zostały uruchomione lokalnie przy dodawaniu workflow CI i przechodzą; `qa:lhci`, `format` i `images:build` nie były uruchamiane przy przygotowaniu tej dokumentacji.
 
 ### Wdrożenie
 
@@ -215,7 +215,20 @@ Repozytorium zawiera konfigurację wdrożenia na Netlify:
 - `_headers` — nagłówki `Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` i `X-Robots-Tag`.
 - Formularz kontaktowy jest przygotowany pod Netlify Forms (atrybuty `netlify`, `netlify-honeypot="bot-field"` oraz ukryte pole `form-name`). Repozytorium nie zawiera własnej implementacji obsługi zgłoszeń.
 
-Repozytorium nie zawiera konfiguracji CI/CD (np. GitHub Actions).
+### Ciągła integracja (CI)
+
+Repozytorium zawiera jeden workflow GitHub Actions — `.github/workflows/ci.yml`, o nazwie `CI`, z jednym zadaniem `quality-gate`; w interfejsie GitHuba status nosi nazwę `CI / quality-gate`.
+
+- Wyzwalacze: `push` do `main`, `pull_request` skierowany na `main` oraz ręczne `workflow_dispatch`. Gałęzie deweloperskie nie są budowane przy każdym pushu — pull request waliduje je przed scaleniem, a `main` jest sprawdzany niezależnie.
+- Środowisko: jeden runner `ubuntu-latest`, Node.js 24 LTS. Wersja jest ustawiona wyłącznie w workflow — pole `engines` w `package.json` pozostaje `">=18"`. Nie ma macierzy systemów, wersji Node ani przeglądarek.
+- Kroki, w kolejności: `npm ci` (instalacja deterministyczna z `package-lock.json`, z cache npm), `npm run build:dist`, `npx playwright install --with-deps chromium`, `npm run check:predeploy`, `npm run qa:functional`. Build poprzedza instalację przeglądarki, bo jej nie potrzebuje — nieudany build przerywa zadanie przed pobraniem Chromium. Workflow wywołuje istniejące skrypty projektu i nie powiela ich zawartości w YAML-u.
+- Bramka przed wdrożeniem i zestaw funkcjonalny są osobnymi krokami, więc logi wskazują, który z nich zawiódł; `check:predeploy` nie został rozszerzony o `qa:functional`.
+- Instalowany jest wyłącznie Chromium — jedyna przeglądarka uruchamiana przez `qa:a11y` i `qa:functional`.
+- Uprawnienia to `contents: read`. Workflow nie korzysta z sekretów, nie zapisuje niczego w repozytorium i niczego nie wdraża — wdrożeniem nadal zajmuje się Netlify.
+- `concurrency` z kluczem zależnym od referencji i `cancel-in-progress: true` anuluje wyłącznie nieaktualny bieg tej samej gałęzi lub tego samego pull requesta; zadanie ma `timeout-minutes: 15`. Żaden krok nie używa `continue-on-error`, więc pierwszy niezerowy kod wyjścia przerywa bieg.
+- Workflow nie uruchamia `qa:lhci`, Lighthouse, `format:check` ani wdrożenia.
+
+Ustawienie `CI / quality-gate` jako statusu wymaganego (branch protection) jest konfiguracją repozytorium w GitHubie, a nie plikiem w repozytorium, i pozostaje krokiem ręcznym. Szczegóły kontraktu CI opisuje `settings.md`.
 
 ### Dostępność
 
@@ -283,7 +296,7 @@ Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 
 Na podstawie otwartych punktów odnotowanych w repozytorium:
 
-- włączenie `check:predeploy` jako obowiązkowej bramki w workflow CI.
+- ustawienie statusu `CI / quality-gate` jako wymaganego w regułach ochrony gałęzi `main` w GitHubie. Workflow CI opisany w sekcji „Ciągła integracja (CI)” uruchamia `check:predeploy` i `qa:functional` automatycznie; wymuszenie zielonego statusu przed scaleniem jest ustawieniem repozytorium, a nie plikiem w nim zawartym.
 
 ### Licencja
 
@@ -495,7 +508,7 @@ The repository contains no unit test suite. The following checks are configured:
 - `scripts/verify-css-build.js` and `scripts/verify-js-build.js` — artifact verification embedded in the build commands.
 - `lighthouserc.json` — Lighthouse CI over the `dist` directory for `/`, `/oferta/remonty.html`, and `/doc/polityka-prywatnosci.html`, with thresholds: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
-These commands are configured in the repository; apart from `qa:functional` and `qa:a11y`, which were run when the functional suite was added, running them was not part of preparing this documentation.
+These commands are configured in the repository. `build:dist`, `check:predeploy` (and therefore `check:links`, `check:assets`, and `qa:a11y`), and `qa:functional` were run locally when the CI workflow was added and all pass; `qa:lhci`, `format`, and `images:build` were not run while preparing this documentation.
 
 ### Deployment
 
@@ -506,7 +519,20 @@ The repository includes Netlify deployment configuration:
 - `_headers` — `Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, and `X-Robots-Tag` headers.
 - The contact form is marked up for Netlify Forms (`netlify`, `netlify-honeypot="bot-field"` attributes and a hidden `form-name` field). The repository contains no custom submission handling implementation.
 
-The repository contains no CI/CD configuration (for example GitHub Actions).
+### Continuous Integration (CI)
+
+The repository contains one GitHub Actions workflow — `.github/workflows/ci.yml`, named `CI`, with a single job `quality-gate`; GitHub reports the status check as `CI / quality-gate`.
+
+- Triggers: `push` to `main`, `pull_request` targeting `main`, and manual `workflow_dispatch`. Development branches are not built on every push — a pull request validates them before merge, and `main` is checked independently.
+- Environment: one `ubuntu-latest` runner, Node.js 24 LTS. The version is pinned in the workflow only — the `engines` field in `package.json` stays `">=18"`. There is no OS, Node, or browser matrix.
+- Steps, in order: `npm ci` (deterministic install from `package-lock.json`, with the npm cache), `npm run build:dist`, `npx playwright install --with-deps chromium`, `npm run check:predeploy`, `npm run qa:functional`. The build precedes the browser install because it needs none — a broken build fails the job before the Chromium download is paid for. The workflow invokes the existing project scripts and does not reproduce their internals in YAML.
+- The pre-deploy gate and the functional suite are separate steps, so the logs name which of the two failed; `check:predeploy` was not widened to absorb `qa:functional`.
+- Chromium is the only browser installed — it is the only one `qa:a11y` and `qa:functional` launch.
+- Permissions are `contents: read`. The workflow reads no secrets, writes nothing back to the repository, and deploys nothing — deployment remains Netlify's job.
+- A ref-aware `concurrency` group with `cancel-in-progress: true` cancels only the obsolete run of the same branch or pull request; the job carries `timeout-minutes: 15`. No step uses `continue-on-error`, so the first non-zero exit code fails the run.
+- The workflow does not run `qa:lhci`, Lighthouse, `format:check`, or any deployment.
+
+Making `CI / quality-gate` a required status check (branch protection) is a GitHub repository setting rather than a file in the repository, and remains a manual step. The full CI contract is documented in `settings.md`.
 
 ### Accessibility
 
@@ -574,7 +600,7 @@ The repository contains no recorded performance measurement results.
 
 Based on the open items recorded in the repository:
 
-- adopt `check:predeploy` as a required gate in a CI workflow.
+- make the `CI / quality-gate` status check required in the branch-protection rules for `main` on GitHub. The CI workflow described under "Continuous Integration (CI)" already runs `check:predeploy` and `qa:functional` automatically; enforcing a green status before merge is a repository setting rather than a file in the repository.
 
 ### License
 
