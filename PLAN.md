@@ -148,10 +148,10 @@
   - [x] confirm the corrected pattern across all six `oferta/` subpages
   - **Completion condition:** each gallery item is a single tab stop, Enter and Space open the lightbox without navigating, and with JavaScript disabled the link still opens the full-size image
 
-- [ ] **PH6-02 — Correct the lightbox's accessible structure** — **Priority:** Medium
-  - [ ] append `.lb-close`, `.lb-prev` and `.lb-next` inside `.lb-wrap` so the `aria-modal` dialog contains its own controls, keeping the current fixed positioning
-  - [ ] compose each thumbnail control's accessible name from its own `alt` text instead of overriding every one with `aria-label="Powiększ zdjęcie"`
-  - [ ] keep the existing focus trap and focus-restore behaviour intact
+- [x] **PH6-02 — Correct the lightbox's accessible structure** — **Priority:** Medium
+  - [x] append `.lb-close`, `.lb-prev` and `.lb-next` inside `.lb-wrap` so the `aria-modal` dialog contains its own controls, keeping the current fixed positioning
+  - [x] compose each thumbnail control's accessible name from its own `alt` text instead of overriding every one with `aria-label="Powiększ zdjęcie"`
+  - [x] keep the existing focus trap and focus-restore behaviour intact
   - **Depends on:** `PH6-01`
   - **Completion condition:** all lightbox controls are descendants of the `aria-modal` dialog element and remain Tab-reachable, and each thumbnail control exposes a name derived from its own `alt`
   - **Source:** `AUDIT.md` — P2-06, P2-07

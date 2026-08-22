@@ -84,14 +84,15 @@ function initOfertaLightbox() {
     btnPrev = mkBtn("lb-prev", "Poprzednie zdjęcie", svgL);
     btnNext = mkBtn("lb-next", "Następne zdjęcie", svgR);
 
-    document.body.append(backdrop, wrap, btnClose, btnPrev, btnNext);
+    wrap.append(btnClose, btnPrev, btnNext);
+    document.body.append(backdrop, wrap);
   } else {
     viewport = wrap.querySelector(".lb-viewport") || $("div");
     img = wrap.querySelector("img") || new Image();
 
-    btnClose = document.querySelector(".lb-btn.lb-close");
-    btnPrev = document.querySelector(".lb-btn.lb-prev");
-    btnNext = document.querySelector(".lb-btn.lb-next");
+    btnClose = wrap.querySelector(".lb-btn.lb-close");
+    btnPrev = wrap.querySelector(".lb-btn.lb-prev");
+    btnNext = wrap.querySelector(".lb-btn.lb-next");
   }
 
   const parseSrcset = (ss) => {
@@ -216,7 +217,7 @@ function initOfertaLightbox() {
     applyImage();
   };
 
-  thumbs.forEach(({ trigger, isGallery }, i) => {
+  thumbs.forEach(({ trigger, image, isGallery }, i) => {
     const openFromTrigger = (e) => {
       e.preventDefault();
       index = i;
@@ -226,7 +227,12 @@ function initOfertaLightbox() {
     if (!isGallery) {
       trigger.setAttribute("tabindex", "0");
       trigger.setAttribute("role", "button");
-      trigger.setAttribute("aria-label", "Powiększ zdjęcie");
+
+      if ((image.getAttribute("alt") || "").trim()) {
+        trigger.removeAttribute("aria-label");
+      } else {
+        trigger.setAttribute("aria-label", "Powiększ zdjęcie");
+      }
     }
 
     trigger.addEventListener("click", openFromTrigger, { signal });
