@@ -77,7 +77,7 @@ function createPartialsMiddleware() {
 liveServer.start({
   root: rootDir,
   port: PORT,
-  open: ENTRY_FILE,
+  open: true,
   logLevel: 0,
   middleware: [createPartialsMiddleware()],
 });
