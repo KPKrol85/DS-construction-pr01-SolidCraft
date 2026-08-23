@@ -683,7 +683,7 @@
       </section>
 
       <!-- Kontakt -->
-      <section id="kontakt" class="cta" aria-labelledby="kontakt-heading" aria-describedby="kontakt-desc">
+      <section id="kontakt" class="cta cta--contact" aria-labelledby="kontakt-heading" aria-describedby="kontakt-desc">
         <div class="container cta-wrap">
           <div class="cta-text">
             <h2 class="block-head__title cta__title" id="kontakt-heading" data-reveal="up" data-reveal-delay="80">Porozmawiajmy o Twoim remoncie</h2>
@@ -722,7 +722,7 @@
               <label for="hp-bot-field">Nie wypełniaj tego pola</label>
               <input id="hp-bot-field" name="bot-field" type="text" tabindex="-1" autocomplete="off" />
             </div>
-            <div class="form-row" data-reveal="up" data-reveal-delay="240">
+            <div class="form-row form-row--half" data-reveal="up" data-reveal-delay="240">
               <label for="f-name">Imię i nazwisko</label>
               <input
                 id="f-name"
@@ -737,7 +737,7 @@
                 placeholder="Jan Kowalski" />
               <span id="f-name-error" class="form-error visually-hidden" aria-live="polite"></span>
             </div>
-            <div class="form-row" data-reveal="up" data-reveal-delay="280">
+            <div class="form-row form-row--half" data-reveal="up" data-reveal-delay="280">
               <label for="f-phone">Telefon</label>
               <input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel-national" required aria-describedby="f-phone-error" placeholder="533 537 091 lub +48 533 537 091" />
               <span id="f-phone-error" class="form-error visually-hidden" aria-live="polite"></span>
@@ -747,7 +747,7 @@
               <textarea id="f-msg" name="msg" rows="4" required maxlength="1000" aria-describedby="f-msg-error" placeholder="Krótko opisz zakres prac..."></textarea>
               <span id="f-msg-error" class="form-error visually-hidden" aria-live="polite"></span>
             </div>
-            <div class="form-row" data-reveal="up" data-reveal-delay="360">
+            <div class="form-row form-row--consent" data-reveal="up" data-reveal-delay="360">
               <label class="checkbox" for="f-consent">
                 <input id="f-consent" type="checkbox" name="consent" value="yes" required aria-describedby="f-consent-error" />
                 <span>Wyrażam zgodę na kontakt w celu przygotowania wyceny.</span>
@@ -758,8 +758,7 @@
             <p class="form-note" aria-live="polite" data-reveal="up" data-reveal-delay="460"></p>
             <p class="muted small" id="privacy-note" data-reveal="up" data-reveal-delay="500">
               Wysyłając formularz akceptujesz naszą
-              <a href="doc/polityka-prywatnosci.html">Politykę prywatności</a>
-              .
+              <a href="doc/polityka-prywatnosci.html">Politykę prywatności</a>.
             </p>
           </form>
         </div>

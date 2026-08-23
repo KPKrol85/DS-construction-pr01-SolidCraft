@@ -706,104 +706,170 @@
   padding: var(--space-4);
   margin-inline: auto;
 }
+
+/* Homepage contact composition — heading, contact block and quote form read as
+   one unit. Everything from .cta--contact down is specific to #kontakt; the six
+   oferta/ pages reuse the plain .cta block above and are unaffected. */
+.cta--contact {
+  /* The gradient is identical in both themes, so copy sitting directly on it
+     takes a fixed dark ink rather than the themed --c-ink. */
+  --cta-ink: #0b1220;
+
+  padding-block: var(--section-py);
+}
+
 .cta-wrap {
   display: grid;
-  gap: var(--space-5);
-  grid-template-columns: 1fr;
+  gap: clamp(var(--space-6), 4vw, var(--space-8));
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
   text-align: center;
 }
+
+.cta-text {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  width: 100%;
+}
+
 .cta__title {
-  margin: var(--space-4) auto;
-  text-align: center;
-  color: color-mix(in oklab, #fff 15%, #0f172a);
+  margin: 0;
+  color: var(--cta-ink);
+  text-wrap: balance;
 }
+
 .cta__lead {
-  color: #1f2937;
-  margin: var(--space-6) auto;
-  text-align: center;
+  margin: 0;
+  max-width: 52ch;
+  color: var(--cta-ink);
   font-weight: 600;
 }
-.contact-list {
-  list-style: none;
-  padding: 0;
-  margin: var(--space-6) auto;
-  display: grid;
-  gap: var(--space-1);
-  color: var(--c-ink);
-}
-.contact-item {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-1);
 
-  text-decoration: none;
-  transition:
-    color 0.2s ease,
-    text-decoration-color 0.2s ease,
-    background-color 0.2s ease;
+/* Contact block — one shrink-to-fit surface card, so the two rows share a
+   single left icon column while the group as a whole stays centred. Centring
+   each row on its own put the icons at different x positions, because the
+   number and the address are different lengths. */
+.contact-list {
+  width: fit-content;
+  max-width: 100%;
+  margin: var(--space-1) auto 0;
+  padding: 0 var(--space-4);
+  list-style: none;
+  display: grid;
+  gap: 0;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-3);
+  box-shadow: var(--shadow-sm);
+  color: var(--c-ink);
+  text-align: start;
 }
-.contact-item:hover {
-  color: color-mix(in oklab, currentColor 70%, var(--c-accent));
+
+.contact-list > li + li {
+  border-top: 1px solid var(--c-border);
+}
+
+.contact-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 2.75rem;
+  padding-block: var(--space-2);
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  transition: color 0.2s ease;
+}
+
+.contact-item:hover,
+.contact-item:active {
+  color: color-mix(in oklab, var(--c-ink) 55%, var(--c-accent));
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
-.contact-item:active {
-  background: rgba(255, 255, 255, 0.18);
-}
+
 .contact-item:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
+  border-radius: var(--radius-1);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
+
 /* Placeholder for the registry-injected icon; colour follows currentColor. */
 .contact-icon {
   display: inline-flex;
   width: 18px;
   height: 18px;
   flex: 0 0 18px;
-  opacity: 0.9;
+  color: var(--c-accent);
 }
+
 .contact-icon svg {
   display: block;
   width: 100%;
   height: 100%;
 }
+
 .no-js .contact-icon {
   display: none;
 }
+
 .contact__details {
   font-weight: 600;
+  letter-spacing: var(--ls-1);
 }
+
+/* Quote form — a solid surface panel rather than a glass overlay, so every
+   colour inside it resolves from the theme tokens instead of fixed rgba(). */
 .form {
   display: grid;
-  gap: var(--space-3);
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: saturate(170%) blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: var(--radius-3);
-  padding: var(--space-4);
-  box-shadow: var(--shadow);
-  max-width: 600px;
-  margin: 0 auto;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+  padding: clamp(var(--space-5), 4vw, var(--space-7));
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-4);
+  box-shadow: var(--shadow-xl);
+  color: var(--c-ink);
+  text-align: start;
 }
+
 .form .form-row {
   display: grid;
   gap: var(--space-2);
+  align-content: start;
 }
-.form label {
-  font-weight: 700;
-  color: #1f2937;
-  text-transform: uppercase;
+
+/* Consent closes the field set, so it carries the rule that separates the
+   inputs from the submit area. */
+.form .form-row--consent {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--c-border);
+}
+
+/* Field labels only — .checkbox is also a <label>, and its consent sentence
+   must not inherit the uppercase field treatment. */
+.form label:not(.checkbox) {
+  color: var(--c-ink);
   font-size: var(--fs-2);
+  font-weight: 600;
+  letter-spacing: var(--ls-3);
+  text-transform: uppercase;
 }
+
 .form .form-note {
-  min-height: 1.6em;
-  margin-top: var(--space-1);
+  margin: 0;
+  min-height: 0;
 }
+
 .form .form-note:is(.is-ok, .is-err) {
   padding: var(--space-2) var(--space-3);
   border: 2px solid;
@@ -811,18 +877,21 @@
   border-radius: var(--radius-2);
   font-weight: 700;
 }
+
 .form .form-note.is-ok {
   color: var(--feedback-ok-fg);
   background: var(--feedback-ok-bg);
   border-color: var(--feedback-ok-border);
   border-style: dashed;
 }
+
 .form .form-note.is-err {
   color: var(--feedback-err-fg);
   background: var(--feedback-err-bg);
   border-color: var(--feedback-err-border);
   border-style: solid;
 }
+
 .form .form-error {
   display: block;
   font-size: var(--fs-2);
@@ -834,125 +903,161 @@
   border-radius: var(--radius-1);
   font-weight: 700;
 }
+
+/* Privacy note — the quietest line in the panel, but still part of it rather
+   than floating underneath. */
 .form .muted {
-  color: var(--c-ink);
-  opacity: 0.9;
+  margin: 0;
+  color: var(--c-muted);
   font-size: var(--fs-2);
-  letter-spacing: var(--ls-3);
+  line-height: var(--lh-body);
+  letter-spacing: var(--ls-1);
+  text-align: center;
+  text-wrap: pretty;
 }
+
 .form .muted a {
-  text-underline-offset: 2px;
-  font-weight: 800;
-}
-.form .muted a:hover {
+  color: var(--c-ink);
+  font-weight: 600;
   text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
 }
-.form :is(input[type="text"], input[type="tel"], input[type="email"], textarea) {
+
+.form .muted a:hover {
+  color: color-mix(in oklab, var(--c-ink) 45%, var(--c-accent));
+}
+
+.form
+  :is(input[type="text"], input[type="tel"], input[type="email"], textarea) {
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  min-height: 2.75rem;
   display: block;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: var(--radius-3);
+  border: 1px solid color-mix(in oklab, var(--c-border), var(--c-ink) 22%);
+  border-radius: var(--radius-2);
   padding: var(--space-2) var(--space-3);
-  background: rgba(255, 255, 255, 0.92);
-  color: #0f172a;
+  background: var(--bg);
+  color: var(--c-ink);
+  font-size: var(--fs-3);
   line-height: var(--lh-body);
   transition:
     border-color 0.18s ease,
     box-shadow 0.18s ease;
 }
+
 .form textarea {
   resize: vertical;
-  min-height: var(--space-10);
+  min-height: var(--space-12);
   max-height: 40vh;
   overflow: auto;
 }
+
 .form :is(input, textarea)::placeholder {
-  color: rgba(0, 0, 0, 0.52);
+  color: var(--c-muted);
+  opacity: 1;
 }
-.form :is(input[type="text"], input[type="tel"], input[type="email"], textarea):focus {
+
+.form
+  :is(
+    input[type="text"],
+    input[type="tel"],
+    input[type="email"],
+    textarea
+  ):hover:not(:focus) {
+  border-color: color-mix(in oklab, var(--c-border), var(--c-ink) 45%);
+}
+
+.form
+  :is(
+    input[type="text"],
+    input[type="tel"],
+    input[type="email"],
+    textarea
+  ):focus-visible {
   outline: 3px solid var(--ring);
-  outline-offset: var(--space-2);
-  border-color: transparent;
+  outline-offset: 2px;
+  border-color: var(--c-accent);
 }
-.form :is(input, textarea)[aria-invalid="true"],
-.form :is(input, textarea):invalid {
-  border-color: #ef4444;
-  box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.6);
+
+/* Error styling comes from forms.js via [aria-invalid], plus the native
+   :invalid state once a field actually holds something. Matching bare :invalid
+   painted every required field red before the visitor had typed anything, and
+   the list is restricted to the text controls because a checkbox never shows a
+   placeholder — :not(:placeholder-shown) is always true for one, so the
+   required consent box would be painted red on load. Its own invalid state is
+   the .checkbox input rule below. */
+.form
+  :is(input[type="text"], input[type="tel"], input[type="email"], textarea):is(
+    [aria-invalid="true"],
+    :invalid:not(:placeholder-shown)
+  ) {
+  border-color: var(--feedback-err-border);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--feedback-err-border) 20%, transparent);
 }
-.form :is(input[type="text"], input[type="tel"], input[type="email"], textarea):not(:placeholder-shown):valid:not([aria-invalid="true"]) {
+
+.form
+  :is(input[type="text"], input[type="tel"], input[type="email"], textarea):not(
+    :placeholder-shown
+  ):valid:not([aria-invalid="true"]) {
   border-color: color-mix(in srgb, var(--brand) 55%, #10b981);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent);
 }
-:root[data-theme="dark"] .form :is(input, textarea) {
-  background: rgba(15, 23, 42, 0.92);
-  color: #e5e7eb;
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-:root[data-theme="dark"] .form :is(input, textarea)::placeholder {
-  color: rgba(255, 255, 255, 0.55);
-}
-:root[data-theme="dark"] .form :is(input, textarea):focus {
-  outline: 3px solid var(--ring);
-}
-:root[data-theme="dark"] .form :is(input[type="text"], input[type="tel"], input[type="email"], textarea):not(:placeholder-shown):valid:not([aria-invalid="true"]) {
-  border-color: color-mix(in srgb, #6ee7b7 65%, var(--brand));
-  box-shadow: 0 0 0 3px color-mix(in srgb, #6ee7b7 24%, transparent);
-}
-.form .checkbox {
-  justify-self: center;
-}
+
 .form .checkbox span {
-  font-weight: 600;
+  color: var(--c-ink);
+  font-size: var(--fs-2);
+  font-weight: 500;
   line-height: var(--lh-body);
 }
+
+/* Two columns rather than inline-flex, so a consent label that wraps keeps its
+   box on the first line instead of centring against the whole block. */
 .checkbox {
-  display: inline-flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
   gap: var(--space-3);
-  text-align: left;
+  cursor: pointer;
+  text-align: start;
 }
+
 .checkbox input {
   width: var(--space-5);
   height: var(--space-5);
   margin: 0;
+  margin-block-start: 0.1em;
   flex: 0 0 auto;
   accent-color: var(--brand);
-  border-radius: var(--radius-3);
 }
+
 .checkbox input:focus-visible {
-  box-shadow: 0 0 0 3px var(--ring);
-  border-radius: var(--radius-3);
-  outline: none;
-}
-.checkbox input[aria-invalid="true"] {
   outline: 3px solid var(--ring);
-  outline-offset: var(--space-2);
-  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.6);
+  outline-offset: 2px;
 }
-.checkbox input[type="checkbox"]:checked:not([aria-invalid="true"]) {
-  outline: 3px solid color-mix(in srgb, #22c55e 28%, transparent);
-  outline-offset: var(--space-2);
-  border-radius: var(--radius-3);
+
+.checkbox input[aria-invalid="true"] {
+  outline: 2px solid var(--feedback-err-border);
+  outline-offset: 2px;
 }
+
 .form .btn {
-  width: 50%;
-  display: block;
+  width: 100%;
+  max-width: 320px;
   margin-inline: auto;
-  margin-block: var(--space-6);
+  margin-block: 0;
   text-transform: uppercase;
-  min-width: 220px;
-  align-self: center;
-  justify-self: center;
-  max-width: 420px;
+  letter-spacing: var(--ls-2);
 }
+
 .form[aria-busy="true"] .btn {
   position: relative;
   pointer-events: none;
   opacity: 0.9;
 }
+
 .form[aria-busy="true"] .btn::after {
   content: "";
   position: absolute;
@@ -965,16 +1070,49 @@
   border-right-color: transparent;
   animation: spin 0.9s linear infinite;
 }
-@media (min-width: 1024px) {
-  .form .checkbox {
-    width: fit-content;
-    justify-self: center;
+
+/* Dark theme: the surfaces already follow the tokens, so only the shadows —
+   tuned for ink on white — need restating over the gradient. */
+:root[data-theme="dark"] .contact-list,
+:root[data-theme="dark"] .form {
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .contact-list,
+  :root:not([data-theme]) .form {
+    box-shadow:
+      var(--shadow-lg),
+      0 0 0 1px rgba(255, 255, 255, 0.06) inset;
   }
 }
+
+/* Name and telephone are both short: pairing them shortens the panel without
+   crowding either field. */
+@media (min-width: 760px) {
+  .form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-4);
+  }
+
+  .form > * {
+    grid-column: 1 / -1;
+  }
+
+  .form .form-row--half {
+    grid-column: span 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .form :is(input[type="text"], input[type="tel"], input[type="email"], textarea) {
+  .contact-item,
+  .form
+    :is(input[type="text"], input[type="tel"], input[type="email"], textarea) {
     transition: none;
   }
+
   .form[aria-busy="true"] .btn::after {
     animation: none;
   }
