@@ -510,17 +510,12 @@
   margin-bottom: var(--space-3);
 }
 
-/* Demonstrational disclaimer: body-sized and in the ink colour so it stays the
-   most legible line under the heading, ahead of the illustrative rating. */
 .block-head__lead--note {
   max-width: 52ch;
   margin-block: 0 var(--space-5);
   font-size: var(--fs-3);
 }
 
-/* Rating summary — one shrink-to-fit informational unit instead of a loose
-   line. The visible text remains the source of the rating; the icon is
-   decorative and injected from the shared registry. */
 .testimonials__rating {
   width: fit-content;
   max-width: 100%;
@@ -540,7 +535,6 @@
   text-align: center;
 }
 
-/* Placeholder for the registry-injected icon; colour follows currentColor. */
 .testimonials__rating-icon {
   display: inline-flex;
   width: 18px;
@@ -559,7 +553,6 @@
   display: none;
 }
 
-/* Keeps the two lines the pill wraps to on narrow screens roughly even. */
 .testimonials__rating-text {
   text-wrap: balance;
 }
@@ -618,10 +611,6 @@
   overflow-wrap: anywhere;
 }
 
-/* The mark opens the card instead of indenting every line, so the full card
-   width stays available to the quote itself. The glyph sits in the top of its
-   em box, so a sub-1 line height keeps it on the card's padding line and its
-   remaining leading supplies the gap down to the first line of the quote. */
 .testimonials__quote::before {
   content: "“";
   display: block;
@@ -670,8 +659,6 @@
   opacity: 0.7;
 }
 
-/* Four testimonials: one column, then a balanced 2x2, then a single row —
-   no orphan card is left on a half-empty row at any width. */
 @media (min-width: 480px) {
   .testimonials__grid {
     grid-template-columns: repeat(2, 1fr);
@@ -707,12 +694,7 @@
   margin-inline: auto;
 }
 
-/* Homepage contact composition — heading, contact block and quote form read as
-   one unit. Everything from .cta--contact down is specific to #kontakt; the six
-   oferta/ pages reuse the plain .cta block above and are unaffected. */
 .cta--contact {
-  /* The gradient is identical in both themes, so copy sitting directly on it
-     takes a fixed dark ink rather than the themed --c-ink. */
   --cta-ink: #0b1220;
 
   padding-block: var(--section-py);
@@ -746,10 +728,6 @@
   font-weight: 600;
 }
 
-/* Contact block — one shrink-to-fit surface card, so the two rows share a
-   single left icon column while the group as a whole stays centred. Centring
-   each row on its own put the icons at different x positions, because the
-   number and the address are different lengths. */
 .contact-list {
   width: fit-content;
   max-width: 100%;
@@ -800,7 +778,6 @@
   text-underline-offset: 3px;
 }
 
-/* Placeholder for the registry-injected icon; colour follows currentColor. */
 .contact-icon {
   display: inline-flex;
   width: 18px;
@@ -824,8 +801,6 @@
   letter-spacing: var(--ls-1);
 }
 
-/* Quote form — a solid surface panel rather than a glass overlay, so every
-   colour inside it resolves from the theme tokens instead of fixed rgba(). */
 .form {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -848,15 +823,11 @@
   align-content: start;
 }
 
-/* Consent closes the field set, so it carries the rule that separates the
-   inputs from the submit area. */
 .form .form-row--consent {
   padding-top: var(--space-4);
   border-top: 1px solid var(--c-border);
 }
 
-/* Field labels only — .checkbox is also a <label>, and its consent sentence
-   must not inherit the uppercase field treatment. */
 .form label:not(.checkbox) {
   color: var(--c-ink);
   font-size: var(--fs-2);
@@ -904,8 +875,6 @@
   font-weight: 700;
 }
 
-/* Privacy note — the quietest line in the panel, but still part of it rather
-   than floating underneath. */
 .form .muted {
   margin: 0;
   color: var(--c-muted);
@@ -928,8 +897,7 @@
   color: color-mix(in oklab, var(--c-ink) 45%, var(--c-accent));
 }
 
-.form
-  :is(input[type="text"], input[type="tel"], input[type="email"], textarea) {
+.form :is(input[type="text"], input[type="tel"], input[type="email"], textarea) {
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -959,49 +927,22 @@
   opacity: 1;
 }
 
-.form
-  :is(
-    input[type="text"],
-    input[type="tel"],
-    input[type="email"],
-    textarea
-  ):hover:not(:focus) {
+.form :is(input[type="text"], input[type="tel"], input[type="email"], textarea):hover:not(:focus) {
   border-color: color-mix(in oklab, var(--c-border), var(--c-ink) 45%);
 }
 
-.form
-  :is(
-    input[type="text"],
-    input[type="tel"],
-    input[type="email"],
-    textarea
-  ):focus-visible {
+.form :is(input[type="text"], input[type="tel"], input[type="email"], textarea):focus-visible {
   outline: 3px solid var(--ring);
   outline-offset: 2px;
   border-color: var(--c-accent);
 }
 
-/* Error styling comes from forms.js via [aria-invalid], plus the native
-   :invalid state once a field actually holds something. Matching bare :invalid
-   painted every required field red before the visitor had typed anything, and
-   the list is restricted to the text controls because a checkbox never shows a
-   placeholder — :not(:placeholder-shown) is always true for one, so the
-   required consent box would be painted red on load. Its own invalid state is
-   the .checkbox input rule below. */
-.form
-  :is(input[type="text"], input[type="tel"], input[type="email"], textarea):is(
-    [aria-invalid="true"],
-    :invalid:not(:placeholder-shown)
-  ) {
+.form :is(input[type="text"], input[type="tel"], input[type="email"], textarea):is([aria-invalid="true"], :invalid:not(:placeholder-shown)) {
   border-color: var(--feedback-err-border);
-  box-shadow: 0 0 0 3px
-    color-mix(in srgb, var(--feedback-err-border) 20%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--feedback-err-border) 20%, transparent);
 }
 
-.form
-  :is(input[type="text"], input[type="tel"], input[type="email"], textarea):not(
-    :placeholder-shown
-  ):valid:not([aria-invalid="true"]) {
+.form :is(input[type="text"], input[type="tel"], input[type="email"], textarea):not(:placeholder-shown):valid:not([aria-invalid="true"]) {
   border-color: color-mix(in srgb, var(--brand) 55%, #10b981);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent);
 }
@@ -1013,8 +954,6 @@
   line-height: var(--lh-body);
 }
 
-/* Two columns rather than inline-flex, so a consent label that wraps keeps its
-   box on the first line instead of centring against the whole block. */
 .checkbox {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -1071,8 +1010,6 @@
   animation: spin 0.9s linear infinite;
 }
 
-/* Dark theme: the surfaces already follow the tokens, so only the shadows —
-   tuned for ink on white — need restating over the gradient. */
 :root[data-theme="dark"] .contact-list,
 :root[data-theme="dark"] .form {
   box-shadow:
@@ -1089,8 +1026,6 @@
   }
 }
 
-/* Name and telephone are both short: pairing them shortens the panel without
-   crowding either field. */
 @media (min-width: 760px) {
   .form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1108,8 +1043,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .contact-item,
-  .form
-    :is(input[type="text"], input[type="tel"], input[type="email"], textarea) {
+  .form :is(input[type="text"], input[type="tel"], input[type="email"], textarea) {
     transition: none;
   }
 

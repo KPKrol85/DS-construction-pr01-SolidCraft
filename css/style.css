@@ -1,12 +1,3 @@
-/* Canonical CSS entry point.
-
-   The module URLs are root-relative on purpose. "./modules/tokens.css" is only
-   correct while it is resolved against this stylesheet — tools that re-resolve
-   @import hrefs against the page instead (axe-core's CSSOM preloader does, on
-   every qa:a11y run) request "<page-dir>/modules/*.css" and log a 404 per
-   module. "/css/modules/*" resolves to one path from any page depth.
-   postcss.config.js maps the leading "/" back to the project root; build:css
-   inlines every module, so production ships no @import at all. */
 @import "/css/modules/tokens.css";
 @import "/css/modules/base.css";
 @import "/css/modules/layout.css";

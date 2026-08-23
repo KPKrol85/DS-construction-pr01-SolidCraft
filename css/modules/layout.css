@@ -797,8 +797,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     margin-inline: var(--space-6);
   }
-  /* From the column grid up, the informational columns share one left reading
-     edge. The contact bar and copyright keep the footer's centered layout. */
   .ft-col {
     text-align: left;
   }
@@ -821,10 +819,10 @@
   }
   .ft-social {
     justify-content: flex-start;
-    /* cancels the 3px inset of the 30px icon inside its 36px hit area */
     margin-inline: -3px 0;
   }
 }
+
 @media (min-width: 1024px) {
   .ft-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -842,6 +840,7 @@
     font-size: var(--fs-1);
   }
 }
+
 @media (hover: hover) {
   .site-footer a {
     transition:
@@ -856,6 +855,7 @@
 }
 
 /* other */
+
 .container {
   max-width: 1140px;
   margin-inline: auto;
