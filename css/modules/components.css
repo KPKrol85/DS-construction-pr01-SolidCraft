@@ -246,11 +246,10 @@ body.has-project-modal {
 
 /* btn--ghost */
 
-
 .btn--ghost {
   background: rgb(255 255 255 / 12%);
   color: var(--fg);
-  border: 1px solid var(--line);
+  border:none;
   box-shadow: none;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);

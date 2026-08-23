@@ -1,5 +1,3 @@
-
-
 /* Heaader */
 
 .site-header {
@@ -544,6 +542,7 @@
   outline-offset: var(--space-2);
   border-radius: var(--radius-3);
 }
+
 .ft-map {
   border-radius: var(--radius-3);
   overflow: hidden;
@@ -554,6 +553,7 @@
   max-width: 60%;
   margin-inline: auto;
 }
+
 .ft-map .map-placeholder {
   height: 100%;
   width: 100%;
@@ -567,15 +567,23 @@
   color: var(--ft-muted);
   background: transparent;
 }
+
 .ft-map .map-placeholder__text {
   margin: 0;
   font-size: var(--fs-3);
   line-height: var(--lh-body);
 }
+
 .ft-map .map-load-btn {
   min-width: 140px;
   color: #d1d5db;
 }
+
+.ft-map .map-load-btn:hover,
+.ft-map .map-load-btn:focus-visible {
+  color: #fff;
+}
+
 .ft-map iframe {
   width: 100% !important;
   height: 100% !important;
@@ -583,6 +591,7 @@
   display: block;
   border-radius: var(--radius-3);
 }
+
 .ft-address {
   margin-top: var(--space-2);
   font-style: normal;
@@ -590,11 +599,13 @@
   color: var(--ft-muted);
   opacity: 0.95;
 }
+
 .ft-address > p:first-child {
   font-size: var(--fs-4);
   font-weight: 600;
   color: var(--brand);
 }
+
 .ft-social {
   display: flex;
   gap: var(--space-3);
@@ -602,6 +613,7 @@
   justify-content: center;
   margin-inline: auto;
 }
+
 .ft-social a {
   position: relative;
   display: inline-grid;
@@ -615,11 +627,13 @@
     transform 0.18s ease,
     filter 0.18s ease;
 }
+
 .ft-social a:hover,
 .ft-social a:focus-visible {
   transform: translateY(-1px);
   filter: brightness(1.15) drop-shadow(0 0 6px hsl(0 0% 100% / 0.25));
 }
+
 /* Icons are injected from the shared registry (js/modules/icons.js); the
    placeholder owns the box and the SVG inherits the footer's currentColor. */
 .ft-social__icon {
@@ -631,15 +645,18 @@
   opacity: 0.9;
   transition: opacity 0.2s ease;
 }
+
 .ft-social__icon svg {
   display: block;
   width: 100%;
   height: 100%;
 }
+
 .ft-social a:hover .ft-social__icon,
 .ft-social a:focus-visible .ft-social__icon {
   opacity: 1;
 }
+
 /* Label text backs the icon-only social links; the link keeps its aria-label. */
 .ft-social__label {
   position: absolute;
@@ -652,6 +669,7 @@
   white-space: nowrap;
   border: 0;
 }
+
 /* Without JS the [data-icon] placeholders stay empty, so the social links fall
    back to their text label instead of collapsing to a blank hit area. */
 .no-js .ft-social a {
@@ -662,9 +680,11 @@
   min-height: 36px;
   padding-inline: var(--space-1);
 }
+
 .no-js .ft-social__icon {
   display: none;
 }
+
 .no-js .ft-social__label {
   position: static;
   width: auto;
@@ -673,18 +693,21 @@
   overflow: visible;
   clip-path: none;
 }
+
 .ft-links,
 .ft-contact {
   list-style: none;
   padding: 0;
   margin: 0;
 }
+
 .ft-contact-bar {
   margin-top: var(--space-4);
   padding-top: var(--space-4);
   border-top: 1px solid var(--ft-border);
   text-align: center;
 }
+
 .ft-contact {
   display: flex;
   flex-wrap: wrap;
@@ -693,9 +716,11 @@
   justify-content: center;
   margin: var(--space-3) 0;
 }
+
 .ft-contact li {
   margin: 0;
 }
+
 .ft-contact-link {
   display: inline-flex;
   align-items: center;
@@ -706,12 +731,14 @@
     color 0.2s ease,
     text-decoration-color 0.2s ease;
 }
+
 .ft-contact-link:hover {
   color: color-mix(in oklab, var(--ft-fg) 65%, var(--c-accent));
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
+
 .ft-contact-link:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
@@ -719,6 +746,7 @@
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
+
 .ft-contact-icon {
   display: inline-flex;
   width: 18px;
@@ -726,14 +754,17 @@
   flex: 0 0 18px;
   opacity: 0.9;
 }
+
 .ft-contact-icon svg {
   display: block;
   width: 100%;
   height: 100%;
 }
+
 .no-js .ft-contact-icon {
   display: none;
 }
+
 .ft-bottom {
   margin: 0 auto;
   border-top: 1px solid var(--ft-border);
@@ -746,6 +777,7 @@
   width: 100%;
   text-align: center;
 }
+
 .ft-bottom p {
   margin: var(--space-2) 0 0;
   color: var(--ft-muted);
@@ -754,10 +786,12 @@
   text-align: center;
   font-size: var(--fs-2);
 }
+
 :root[data-theme="dark"] .ft-map {
   background: hsl(0 0% 100% / 0.04);
   box-shadow: 0 0 0 1px hsl(0 0% 100% / 0.1) inset;
 }
+
 @media (min-width: 760px) {
   .ft-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
