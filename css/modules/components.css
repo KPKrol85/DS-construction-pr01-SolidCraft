@@ -244,23 +244,29 @@ body.has-project-modal {
   pointer-events: none;
 }
 
-/* btn-ghost */
+/* btn--ghost */
+
+
 .btn--ghost {
-  background: transparent;
+  background: rgb(255 255 255 / 12%);
   color: var(--fg);
   border: 1px solid var(--line);
   box-shadow: none;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   transition:
     background 0.2s ease,
     color 0.2s ease,
     border-color 0.2s ease;
 }
+
 .btn--ghost:hover,
 .btn--ghost:focus-visible {
-  background: color-mix(in srgb, #000 6%, transparent);
+  background: rgb(255 255 255 / 18%);
   border-color: var(--line-strong);
   color: var(--fg);
 }
+
 .btn::before {
   content: "";
   position: absolute;
@@ -273,6 +279,7 @@ body.has-project-modal {
   transition: transform 0.55s ease;
   pointer-events: none;
 }
+
 .btn:hover::before {
   transform: translateX(260%) rotate(20deg);
 }
@@ -301,11 +308,13 @@ body.has-project-modal {
   transition: opacity 0.18s ease;
   pointer-events: none;
 }
+
 .lb-backdrop.is-open {
   display: block;
   opacity: 1;
   pointer-events: auto;
 }
+
 .lb-wrap {
   position: fixed;
   inset: 0;
@@ -314,6 +323,7 @@ body.has-project-modal {
   place-items: center;
   pointer-events: none;
 }
+
 .lb-viewport {
   max-width: 92vw;
   max-height: 86vh;
@@ -325,6 +335,7 @@ body.has-project-modal {
     0 0 0 1px rgba(255, 255, 255, 0.12) inset;
   pointer-events: auto;
 }
+
 .lb-viewport img {
   display: block;
   max-width: 100%;
@@ -333,6 +344,7 @@ body.has-project-modal {
   user-select: none;
   -webkit-user-drag: none;
 }
+
 .lb-btn {
   position: fixed;
   z-index: 2002;
@@ -352,49 +364,61 @@ body.has-project-modal {
     background 0.15s ease,
     opacity 0.15s ease;
 }
+
 .lb-btn svg {
   width: 22px;
   height: 22px;
   fill: currentColor;
 }
+
 .lb-btn:hover {
   background: rgba(255, 255, 255, 0.14);
 }
+
 .lb-btn:active {
   transform: scale(0.96);
 }
+
 .lb-btn:focus-visible {
   outline: 3px solid rgba(255, 255, 255, 0.8);
   outline-offset: 2px;
 }
+
 .lb-btn.lb-close {
   top: 24px;
   right: 24px;
   display: none;
 }
+
 .lb-btn.lb-close.is-open {
   display: grid;
 }
+
 .lb-btn.lb-prev,
 .lb-btn.lb-next {
   top: 50%;
   transform: translateY(-50%);
   display: none;
 }
+
 .lb-btn.lb-prev {
   left: 24px;
 }
+
 .lb-btn.lb-next {
   right: 24px;
 }
+
 .lb-btn.lb-prev.is-open,
 .lb-btn.lb-next.is-open {
   display: grid;
 }
+
 html.lb-no-scroll,
 body.lb-no-scroll {
   overflow: hidden;
 }
+
 @media (prefers-reduced-motion: reduce) {
   .lb-backdrop {
     transition: opacity 0.001s linear;

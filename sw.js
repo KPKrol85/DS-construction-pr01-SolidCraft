@@ -23,6 +23,7 @@ const ASSETS = [];
 /* build:sw-manifest:end */
 
 const CACHE_NAME = `${APP_ID}-v${CACHE_VERSION}`;
+const IS_DEV = CACHE_VERSION === "dev";
 
 const STATIC_DESTINATIONS = new Set(["style", "script", "font", "image", "manifest"]);
 
@@ -50,12 +51,16 @@ const persistRuntimeResponse = (event, request, responsePromise) => {
 };
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(ASSETS)));
+  if (!IS_DEV) {
+    event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
+  }
+
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k.startsWith(`${APP_ID}-v`) && k !== CACHE_NAME).map((k) => caches.delete(k)))));
+  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key.startsWith(`${APP_ID}-v`) && (IS_DEV || key !== CACHE_NAME)).map((key) => caches.delete(key)))));
+
   self.clients.claim();
 });
 
@@ -67,32 +72,47 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   if (!isSameOrigin) return;
 
+  if (IS_DEV) {
+    event.respondWith(fetch(req));
+    return;
+  }
+
   const isHTML = req.mode === "navigate" || req.headers.get("accept")?.includes("text/html");
+
   const isStaticAsset = STATIC_DESTINATIONS.has(req.destination) || /\.(?:css|js|mjs|png|jpg|jpeg|gif|svg|webp|avif|ico|woff2?|ttf|otf|eot|webmanifest)$/i.test(url.pathname);
 
   if (isHTML) {
-    const responsePromise = fetch(req).then((response) => ({ response, fromNetwork: true }));
+    const responsePromise = fetch(req).then((response) => ({
+      response,
+      fromNetwork: true,
+    }));
+
     persistRuntimeResponse(event, req, responsePromise);
 
-    event.respondWith(
-      responsePromise
-        .then(({ response }) => response)
-        .catch(() => caches.match(req, { ignoreSearch: true }).then((cached) => cached || caches.match("/offline.html"))),
-    );
+    event.respondWith(responsePromise.then(({ response }) => response).catch(() => caches.match(req, { ignoreSearch: true }).then((cached) => cached || caches.match("/offline.html"))));
+
     return;
   }
 
   if (isStaticAsset) {
     const responsePromise = caches.match(req).then((cached) => {
-      if (cached) return { response: cached, fromNetwork: false };
+      if (cached) {
+        return {
+          response: cached,
+          fromNetwork: false,
+        };
+      }
 
-      return fetch(req).then((response) => ({ response, fromNetwork: true }));
+      return fetch(req).then((response) => ({
+        response,
+        fromNetwork: true,
+      }));
     });
+
     persistRuntimeResponse(event, req, responsePromise);
 
-    event.respondWith(
-      responsePromise.then(({ response }) => response),
-    );
+    event.respondWith(responsePromise.then(({ response }) => response));
+
     return;
   }
 
