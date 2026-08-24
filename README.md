@@ -6,9 +6,9 @@
 
 SolidCraft to statyczny, wielostronicowy serwis WWW firmy remontowo-budowlanej, zbudowany w oparciu o HTML, CSS i JavaScript, bez frameworka frontendowego. Repozytorium zawiera stronę główną, sześć podstron usług w `oferta/`, trzy strony dokumentów w `doc/` (regulamin, polityka prywatności, cookies) oraz strony `thank-you.html`, `404.html` i `offline.html`. Językiem interfejsu jest polski (`lang="pl"`).
 
-Serwis ma charakter demonstracyjny — informuje o tym modal startowy na stronie głównej, wskazujący KP_Code Digital Studio jako autora przykładowej realizacji dla branży budowlanej. Repozytorium nie zawiera backendu ani bazy danych; warstwa serwerowa ogranicza się do konfiguracji hostingu statycznego.
+Serwis ma charakter demonstracyjny i jest tak oznaczony w treści: modal na pierwszej wizycie wskazuje KP_Code Digital Studio jako autora przykładowej realizacji, a sekcje z logotypami klientów i opiniami są opisane jako przykładowe. Repozytorium nie zawiera backendu ani bazy danych; warstwa serwerowa ogranicza się do konfiguracji hostingu statycznego.
 
-**Decyzja projektowa — indeksowanie i treści budujące zaufanie.** Serwis pozostaje publicznie indeksowalny (`index, follow`, obecność w `sitemap.xml`) jako projekt portfolio; wariant `noindex` został rozpatrzony i odrzucony. Ponieważ SolidCraft nie jest rzeczywiście działającą firmą remontowo-budowlaną, konsekwencją tej decyzji jest wymóg, aby publiczne treści budujące zaufanie — ocena, logotypy klientów i opinie — były wprost oznaczone na stronie jako materiał przykładowy i nigdy nie były prezentowane jako zweryfikowane fakty. Dane strukturalne nie mogą przypisywać marce SolidCraft adresu pocztowego, numeru telefonu, adresu e-mail ani profili społecznościowych rzeczywistego przedsiębiorstwa. Oznaczenia te muszą być widoczne w samej treści sekcji — modal startowy jest zamykany na stałe i nie może być jedynym nośnikiem tej informacji.
+Współdzielony nagłówek i stopka mają jedno źródło w `partials/` i są rozwijane do pełnych dokumentów HTML na etapie buildu — w przeglądarce nie zachodzi żadne składanie stron.
 
 ### Wersja online
 
@@ -16,21 +16,22 @@ Adres skonfigurowany jako `homepage` w `package.json` oraz jako adres kanoniczny
 
 ### Kluczowe funkcje
 
-- Wielostronicowa nawigacja z rozwijanym menu oferty, wersją mobilną (`aria-expanded`, obsługa klawiatury) i podświetlaniem aktywnej sekcji (scroll spy).
-- Formularz kontaktowy z walidacją po stronie klienta, maską i weryfikacją polskiego numeru telefonu, komunikatami błędów powiązanymi przez `aria-describedby` oraz obszarem statusu `role="status"`.
-- Ochrona antyspamowa formularza: ukryte pole honeypot (`bot-field`), odrzucenie zgłoszeń wysłanych w mniej niż 2 sekundy oraz heurystyka treści; wysyłka przez `fetch` z limitem czasu 10 s.
+- Wielostronicowa nawigacja ze wspólnym nagłówkiem z `partials/header.html`: rozwijane podmenu oferty, wersja mobilna (`aria-expanded`, obsługa klawiatury) i podświetlanie aktywnej sekcji (scroll spy).
+- Formularz kontaktowy z `novalidate` i własną warstwą walidacji: maska i weryfikacja polskiego numeru telefonu, komunikaty błędów powiązane przez `aria-describedby`, `aria-invalid` oraz obszar statusu `role="status"`.
+- Ochrona antyspamowa formularza: ukryte pole honeypot (`bot-field`), odrzucenie zgłoszeń wysłanych w mniej niż 2 sekundy z zachowaniem wpisanych danych, heurystyka treści i limit czasu wysyłki 10 s.
 - Lightbox dla kart oferty i galerii realizacji: `role="dialog"`, `aria-modal`, obsługa Enter/Spacji, Escape, strzałek, pułapka fokusa i przywrócenie fokusa do elementu wywołującego.
 - Przełącznik motywu jasny/ciemny z rozstrzygnięciem motywu przed renderem (`js/theme-init.js`) i zapisem preferencji w `localStorage`.
+- Modal informacyjny o demonstracyjnym charakterze serwisu: pułapka fokusa, obsługa Escape, blokada przewijania i praca również przy niedostępnym `localStorage`.
 - Mapa Google osadzana dopiero po zgodzie użytkownika, z zapamiętaniem decyzji w `localStorage`.
-- Modal informacyjny o demonstracyjnym charakterze serwisu, zamykany trwale po akceptacji.
-- Rejestracja Service Workera, cache zasobów statycznych i strona zastępcza `offline.html`.
+- Wspólny rejestr ikon SVG (`js/modules/icons.js`) — 13 kluczy `[data-icon]` podstawianych w czasie działania, bez plików ikon w `assets/`.
+- Rejestracja Service Workera, precache powłoki aplikacji i strona zastępcza `offline.html`.
 - Prefetch podstron oferty przy najechaniu lub fokusie, wyłączany przy `Save-Data` i wolnych połączeniach.
 
 ### Stack technologiczny
 
 **Runtime (frontend)**
 
-- HTML5
+- HTML5 z buildowym rendererem partiali (`@layout`, `@include`, `{{token}}`, `{{#if}}`)
 - CSS3 — moduły w `css/modules/` scalane przez `@import` w `css/style.css`
 - JavaScript (ES modules) — `js/script.js` i moduły w `js/modules/`
 
@@ -40,43 +41,22 @@ Adres skonfigurowany jako `homepage` w `package.json` oraz jako adres kanoniczny
 - PostCSS z `postcss-cli` (`postcss-import`, `postcss-preset-env` stage 3, `autoprefixer`, `cssnano`)
 - esbuild (bundling i minifikacja JS, target `es2018`, format `iife`)
 - sharp (generowanie wariantów obrazów)
-- live-server (lokalny serwer developerski)
+- live-server uruchamiany przez `scripts/dev-server.js`
 - Prettier (formatowanie)
-- Playwright + axe-core (skrypty QA: dostępność i testy funkcjonalne)
+- Playwright + axe-core (QA dostępności i funkcjonalne testy przeglądarkowe)
 - Lighthouse CI (`@lhci/cli`)
 - cross-env (przekazanie `SITE_URL` do generatora sitemapy)
+- GitHub Actions (jeden workflow `CI`)
 
 ### Architektura
 
-- Warstwa prezentacji to statyczne pliki HTML — każda podstrona jest osobnym dokumentem z własnymi metadanymi i danymi strukturalnymi.
-- CSS jest podzielony na moduły (`tokens`, `base`, `layout`, `components`, `sections`, `utilities`, `subpages`) scalane przez `@import` w `css/style.css`; build PostCSS rozwija importy do jednego pliku produkcyjnego `dist/css/style.min.css`.
+- Każda utrzymywana strona jest osobnym dokumentem HTML z własnymi metadanymi i danymi strukturalnymi. Wspólny nagłówek i stopka są dołączane dyrektywami `<!-- @layout … -->` i `<!-- @include partials/… -->`, a renderer `scripts/utils/partials.js` rozwija je przy buildzie, w serwerze developerskim i w skryptach kontrolnych.
+- Renderer jest bramką jakości: przerywa pracę przy brakującym partialu, nieopisanej zmiennej `{{…}}`, zdublowanym lub niepoprawnym `@layout`, `@include` wychodzącym poza `partials/`, cyklu dołączeń oraz przy dyrektywie lub tokenie pozostałym po renderowaniu.
+- CSS jest podzielony na moduły (`tokens`, `base`, `layout`, `components`, `sections`, `utilities`, `subpages`) scalane przez `@import`; build PostCSS rozwija je do jednego pliku `dist/css/style.min.css`.
 - JavaScript jest podzielony na moduły ES (`nav`, `ui-core`, `icons`, `forms`, `lightbox`, `map-consent`, `prefetch`, `home`, `project-banner`, `utils`). `js/script.js` eksponuje je w przestrzeni `window.SC` i uruchamia inicjalizatory warunkowo, na podstawie obecności selektorów na stronie.
-- Ikony SVG mają jedno źródło — rejestr w `js/modules/icons.js`. Utrzymywany HTML deklaruje wyłącznie stabilne klucze `[data-icon]`, a `initIcons()` wstawia geometrię z rejestru; kolor jest dziedziczony przez `currentColor`, więc CSS odpowiada tylko za rozmiar i interakcję.
 - `js/theme-init.js` jest ładowany synchronicznie w `<head>`, aby ustawić motyw przed pierwszym renderem; `js/sw-register.js` rejestruje Service Workera w zakresie `/`.
-- Build produkcyjny nie modyfikuje plików źródłowych — `scripts/build-dist.js` tworzy katalog `dist/` i dopiero w kopiach HTML podmienia odwołania na assety minifikowane, a PostCSS i esbuild zapisują pliki minifikowane wyłącznie do `dist/`. Drzewo źródłowe nie zawiera artefaktów `.min.css` ani `.min.js`.
-- Wspólny nagłówek i stopka mają jedno źródło — `partials/header.html` i `partials/footer.html`. Strony osadzają je dyrektywą `<!-- @include partials/... -->`, a `scripts/utils/partials.js` rozwija je w czasie builda. Wygenerowany HTML zawiera pełny nagłówek i stopkę, więc przeglądarka nie potrzebuje `fetch()` ani JavaScriptu, aby je otrzymać.
-- Skrypty narzędziowe w `scripts/` korzystają ze wspólnego loggera (`scripts/utils/logger.js`) z trybem `--verbose`.
-
-### Wspólne partiale layoutu
-
-Każda z 13 utrzymywanych stron deklaruje swój kontekst jedną dyrektywą tuż pod `<body>` i osadza partiale:
-
-```html
-<body class="page-sub">
-  <!-- @layout base="../" home="../index.html" active-home="" -->
-  <!-- @include partials/header.html -->
-  ...
-  <!-- @include partials/footer.html -->
-</body>
-```
-
-- `base` — przedrostek odwołań liczonych od katalogu głównego (`assets/`, `oferta/`, `doc/`).
-- `home` — przedrostek kotwic strony głównej; strona główna zostawia go pustym, więc zachowuje czyste `#kotwice` wymagane przez scroll-spy i menu rozwijane.
-- `active-home` — niepuste wyłącznie w `index.html`, gdzie steruje `aria-current="page"`.
-
-Wartości dla poszczególnych grup stron: `index.html` → `base=""`, `home=""`, `active-home="true"`; `thank-you.html` → `base=""`, `home="index.html"`; `oferta/` i `doc/` → `base="../"`, `home="../index.html"`; `404.html` i `offline.html` → `base="/"`, `home="/"` (te dokumenty mogą być serwowane spod dowolnej ścieżki).
-
-W partialach dostępne są `{{nazwa}}` oraz `{{#if nazwa}}...{{/if}}`. Nierozpoznana zmienna, brakujący partial lub token pozostały po renderowaniu przerywają build błędem — `dist/` nigdy nie otrzyma strony bez nagłówka lub stopki. Katalog `partials/` jest wykluczony z `dist/`, sitemapy i Prettiera (zawiera składnię szablonu).
+- Drzewo źródłowe nie zawiera artefaktów produkcyjnych: minifikowany CSS i JS powstają wyłącznie w `dist/`, a `.gitignore` blokuje `/css/*.min.css` i `/js/*.min.js`.
+- `sw.js` w katalogu głównym jest źródłem logiki runtime; blok między znacznikami `build:sw-manifest` (wersja cache i lista precache) jest własnością buildu.
 
 ### Struktura projektu
 
@@ -86,42 +66,40 @@ DS-construction-pr01-SolidCraft/
 ├── 404.html
 ├── offline.html
 ├── thank-you.html
-├── oferta/                    # 6 podstron usług
-├── doc/                       # regulamin, polityka prywatności, cookies
-├── partials/                  # wspólny layout (jedyne źródło)
-│   ├── header.html
-│   └── footer.html
+├── oferta/                      # 6 podstron usług
+├── doc/                         # regulamin, polityka prywatności, cookies
+├── partials/
+│   ├── header.html              # wspólny nagłówek (źródło)
+│   └── footer.html              # wspólna stopka (źródło)
 ├── css/
-│   ├── style.css              # źródło (@import modułów)
+│   ├── style.css                # źródło (@import modułów)
 │   └── modules/
 ├── js/
-│   ├── script.js              # źródło (ES modules)
+│   ├── script.js                # źródło (ES modules)
 │   ├── theme-init.js
 │   ├── sw-register.js
 │   └── modules/
 ├── assets/
 │   ├── fonts/
-│   ├── img-src/               # obrazy źródłowe
-│   └── img/                   # warianty generowane przez sharp
+│   ├── img-src/                 # obrazy źródłowe
+│   └── img/                     # warianty generowane przez sharp
 ├── scripts/
 │   ├── build-dist.js
 │   ├── dev-server.js
+│   ├── generate-sitemap.mjs
+│   ├── generate-sw.js
 │   ├── images.js
 │   ├── check-links.mjs
 │   ├── check-html-assets.mjs
-│   ├── generate-sitemap.mjs
-│   ├── generate-sw.js
 │   ├── qa-a11y.mjs
 │   ├── qa-functional.mjs
-│   ├── functional/            # scenariusze testów funkcjonalnych
 │   ├── verify-css-build.js
 │   ├── verify-js-build.js
-│   └── utils/
-│       ├── logger.js
-│       ├── mime-types.mjs
-│       ├── static-server.mjs  # serwer statyczny testów funkcjonalnych
-│       └── partials.js        # renderer partiali (build i dev)
-├── sw.js                      # logika SW; blok precache generuje build
+│   ├── functional/              # scenariusze testów funkcjonalnych
+│   └── utils/                   # renderer partiali, logger, serwery statyczne
+├── .github/workflows/ci.yml
+├── dist/                        # wynik buildu, nietrackowany w Git
+├── sw.js
 ├── manifest.webmanifest
 ├── robots.txt
 ├── _headers
@@ -132,12 +110,7 @@ DS-construction-pr01-SolidCraft/
 ├── settings.md
 ├── CHANGELOG.md
 ├── LICENSE
-├── package.json
-└── dist/                      # wyjście produkcyjne (generowane, poza Git)
-    ├── css/style.min.css      # artefakt generowany
-    └── js/
-        ├── script.min.js      # artefakt generowany
-        └── theme-init.min.js  # artefakt generowany
+└── package.json
 ```
 
 ### Instalacja
@@ -154,11 +127,9 @@ Wymagania: Node.js w wersji `>=18`. Wszystkie zależności są zależnościami d
 npm run dev
 ```
 
-`scripts/dev-server.js` uruchamia `live-server` na porcie `15500` i otwiera w przeglądarce katalog główny serwera. Żądania HTML obsługuje middleware, który rozwija partiale przy każdym żądaniu — zmiana w `partials/header.html` lub `partials/footer.html` jest widoczna po odświeżeniu strony i trafia od razu do wszystkich 13 stron. Przeładowanie na żywo (`live-reload`) działa bez zmian. Serwer HTTP jest konieczny — strony korzystają z modułów ES, Service Workera i manifestu wskazywanego ścieżką bezwzględną, więc otwarcie pliku przez `file://` nie odwzoruje zachowania produkcyjnego.
+`scripts/dev-server.js` uruchamia `live-server` na porcie `15500` i obsługuje każde żądanie HTML przez renderer partiali, więc zmiany w `partials/` są widoczne po odświeżeniu. Serwer HTTP jest konieczny — strony korzystają z modułów ES, Service Workera i manifestu wskazywanego ścieżką bezwzględną, więc otwarcie pliku przez `file://` nie odwzoruje zachowania produkcyjnego.
 
-Development lokalny korzysta wyłącznie ze źródeł nieminifikowanych (`css/style.css` z modułami i `js/script.js` jako moduły ES) — build produkcyjny nie jest do niego potrzebny.
-
-Przebudowa assetów produkcyjnych w tle (zapis do `dist/`):
+Przebudowa assetów w tle (zapis do `dist/`):
 
 ```bash
 npm run watch:css
@@ -167,21 +138,21 @@ npm run watch:js
 
 ### Dostępne skrypty
 
-- `npm run dev` — lokalny serwer `live-server` z renderowaniem partiali (`scripts/dev-server.js`, port `15500`); `npm start` jest aliasem.
+- `npm run dev` — serwer developerski z rendererem partiali (port `15500`); `npm start` jest aliasem.
 - `npm run build:css` — PostCSS buduje `dist/css/style.min.css`, następnie `scripts/verify-css-build.js` sprawdza brak pozostałych `@import`.
-- `npm run build:js` — esbuild buduje `dist/js/theme-init.min.js` i `dist/js/script.min.js`, następnie `scripts/verify-js-build.js` sprawdza brak składni `import`/`export` w obu plikach.
-- `npm run build` — `build:css` i `build:js`; obydwa zapisują wyłącznie do `dist/`.
-- `npm run build:dist` — składa katalog `dist/`, uruchamia `build`, `build:sitemap` i `build:sw`.
+- `npm run build:js` — esbuild buduje `dist/js/theme-init.min.js` i `dist/js/script.min.js`, następnie `scripts/verify-js-build.js` sprawdza brak składni `import`/`export`.
+- `npm run build` — `build:css` i `build:js`.
+- `npm run build:dist` — pełny build wdrożeniowy: `scripts/build-dist.js`, następnie `build`, `build:sitemap` i `build:sw`.
 - `npm run build:sitemap` — generuje `dist/sitemap.xml` dla adresu przekazanego w `SITE_URL`.
-- `npm run build:sw` — generuje `dist/sw.js`: listę precache i `CACHE_VERSION` wyprowadza z gotowego katalogu `dist/`.
+- `npm run build:sw` — generuje `dist/sw.js` z listą precache i wersją cache wyliczonymi z gotowego `dist/`.
 - `npm run images:build` / `npm run images:clean` — generowanie i czyszczenie obrazów w `assets/img/`.
-- `npm run check:links` — walidacja linków wewnętrznych, zewnętrznych i kotwic w plikach HTML.
-- `npm run check:assets` — walidacja lokalnych odwołań do zasobów w HTML.
+- `npm run check:links` — walidacja linków wewnętrznych, zewnętrznych i kotwic w renderowanych stronach.
+- `npm run check:assets` — walidacja lokalnych odwołań do zasobów w renderowanych stronach.
 - `npm run check:html` — `check:links` i `check:assets`.
 - `npm run qa:a11y` — skan axe-core w przeglądarce headless.
-- `npm run qa:functional` — funkcjonalne scenariusze przeglądarkowe (nawigacja, podmenu `Oferta`, lightbox, formularz kontaktowy) w headless Chromium.
+- `npm run qa:functional` — funkcjonalny zestaw regresyjny w Playwright; obsługuje filtr `--only=<fragment nazwy scenariusza>`.
 - `npm run check:predeploy` — `check:html` i `qa:a11y` jako lokalna bramka przed wdrożeniem.
-- `npm run qa:lhci` — `build:dist` (który sam uruchamia `build`) i `lhci autorun` z konfiguracją `lighthouserc.json`.
+- `npm run qa:lhci` — `build:dist` i `lhci autorun` z konfiguracją `lighthouserc.json`.
 - `npm run format` / `npm run format:check` — Prettier w trybie zapisu i weryfikacji.
 
 ### Build produkcyjny
@@ -190,45 +161,32 @@ npm run watch:js
 npm run build:dist
 ```
 
-`npm run build:dist` wykonuje kolejno cztery kroki. Najpierw `scripts/build-dist.js` usuwa i odtwarza katalog `dist/`, renderuje wszystkie pliki HTML wraz z partialami z `partials/`, kopiuje katalog `assets/` (z pominięciem `assets/img-src/`) oraz pliki opcjonalne (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `manifest.webmanifest`, `js/sw-register.js`), a w kopiach HTML podmienia odwołania `css/style.css`, `js/script.js` i `js/theme-init.js` na warianty minifikowane. Następnie `npm run build` generuje z bieżących źródeł `dist/css/style.min.css`, `dist/js/theme-init.min.js` i `dist/js/script.min.js`, a skrypty weryfikacyjne kończą build błędem, gdy któregoś z tych artefaktów brakuje. Dalej `build:sitemap` zapisuje `dist/sitemap.xml` — jedyny plik sitemapy w projekcie; w katalogu głównym nie ma śledzonej kopii, którą ten krok mógłby nadpisać. Na końcu `build:sw` zapisuje `dist/sw.js` — jedyny Service Worker trafiający na produkcję; `build-dist.js` nie kopiuje tu `sw.js`, więc również tutaj nie ma kopii do nadpisania. Kolejność jest wiążąca: czyszczenie `dist/` poprzedza generowanie assetów produkcyjnych, a `build:sw` wykonuje się po nich, bo odczytuje pliki, które precache’uje.
+Kolejność jest deterministyczna: `dist/` jest tworzony od nowa, utrzymywane strony są renderowane wraz z partialami, kopiowane są pliki opcjonalne (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `manifest.webmanifest`, `js/sw-register.js`) oraz `assets/` z pominięciem `assets/img-src/`, następnie w kopiach HTML odwołania `css/style.css`, `js/script.js` i `js/theme-init.js` są podmieniane na warianty minifikowane. Dopiero potem powstają assety produkcyjne (`build`), `dist/sitemap.xml` (`build:sitemap`) i `dist/sw.js` (`build:sw`).
 
-`build:sitemap` wymaga zmiennej `SITE_URL` i kończy się kodem różnym od zera, gdy jej nie ustawiono. Skrypt `build:dist` w `package.json` przekazuje `SITE_URL=https://construction-pr01-solidcraft.netlify.app` przez `cross-env`. Z sitemapy wykluczone są `404.html`, `offline.html` i `thank-you.html`.
+`build:sitemap` wymaga zmiennej `SITE_URL` i kończy się kodem różnym od zera, gdy jej nie ustawiono; skrypt przekazuje `SITE_URL=https://construction-pr01-solidcraft.netlify.app` przez `cross-env`. Z sitemapy wykluczone są `404.html`, `offline.html` i `thank-you.html`.
+
+`build:sw` przepisuje blok między znacznikami `build:sw-manifest` w `sw.js`: listę precache wyprowadza z reguł nad gotowym `dist/` (strony HTML, `manifest.webmanifest`, `css/`, `js/`, `assets/fonts/*.woff2`, `assets/img/favicon/*`), a `CACHE_VERSION` ustawia na skrócony do 16 znaków skrót SHA-256 z par adres–zawartość. Skrypt przerywa build, gdy reguła precache nic nie dopasuje, gdy znaczniki nie występują dokładnie raz lub gdy wpis jest zduplikowany, nieposortowany albo nie wskazuje pliku w `dist/`.
 
 ### Testy i walidacja
 
-Repozytorium nie zawiera testów jednostkowych. Skonfigurowane są następujące mechanizmy kontroli:
-
-- `scripts/check-links.mjs` i `scripts/check-html-assets.mjs` — statyczna walidacja linków i odwołań do zasobów w HTML.
-- `scripts/qa-a11y.mjs` — axe-core uruchamiany przez Playwright na lokalnym serwerze statycznym; skanowane są `/index.html`, `/404.html`, wszystkie sześć podstron oferty (`/oferta/elektryka.html`, `/oferta/hydraulika.html`, `/oferta/kafelkowanie.html`, `/oferta/lazienki.html`, `/oferta/malowanie.html`, `/oferta/remonty.html`), wszystkie trzy strony dokumentów (`/doc/cookies.html`, `/doc/polityka-prywatnosci.html`, `/doc/regulamin.html`) oraz `/offline.html`, jeśli plik istnieje — łącznie 12 tras. Jedenaście tras wymaganych: brak którejkolwiek przerywa bieg komunikatem `Required page not found`. Skrypt kończy się błędem przy naruszeniach o wadze `serious` lub `critical`.
-- `scripts/qa-functional.mjs` — funkcjonalny zestaw przeglądarkowy uruchamiany przez Playwright na tym samym lokalnym serwerze statycznym i tym samym rendererze partiali; dziewięć scenariuszy pokrywa mobilną szufladę nawigacji, podmenu `Oferta`, lightbox galerii na `/oferta/lazienki.html` oraz cztery ścieżki formularza kontaktowego (walidacja, odrzucenie przez próg antyspamowy, udane wysłanie, nieudane wysłanie). Każdy scenariusz działa w osobnym kontekście przeglądarki, a wysyłka formularza jest przechwytywana i obsługiwana lokalnie przez Playwright — żadne żądanie nie opuszcza `127.0.0.1`. Skrypt kończy się kodem różnym od zera przy pierwszym niespełnionym warunku. Opcjonalna flaga `--only=<fragment nazwy scenariusza>` zawęża bieg do wybranych scenariuszy.
+- `scripts/check-links.mjs` i `scripts/check-html-assets.mjs` — statyczna walidacja linków i odwołań do zasobów; obie renderują strony przez `scripts/utils/partials.js`, więc sprawdzają dokument w takiej postaci, w jakiej trafia do `dist/`.
+- `scripts/qa-a11y.mjs` — axe-core uruchamiany przez Playwright na lokalnym serwerze statycznym; skanowane są `index.html`, `404.html`, wszystkie sześć podstron `oferta/`, wszystkie trzy strony `doc/` oraz `offline.html`, jeśli plik istnieje. Skrypt kończy się błędem przy naruszeniach o wadze `serious` lub `critical`.
+- `scripts/qa-functional.mjs` — dziewięć scenariuszy funkcjonalnych w headless Chromium: mobilna szuflada nawigacji i podmenu oferty, lightbox (pojedynczy tab stop, Enter/Escape z przywróceniem fokusa, Spacja i strzałki) oraz formularz kontaktowy (puste zgłoszenie, okno antyspamowe, poprawna wysyłka, nieudana wysyłka).
 - `scripts/verify-css-build.js` i `scripts/verify-js-build.js` — weryfikacja artefaktów wbudowana w komendy build.
 - `lighthouserc.json` — Lighthouse CI na katalogu `dist` dla `/`, `/oferta/remonty.html` i `/doc/polityka-prywatnosci.html`, z progami: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
-Powyższe komendy są skonfigurowane w repozytorium. `build:dist`, `check:predeploy` (a więc `check:links`, `check:assets` i `qa:a11y`) oraz `qa:functional` zostały uruchomione lokalnie przy dodawaniu workflow CI i przechodzą. `npm run format` został następnie zastosowany w całym repozytorium, a `npm run format:check` zgłasza `All matched files use Prettier code style!`; `qa:lhci` i `images:build` nie były uruchamiane.
+Powyższe komendy są skonfigurowane w repozytorium; ich wykonanie nie było elementem przygotowania tej dokumentacji.
 
 ### Wdrożenie
 
 Repozytorium zawiera konfigurację wdrożenia na Netlify:
 
-- `netlify.toml` — komenda build `npm run build:dist`, katalog publikacji `dist`. Ponieważ `build:dist` uruchamia `npm run build`, wdrożenie regeneruje assety minifikowane z bieżących źródeł i nie publikuje wersji zapisanych w repozytorium.
+- `netlify.toml` — komenda build `npm run build:dist`, katalog publikacji `dist`.
 - `_redirects` — przekierowania 301 dla adresów bez rozszerzenia `.html` i ze slashem końcowym oraz reguła 404 na `/404.html`.
 - `_headers` — nagłówki `Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` i `X-Robots-Tag`.
 - Formularz kontaktowy jest przygotowany pod Netlify Forms (atrybuty `netlify`, `netlify-honeypot="bot-field"` oraz ukryte pole `form-name`). Repozytorium nie zawiera własnej implementacji obsługi zgłoszeń.
 
-### Ciągła integracja (CI)
-
-Repozytorium zawiera jeden workflow GitHub Actions — `.github/workflows/ci.yml`, o nazwie `CI`, z jednym zadaniem `quality-gate`; w interfejsie GitHuba status nosi nazwę `CI / quality-gate`.
-
-- Wyzwalacze: `push` do `main`, `pull_request` skierowany na `main` oraz ręczne `workflow_dispatch`. Gałęzie deweloperskie nie są budowane przy każdym pushu — pull request waliduje je przed scaleniem, a `main` jest sprawdzany niezależnie.
-- Środowisko: jeden runner `ubuntu-latest`, Node.js 24 LTS. Wersja jest ustawiona wyłącznie w workflow — pole `engines` w `package.json` pozostaje `">=18"`. Nie ma macierzy systemów, wersji Node ani przeglądarek.
-- Kroki, w kolejności: `npm ci` (instalacja deterministyczna z `package-lock.json`, z cache npm), `npm run build:dist`, `npx playwright install --with-deps chromium`, `npm run check:predeploy`, `npm run qa:functional`. Build poprzedza instalację przeglądarki, bo jej nie potrzebuje — nieudany build przerywa zadanie przed pobraniem Chromium. Workflow wywołuje istniejące skrypty projektu i nie powiela ich zawartości w YAML-u.
-- Bramka przed wdrożeniem i zestaw funkcjonalny są osobnymi krokami, więc logi wskazują, który z nich zawiódł; `check:predeploy` nie został rozszerzony o `qa:functional`.
-- Instalowany jest wyłącznie Chromium — jedyna przeglądarka uruchamiana przez `qa:a11y` i `qa:functional`.
-- Uprawnienia to `contents: read`. Workflow nie korzysta z sekretów, nie zapisuje niczego w repozytorium i niczego nie wdraża — wdrożeniem nadal zajmuje się Netlify.
-- `concurrency` z kluczem zależnym od referencji i `cancel-in-progress: true` anuluje wyłącznie nieaktualny bieg tej samej gałęzi lub tego samego pull requesta; zadanie ma `timeout-minutes: 15`. Żaden krok nie używa `continue-on-error`, więc pierwszy niezerowy kod wyjścia przerywa bieg.
-- Workflow nie uruchamia `qa:lhci`, Lighthouse, `format:check` ani wdrożenia.
-
-Ustawienie `CI / quality-gate` jako statusu wymaganego (branch protection) jest konfiguracją repozytorium w GitHubie, a nie plikiem w repozytorium, i pozostaje krokiem ręcznym. Szczegóły kontraktu CI opisuje `settings.md`.
+Ciągła integracja: `.github/workflows/ci.yml` definiuje workflow `CI` z jednym zadaniem `quality-gate` (status `CI / quality-gate`), uruchamiany przy `push` na `main`, dla pull requestów do `main` i ręcznie. Kroki: `npm ci`, `npm run build:dist`, instalacja Chromium dla Playwright, `npm run check:predeploy`, `npm run qa:functional`. Workflow działa na Node `24`, ma uprawnienia `contents: read` i niczego nie wdraża — wdrożenie pozostaje po stronie Netlify.
 
 ### Dostępność
 
@@ -236,12 +194,11 @@ Zaimplementowane mechanizmy obejmują:
 
 - semantyczne sekcje z `aria-labelledby` i `aria-describedby` oraz link „Pomiń do treści” prowadzący do `#main`,
 - synchronizację stanu ARIA w nawigacji (`aria-expanded`, `aria-haspopup`, `aria-controls`, `aria-current`) i w przełączniku motywu (`aria-pressed`),
-- obsługę klawiatury i pułapkę fokusa w lightboxie oraz przywracanie fokusa po zamknięciu; wszystkie przyciski lightboxa (zamknij, poprzednie, następne) są elementami potomnymi kontenera `aria-modal`, a nazwę dostępną każdej miniatury tworzy jej własny `alt`,
-- te same mechanizmy w modalu startowym: przeniesienie fokusa do okna, cykl Tab wyłącznie w jego obrębie, zamykanie klawiszem Escape, blokada przewijania tła i przywrócenie fokusa po zamknięciu,
-- pojedynczy punkt zatrzymania Tab na każdej pozycji galerii — aktywacja Enter/Spacją otwiera lightbox zamiast nawigować do pliku obrazu,
-- komunikaty błędów formularza powiązane z polami, ustawianie `aria-invalid` i obszar statusu `role="status"` z `aria-live="polite"`; walidację prowadzi wyłącznie skrypt (`novalidate`), więc komunikaty pojawiają się także dla pól pustych i braku zgody,
+- obsługę klawiatury, pułapkę fokusa i przywracanie fokusa w lightboxie oraz w modalu informacyjnym,
+- komunikaty błędów formularza powiązane z polami, ustawianie `aria-invalid` i obszar statusu `role="status"` z `aria-live="polite"`,
 - reakcję na `prefers-reduced-motion` w CSS oraz w skryptach animacji i przewijania,
-- skrypt QA `npm run qa:a11y` oparty o axe-core.
+- ikony SVG wstawiane z `aria-hidden="true"` i `focusable="false"`,
+- bramki QA: `npm run qa:a11y` (axe-core, 12 tras) i `npm run qa:functional` (ścieżki klawiaturowe nawigacji i lightboxa).
 
 Dokumentacja nie zawiera potwierdzenia zgodności z konkretnym poziomem WCAG — opisane są wyłącznie zaimplementowane mechanizmy.
 
@@ -249,54 +206,46 @@ Dokumentacja nie zawiera potwierdzenia zgodności z konkretnym poziomem WCAG —
 
 - `title`, `meta description`, `canonical` i `meta robots` na stronach; `noindex` dla `404.html`, `offline.html` oraz `thank-you.html` (`noindex, follow`).
 - Metadane Open Graph i Twitter Card wraz z obrazami w `assets/img/og/`.
-- Dane strukturalne JSON-LD: `WebSite`, `CollectionPage` i `FAQPage`. Serwis celowo nie publikuje typu `GeneralContractor` ani innego typu `LocalBusiness` — SolidCraft jest fikcyjną marką demonstracyjną i nie ma adresu, telefonu, e-maila ani profili społecznościowych rzeczywistej firmy (patrz „Przegląd projektu" — decyzja projektowa).
-- `robots.txt` z odwołaniem do publicznego adresu sitemapy. Sama sitemapa nie jest utrzymywana ręcznie w repozytorium — `dist/sitemap.xml` generuje `scripts/generate-sitemap.mjs` podczas `build:dist`.
+- Dane strukturalne JSON-LD: `WebSite`, `CollectionPage`, `ItemList` i `FAQPage`. Znaczniki opisujące fikcyjny podmiot gospodarczy zostały usunięte, zgodnie z demonstracyjnym charakterem serwisu.
+- `robots.txt` z odwołaniem do `/sitemap.xml`; sam plik sitemapy nie jest utrzymywany w repozytorium — powstaje jako `dist/sitemap.xml` podczas `build:dist`.
 
 ### PWA i obsługa offline
 
 - `manifest.webmanifest` definiuje `id`, `start_url` i `scope` `/`, tryb `standalone`, kolory motywu, ikony (w tym `maskable`), trzy skróty aplikacji oraz zrzuty ekranu dla widoku wąskiego i szerokiego.
 - `js/sw-register.js` rejestruje `/sw.js` w zakresie `/` po zdarzeniu `load`.
-- `sw.js` obsługuje dokumenty HTML strategią network-first z fallbackiem na `/offline.html`, a zasoby statyczne strategią cache-first; zapisy do cache w obsłudze `fetch` są przekazywane do `event.waitUntil`, a przy aktywacji usuwane są nieaktualne cache o prefiksie `solidcraft-v` — cache spoza tego prefiksu nie są ruszane.
-- Kontrakt precache nie jest utrzymywany ręcznie. `npm run build:sw` (`scripts/generate-sw.js`) przepisuje w `sw.js` oznaczony blok na podstawie gotowego katalogu `dist/` i zapisuje wynik jako `dist/sw.js`: nazwa cache to `solidcraft-v<odcisk>`, gdzie odcisk to skrót SHA-256 par „URL + zawartość” wszystkich precache’owanych plików, a lista obejmuje wszystkie 13 stron HTML wraz z `/`, manifest, `css/style.min.css`, `js/theme-init.min.js`, `js/script.min.js`, `js/sw-register.js`, sześć plików `woff2` i komplet ikon z `assets/img/favicon/`. Zmiana któregokolwiek z tych plików zmienia wersję cache; pozostała zawartość `dist/` (galerie, hero, zrzuty ekranu, `sitemap.xml`, `robots.txt`) pozostaje w cache runtime.
-- W drzewie źródłowym ten blok jest celowo pusty, bo `css/style.min.css`, `js/theme-init.min.js` i `js/script.min.js` powstają dopiero w `dist/`. Dzięki temu Service Worker instaluje się poprawnie pod `npm run dev` zamiast przerywać `cache.addAll()` na plikach, których w źródłach nie ma. Wersja cache `"dev"` przełącza go też w tryb network-only: pod `npm run dev` nic nie trafia do precache, każde żądanie `GET` z tego samego origin idzie prosto do sieci bez odczytu i zapisu cache, a przy aktywacji usuwane są wszystkie cache `solidcraft-v` — edytowany plik nigdy nie jest przesłonięty wcześniejszą kopią. Strategie network-first / cache-first opisane wyżej dotyczą więc produkcji, czyli generowanego `dist/sw.js`.
+- W drzewie źródłowym `CACHE_VERSION` ma wartość `"dev"`, a lista precache jest pusta — taki worker instaluje się czysto i działa w trybie network-only, więc lokalne zmiany nie są przesłaniane przez cache.
+- W buildzie produkcyjnym `dist/sw.js` otrzymuje wyliczoną listę precache i wersję cache, obsługuje dokumenty HTML strategią network-first z fallbackiem na `/offline.html`, a zasoby statyczne strategią cache-first z zapisem odpowiedzi sieciowych; przy aktywacji usuwa wyłącznie klucze z prefiksem `solidcraft-v`.
 
 Manifest i Service Worker są wskazywane ścieżkami bezwzględnymi, więc działają przy serwowaniu serwisu z katalogu głównego domeny. Repozytorium nie zawiera weryfikacji instalowalności ani testów działania offline.
 
 ### Wydajność
 
 - Minifikacja CSS (`cssnano`) i JS (`esbuild`) oraz podmiana odwołań na assety minifikowane w buildzie `dist/`.
-- Preload obrazu hero (`srcset` AVIF) z `fetchpriority="high"` oraz preload czterech plików `woff2`; fonty są hostowane lokalnie z `font-display: swap`.
+- Preload obrazu hero (`srcset` AVIF) z `fetchpriority="high"` oraz preload plików `woff2`; fonty są hostowane lokalnie w podziale na podzbiory `latin` i `latin-ext` z `unicode-range` i `font-display: swap`.
 - Responsywne obrazy generowane przez `scripts/images.js` w formatach AVIF, WebP i JPG, w zdefiniowanych rozmiarach dla hero, oferty i galerii.
+- Ikony interfejsu wstawiane z jednego rejestru SVG zamiast osobnych plików graficznych.
 - Prefetch podstron oferty przy `mouseenter`/`focus` z opóźnieniem 120 ms, pomijany przy `saveData` i połączeniach 2G.
 - Mapa ładowana dopiero po zgodzie użytkownika, w `iframe` z `loading="lazy"`.
-- Cache zasobów statycznych w Service Workerze.
+- Precache powłoki aplikacji i runtime cache w Service Workerze.
 - Progi jakości zdefiniowane w `lighthouserc.json`.
 
 Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 
 ### Dane i trwałość stanu
 
-- Treści serwisu są zapisane bezpośrednio w plikach HTML; nie ma zewnętrznego źródła danych ani API.
-- W `localStorage` przechowywane są wyłącznie preferencje interfejsu: `theme` (motyw), `consent.maps` (zgoda na osadzenie mapy) i `project-banner-accepted` (akceptacja informacji o projekcie).
+- Treści serwisu są zapisane bezpośrednio w plikach HTML i w `partials/`; nie ma zewnętrznego źródła danych ani API.
+- W `localStorage` przechowywane są wyłącznie preferencje interfejsu: `theme` (motyw), `consent.maps` (zgoda na osadzenie mapy) i `project-banner-accepted` (akceptacja informacji o projekcie). Dostęp do storage jest zabezpieczony — brak dostępu nie blokuje działania interfejsu.
 - Parametr adresu `?usluga=` jest przepisywany do ukrytego pola formularza kontaktowego, po czym usuwany z adresu przez `history.replaceState`.
 - Dane formularza są wysyłane metodą POST na adres z atrybutu `action` (`/thank-you.html`) i obsługiwane przez Netlify Forms. Projekt nie posiada kont użytkowników, bazy danych ani synchronizacji między urządzeniami.
 
 ### Utrzymanie projektu
 
-- Pliki źródłowe do edycji: `css/style.css` i `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/sw-register.js`, `js/modules/**`, `partials/header.html` i `partials/footer.html`, `assets/img-src/**` oraz utrzymywane strony HTML.
-- Artefakty generowane, których nie należy edytować ręcznie: `dist/css/style.min.css`, `dist/js/script.min.js`, `dist/js/theme-init.min.js`, strony HTML, `sitemap.xml` i `sw.js` w `dist/`, `assets/img/**` oraz cały katalog `dist/`. Katalog `dist/` jest w całości generowany, nie jest utrzymywany ręcznie i pozostaje poza kontrolą wersji.
-- Wspólny nagłówek i stopkę zmienia się w `partials/`, nigdy w wyrenderowanej kopii — jedna zmiana obejmuje wszystkie 13 stron.
-- Higiena repozytorium: `.gitignore` trzyma poza Gitem `node_modules/`, `/dist/`, artefakty `*.min.css`/`*.min.js`, katalogi raportów oraz lokalne katalogi agentów (`.claude/`, `.codex/`); `.gitattributes` normalizuje pliki tekstowe do LF i oznacza jako `binary` rozszerzenia binarne obecne w projekcie. Śledzone pliki tekstowe są już znormalizowane do LF (`git ls-files --eol` zwraca `i/lf w/lf` dla każdego z nich, żaden wpis nie jest `crlf` ani `mixed`), więc renormalizacja nie jest zadaniem oczekującym. Gdyby `.gitattributes` się zmienił, `git add --renormalize .` pozostaje osobną operacją Gita wykonywaną przez opiekuna projektu i nie jest częścią żadnego skryptu npm.
-- Zmiany w źródłach CSS/JS nie wymagają żadnego kroku buildu w developmencie — `npm run dev` serwuje pliki źródłowe. Artefakty minifikowane powstają dopiero w `dist/` podczas `npm run build:dist` (lokalnie i na wdrożeniu).
-- Po zmianie obrazów źródłowych należy uruchomić `npm run images:build` — ten krok pozostaje ręczny i nie jest częścią ścieżki wdrożenia.
-- Lista precache’owanych zasobów i `CACHE_VERSION` nie są utrzymywane ręcznie: generuje je `npm run build:sw` z gotowego `dist/`, a wersja jest odciskiem zawartości, więc zmiana precache’owanego pliku sama unieważnia cache. Ręcznie zmienia się tylko logikę runtime w `sw.js` poza oznaczonym blokiem.
-- Zasady pipeline’u i narzędzi są opisane w `settings.md`, który pozostaje jedynym źródłem prawdy dla tej warstwy; historia zmian jest prowadzona w `CHANGELOG.md`.
-
-### Roadmap
-
-Na podstawie otwartych punktów odnotowanych w repozytorium:
-
-- ustawienie statusu `CI / quality-gate` jako wymaganego w regułach ochrony gałęzi `main` w GitHubie. Workflow CI opisany w sekcji „Ciągła integracja (CI)” uruchamia `check:predeploy` i `qa:functional` automatycznie; wymuszenie zielonego statusu przed scaleniem jest ustawieniem repozytorium, a nie plikiem w nim zawartym.
+- Pliki źródłowe do edycji: `partials/header.html`, `partials/footer.html`, `css/style.css` i `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/sw-register.js`, `js/modules/**`, `assets/img-src/**` oraz logika runtime w `sw.js`.
+- Wspólna warstwa layoutu ma jedno źródło — edytuj partial, nie wyrenderowaną kopię w `dist/`.
+- Nie edytuj ręcznie: zawartości `dist/` (w tym `dist/sitemap.xml` i `dist/sw.js`), bloku między znacznikami `build:sw-manifest` w `sw.js` oraz `assets/img/**`.
+- Po zmianie plików źródłowych uruchom `npm run build:dist`, a po zmianie obrazów źródłowych `npm run images:build`.
+- Nazwy `CI` i `quality-gate` są częścią kontraktu — zmiana którejkolwiek odłącza wymagany status check w ustawieniach ochrony gałęzi.
+- Zasady pipeline'u i narzędzi są opisane w `settings.md`, który pozostaje jedynym źródłem prawdy dla tej warstwy; historia zmian jest prowadzona w `CHANGELOG.md`.
 
 ### Licencja
 
@@ -304,15 +253,20 @@ Projekt jest objęty licencją **Własnościowa Licencja Projektu KP_CODE (wersj
 
 Projekt nie jest oprogramowaniem open source. Wykorzystanie komercyjne, redystrybucja, publiczne wdrożenie oraz wykorzystanie projektu jako szablonu wymagają uprzedniej, pisemnej zgody właściciela praw: **kontakt@kp-code.pl**.
 
+### Atrybucje
+
+- Geometria ikon w `js/modules/icons.js` pochodzi z Font Awesome Free 7.3.1 (Fonticons, Inc.), zgodnie z notą w nagłówku pliku: <https://fontawesome.com>.
+- Kroje Montserrat i Poppins są hostowane lokalnie w `assets/fonts/` jako pliki `woff2`. Repozytorium nie zawiera plików licencyjnych tych krojów.
+
 ## EN
 
 ### Project Overview
 
 SolidCraft is a static, multi-page website for a construction and renovation company, built with HTML, CSS, and JavaScript, without a frontend framework. The repository contains the home page, six service subpages in `oferta/`, three legal pages in `doc/` (terms, privacy policy, cookies), and the `thank-you.html`, `404.html`, and `offline.html` pages. The interface language is Polish (`lang="pl"`).
 
-The site is demonstrational — a startup modal on the home page states this and credits KP_Code Digital Studio as the author of this sample implementation for the construction sector. The repository contains no backend and no database; the server-side layer is limited to static hosting configuration.
+The site is demonstrational and labeled as such in its content: a first-visit modal credits KP_Code Digital Studio as the author of this sample implementation, and the client-logo and testimonial sections are marked as examples. The repository contains no backend and no database; the server-side layer is limited to static hosting configuration.
 
-**Project decision — indexing and trust content.** The site stays publicly indexable (`index, follow`, present in `sitemap.xml`) as a portfolio project; the `noindex` alternative was considered and rejected. Because SolidCraft is not a real operating construction company, that decision carries a requirement: the public trust content — the rating, the client logos and the testimonials — must be explicitly marked on the page as sample material and must never be presented as verified fact. Structured data must not attribute a postal address, telephone number, email address or social profile of a real business to the SolidCraft brand. These disclosures must be visible in the section content itself — the startup modal is dismissed permanently and cannot be the only carrier of this information.
+The shared header and footer have a single source in `partials/` and are expanded into complete HTML documents at build time — no page composition happens in the browser.
 
 ### Live Version
 
@@ -320,21 +274,22 @@ The address configured as `homepage` in `package.json` and as the canonical URL 
 
 ### Key Features
 
-- Multi-page navigation with an offer dropdown, a mobile variant (`aria-expanded`, keyboard support), and active-section highlighting (scroll spy).
-- Contact form with client-side validation, Polish phone number masking and validation, error messages linked through `aria-describedby`, and a `role="status"` message area.
-- Form anti-spam protection: hidden honeypot field (`bot-field`), rejection of submissions sent in under 2 seconds, and content heuristics; submission via `fetch` with a 10 s timeout.
+- Multi-page navigation with a shared header from `partials/header.html`: offer dropdown, a mobile variant (`aria-expanded`, keyboard support), and active-section highlighting (scroll spy).
+- Contact form with `novalidate` and its own validation layer: Polish phone number masking and validation, error messages linked through `aria-describedby`, `aria-invalid`, and a `role="status"` message area.
+- Form anti-spam protection: hidden honeypot field (`bot-field`), rejection of submissions sent in under 2 seconds while preserving the entered data, content heuristics, and a 10 s submission timeout.
 - Lightbox for offer cards and the project gallery: `role="dialog"`, `aria-modal`, Enter/Space activation, Escape, arrow navigation, focus trap, and focus restore to the triggering element.
 - Light/dark theme toggle with pre-render theme resolution (`js/theme-init.js`) and preference persistence in `localStorage`.
+- Informational modal about the demonstrational nature of the site: focus trap, Escape handling, scroll lock, and correct behavior when `localStorage` is unavailable.
 - Google map embedded only after user consent, with the decision persisted in `localStorage`.
-- Informational modal about the demonstrational nature of the site, permanently dismissed after acceptance.
-- Service Worker registration, static asset caching, and an `offline.html` fallback page.
+- Shared SVG icon registry (`js/modules/icons.js`) — 13 `[data-icon]` keys resolved at runtime, with no icon files in `assets/`.
+- Service Worker registration, app-shell precaching, and an `offline.html` fallback page.
 - Prefetch of service subpages on hover or focus, disabled for `Save-Data` and slow connections.
 
 ### Tech Stack
 
 **Runtime (frontend)**
 
-- HTML5
+- HTML5 with a build-time partial renderer (`@layout`, `@include`, `{{token}}`, `{{#if}}`)
 - CSS3 — modules in `css/modules/` composed via `@import` in `css/style.css`
 - JavaScript (ES modules) — `js/script.js` and modules in `js/modules/`
 
@@ -344,43 +299,22 @@ The address configured as `homepage` in `package.json` and as the canonical URL 
 - PostCSS with `postcss-cli` (`postcss-import`, `postcss-preset-env` stage 3, `autoprefixer`, `cssnano`)
 - esbuild (JS bundling and minification, target `es2018`, format `iife`)
 - sharp (image variant generation)
-- live-server (local development server)
+- live-server launched through `scripts/dev-server.js`
 - Prettier (formatting)
-- Playwright + axe-core (accessibility and functional QA scripts)
+- Playwright + axe-core (accessibility QA and functional browser tests)
 - Lighthouse CI (`@lhci/cli`)
 - cross-env (passing `SITE_URL` to the sitemap generator)
+- GitHub Actions (a single `CI` workflow)
 
 ### Architecture
 
-- The presentation layer consists of static HTML files — each subpage is a separate document with its own metadata and structured data.
-- CSS is split into modules (`tokens`, `base`, `layout`, `components`, `sections`, `utilities`, `subpages`) composed via `@import` in `css/style.css`; the PostCSS build inlines those imports into a single production file, `dist/css/style.min.css`.
+- Every maintained page is a separate HTML document with its own metadata and structured data. The shared header and footer are pulled in with `<!-- @layout … -->` and `<!-- @include partials/… -->` directives, and the `scripts/utils/partials.js` renderer expands them during the build, in the development server, and in the checking scripts.
+- The renderer is itself a gate: it stops on a missing partial, an undeclared `{{…}}` variable, a duplicated or malformed `@layout`, an `@include` escaping `partials/`, an include cycle, and on any directive or token surviving rendering.
+- CSS is split into modules (`tokens`, `base`, `layout`, `components`, `sections`, `utilities`, `subpages`) composed via `@import`; the PostCSS build inlines them into a single `dist/css/style.min.css`.
 - JavaScript is split into ES modules (`nav`, `ui-core`, `icons`, `forms`, `lightbox`, `map-consent`, `prefetch`, `home`, `project-banner`, `utils`). `js/script.js` exposes them under `window.SC` and runs initializers conditionally, based on the presence of selectors on the page.
-- SVG icons have a single source — the registry in `js/modules/icons.js`. Maintained HTML declares only stable `[data-icon]` keys, and `initIcons()` injects the geometry from the registry; colour is inherited through `currentColor`, so CSS owns only size and interaction.
 - `js/theme-init.js` is loaded synchronously in `<head>` to set the theme before the first render; `js/sw-register.js` registers the Service Worker with scope `/`.
-- The production build does not modify the source files — `scripts/build-dist.js` creates the `dist/` directory and rewrites references to minified assets only in the HTML copies, while PostCSS and esbuild write their minified output exclusively into `dist/`. The source tree holds no `.min.css` or `.min.js` artifacts.
-- The shared header and footer have a single source each — `partials/header.html` and `partials/footer.html`. Pages embed them with a `<!-- @include partials/... -->` directive, and `scripts/utils/partials.js` expands them at build time. The generated HTML already contains the complete header and footer, so the browser needs no `fetch()` and no JavaScript to obtain them.
-- Tooling scripts in `scripts/` share a logger (`scripts/utils/logger.js`) with a `--verbose` mode.
-
-### Shared Layout Partials
-
-Each of the 13 maintained pages declares its context with one directive right below `<body>` and embeds the partials:
-
-```html
-<body class="page-sub">
-  <!-- @layout base="../" home="../index.html" active-home="" -->
-  <!-- @include partials/header.html -->
-  ...
-  <!-- @include partials/footer.html -->
-</body>
-```
-
-- `base` — prefix for references resolved from the project root (`assets/`, `oferta/`, `doc/`).
-- `home` — prefix for homepage anchors; the homepage leaves it empty so it keeps the bare `#anchors` its scroll-spy and dropdown scripts depend on.
-- `active-home` — non-empty only in `index.html`, where it drives `aria-current="page"`.
-
-Values per page group: `index.html` → `base=""`, `home=""`, `active-home="true"`; `thank-you.html` → `base=""`, `home="index.html"`; `oferta/` and `doc/` → `base="../"`, `home="../index.html"`; `404.html` and `offline.html` → `base="/"`, `home="/"` (those documents can be served from any path).
-
-Partials support `{{name}}` and `{{#if name}}...{{/if}}`. An undeclared variable, a missing partial, or any token left after rendering fails the build — `dist/` never receives a page without its header or footer. The `partials/` directory is excluded from `dist/`, from the sitemap, and from Prettier (it holds template syntax).
+- The source tree holds no production artifacts: minified CSS and JS are produced only under `dist/`, and `.gitignore` blocks `/css/*.min.css` and `/js/*.min.js`.
+- The root `sw.js` is the source of the runtime logic; the block between the `build:sw-manifest` markers (cache version and precache list) is owned by the build.
 
 ### Project Structure
 
@@ -390,42 +324,40 @@ DS-construction-pr01-SolidCraft/
 ├── 404.html
 ├── offline.html
 ├── thank-you.html
-├── oferta/                    # 6 service subpages
-├── doc/                       # terms, privacy policy, cookies
-├── partials/                  # shared layout (single source of truth)
-│   ├── header.html
-│   └── footer.html
+├── oferta/                      # 6 service subpages
+├── doc/                         # terms, privacy policy, cookies
+├── partials/
+│   ├── header.html              # shared header (source)
+│   └── footer.html              # shared footer (source)
 ├── css/
-│   ├── style.css              # source (module @imports)
+│   ├── style.css                # source (module @imports)
 │   └── modules/
 ├── js/
-│   ├── script.js              # source (ES modules)
+│   ├── script.js                # source (ES modules)
 │   ├── theme-init.js
 │   ├── sw-register.js
 │   └── modules/
 ├── assets/
 │   ├── fonts/
-│   ├── img-src/               # source images
-│   └── img/                   # variants generated by sharp
+│   ├── img-src/                 # source images
+│   └── img/                     # variants generated by sharp
 ├── scripts/
 │   ├── build-dist.js
 │   ├── dev-server.js
+│   ├── generate-sitemap.mjs
+│   ├── generate-sw.js
 │   ├── images.js
 │   ├── check-links.mjs
 │   ├── check-html-assets.mjs
-│   ├── generate-sitemap.mjs
-│   ├── generate-sw.js
 │   ├── qa-a11y.mjs
 │   ├── qa-functional.mjs
-│   ├── functional/            # functional test scenarios
 │   ├── verify-css-build.js
 │   ├── verify-js-build.js
-│   └── utils/
-│       ├── logger.js
-│       ├── mime-types.mjs
-│       ├── static-server.mjs  # functional-test static server
-│       └── partials.js        # partial renderer (build and dev)
-├── sw.js                      # SW logic; the build generates its precache block
+│   ├── functional/              # functional test scenarios
+│   └── utils/                   # partial renderer, logger, static servers
+├── .github/workflows/ci.yml
+├── dist/                        # build output, not tracked in Git
+├── sw.js
 ├── manifest.webmanifest
 ├── robots.txt
 ├── _headers
@@ -436,12 +368,7 @@ DS-construction-pr01-SolidCraft/
 ├── settings.md
 ├── CHANGELOG.md
 ├── LICENSE
-├── package.json
-└── dist/                      # production output (generated, not in Git)
-    ├── css/style.min.css      # generated artifact
-    └── js/
-        ├── script.min.js      # generated artifact
-        └── theme-init.min.js  # generated artifact
+└── package.json
 ```
 
 ### Installation
@@ -458,11 +385,9 @@ Requirements: Node.js `>=18`. All dependencies are development dependencies — 
 npm run dev
 ```
 
-`scripts/dev-server.js` starts `live-server` on port `15500` and opens the server root in the browser. HTML requests go through a middleware that expands the partials per request — editing `partials/header.html` or `partials/footer.html` shows up on a plain refresh and reaches all 13 pages at once. Live reload keeps working as before. An HTTP server is required — the pages rely on ES modules, a Service Worker, and a manifest referenced by an absolute path, so opening files over `file://` will not reproduce production behavior.
+`scripts/dev-server.js` starts `live-server` on port `15500` and answers every HTML request through the partial renderer, so `partials/` edits are visible after a plain refresh. An HTTP server is required — the pages rely on ES modules, a Service Worker, and a manifest referenced by an absolute path, so opening files over `file://` will not reproduce production behavior.
 
-Local development uses the non-minified sources only (`css/style.css` with its modules and `js/script.js` as ES modules) — it never needs a production build.
-
-Rebuilding the production assets in the background (written into `dist/`):
+Rebuilding assets in the background (output goes to `dist/`):
 
 ```bash
 npm run watch:css
@@ -471,21 +396,21 @@ npm run watch:js
 
 ### Available Scripts
 
-- `npm run dev` — local `live-server` with partial rendering (`scripts/dev-server.js`, port `15500`); `npm start` is an alias.
+- `npm run dev` — development server with the partial renderer (port `15500`); `npm start` is an alias.
 - `npm run build:css` — PostCSS builds `dist/css/style.min.css`, then `scripts/verify-css-build.js` checks that no `@import` remains.
-- `npm run build:js` — esbuild builds `dist/js/theme-init.min.js` and `dist/js/script.min.js`, then `scripts/verify-js-build.js` checks that no `import`/`export` syntax remains in either file.
-- `npm run build` — runs `build:css` and `build:js`; both write into `dist/` only.
-- `npm run build:dist` — assembles the `dist/` directory, then runs `build`, `build:sitemap` and `build:sw`.
+- `npm run build:js` — esbuild builds `dist/js/theme-init.min.js` and `dist/js/script.min.js`, then `scripts/verify-js-build.js` checks that no `import`/`export` syntax remains.
+- `npm run build` — runs `build:css` and `build:js`.
+- `npm run build:dist` — the full deployment build: `scripts/build-dist.js`, then `build`, `build:sitemap`, and `build:sw`.
 - `npm run build:sitemap` — generates `dist/sitemap.xml` for the address passed in `SITE_URL`.
-- `npm run build:sw` — generates `dist/sw.js`, deriving the precache list and `CACHE_VERSION` from the finished `dist/` tree.
+- `npm run build:sw` — generates `dist/sw.js` with the precache list and cache version derived from the finished `dist/`.
 - `npm run images:build` / `npm run images:clean` — generate and clean images in `assets/img/`.
-- `npm run check:links` — validates internal links, external links, and anchors across HTML files.
-- `npm run check:assets` — validates local asset references in HTML.
+- `npm run check:links` — validates internal links, external links, and anchors in the rendered pages.
+- `npm run check:assets` — validates local asset references in the rendered pages.
 - `npm run check:html` — runs `check:links` and `check:assets`.
 - `npm run qa:a11y` — axe-core scan in a headless browser.
-- `npm run qa:functional` — functional browser scenarios (navigation, the `Oferta` submenu, the lightbox, the contact form) in headless Chromium.
+- `npm run qa:functional` — the Playwright functional regression suite; supports a `--only=<part of a scenario name>` filter.
 - `npm run check:predeploy` — runs `check:html` and `qa:a11y` as the local pre-deploy gate.
-- `npm run qa:lhci` — runs `build:dist` (which itself runs `build`) and `lhci autorun` with the `lighthouserc.json` configuration.
+- `npm run qa:lhci` — runs `build:dist` and `lhci autorun` with the `lighthouserc.json` configuration.
 - `npm run format` / `npm run format:check` — Prettier in write and verify modes.
 
 ### Production Build
@@ -494,45 +419,32 @@ npm run watch:js
 npm run build:dist
 ```
 
-`npm run build:dist` runs four steps in order. First `scripts/build-dist.js` removes and recreates the `dist/` directory, renders every HTML file with its `partials/` header and footer expanded, copies the `assets/` directory (excluding `assets/img-src/`), and the optional files (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `manifest.webmanifest`, `js/sw-register.js`), and rewrites `css/style.css`, `js/script.js`, and `js/theme-init.js` references to their minified variants in the HTML copies. Then `npm run build` generates `dist/css/style.min.css`, `dist/js/theme-init.min.js`, and `dist/js/script.min.js` from the current sources, and the verification scripts fail the build when one of those artifacts is missing. Next `build:sitemap` writes `dist/sitemap.xml` — the only sitemap file in the project; no tracked copy exists at the root for this step to overwrite. Finally `build:sw` writes `dist/sw.js` — the only Service Worker that reaches production; `build-dist.js` stages no `sw.js`, so there is no copy for this step to overwrite either. The order is binding: `dist/` is cleaned before the production assets are generated, and `build:sw` runs after them because it reads the files it precaches.
+The order is deterministic: `dist/` is recreated, the maintained pages are rendered with their partials, the optional files (`_headers`, `_redirects`, `netlify.toml`, `robots.txt`, `manifest.webmanifest`, `js/sw-register.js`) and `assets/` (excluding `assets/img-src/`) are copied, and the HTML copies' `css/style.css`, `js/script.js`, and `js/theme-init.js` references are rewritten to their minified variants. Only then are the production assets built (`build`), followed by `dist/sitemap.xml` (`build:sitemap`) and `dist/sw.js` (`build:sw`).
 
-`build:sitemap` requires the `SITE_URL` variable and exits non-zero when it is not set. The `build:dist` script in `package.json` passes `SITE_URL=https://construction-pr01-solidcraft.netlify.app` through `cross-env`. `404.html`, `offline.html`, and `thank-you.html` are excluded from the sitemap.
+`build:sitemap` requires the `SITE_URL` variable and exits non-zero when it is not set; the script supplies `SITE_URL=https://construction-pr01-solidcraft.netlify.app` through `cross-env`. `404.html`, `offline.html`, and `thank-you.html` are excluded from the sitemap.
+
+`build:sw` rewrites the block between the `build:sw-manifest` markers in `sw.js`: the precache list is derived by rules over the finished `dist/` (HTML pages, `manifest.webmanifest`, `css/`, `js/`, `assets/fonts/*.woff2`, `assets/img/favicon/*`), and `CACHE_VERSION` is set to a SHA-256 digest of the URL–content pairs truncated to 16 characters. The script fails the build when a precache rule matches nothing, when the markers do not occur exactly once, or when an entry is duplicated, unsorted, or does not resolve to a file in `dist/`.
 
 ### Testing and Validation
 
-The repository contains no unit test suite. The following checks are configured:
-
-- `scripts/check-links.mjs` and `scripts/check-html-assets.mjs` — static validation of links and asset references in HTML.
-- `scripts/qa-a11y.mjs` — axe-core executed through Playwright against a local static server; the scanned routes are `/index.html`, `/404.html`, all six service subpages (`/oferta/elektryka.html`, `/oferta/hydraulika.html`, `/oferta/kafelkowanie.html`, `/oferta/lazienki.html`, `/oferta/malowanie.html`, `/oferta/remonty.html`), all three document pages (`/doc/cookies.html`, `/doc/polityka-prywatnosci.html`, `/doc/regulamin.html`), and `/offline.html` when the file exists — 12 routes in total. Eleven of them are required: a missing one aborts the run with `Required page not found`. The script fails on `serious` or `critical` violations.
-- `scripts/qa-functional.mjs` — the functional browser suite, executed through Playwright against the same local static server and the same partial renderer; nine scenarios cover the mobile navigation drawer, the `Oferta` submenu, the gallery lightbox on `/oferta/lazienki.html`, and the four contact-form paths (validation, anti-spam rejection, successful submission, failed submission). Each scenario runs in its own browser context, and the form submission is intercepted and answered locally by Playwright — no request leaves `127.0.0.1`. The script exits non-zero on the first unmet condition. The optional `--only=<substring of a scenario name>` flag narrows a run to selected scenarios.
+- `scripts/check-links.mjs` and `scripts/check-html-assets.mjs` — static validation of links and asset references; both render pages through `scripts/utils/partials.js`, so they inspect the document in the form that ships to `dist/`.
+- `scripts/qa-a11y.mjs` — axe-core executed through Playwright against a local static server; the scanned routes are `index.html`, `404.html`, all six `oferta/` subpages, all three `doc/` pages, and `offline.html` when the file exists. The script fails on `serious` or `critical` violations.
+- `scripts/qa-functional.mjs` — nine functional scenarios in headless Chromium: the mobile navigation drawer and offer submenu, the lightbox (single tab stop, Enter/Escape with focus restore, Space and arrow keys), and the contact form (empty submission, anti-spam window, successful submission, failed submission).
 - `scripts/verify-css-build.js` and `scripts/verify-js-build.js` — artifact verification embedded in the build commands.
 - `lighthouserc.json` — Lighthouse CI over the `dist` directory for `/`, `/oferta/remonty.html`, and `/doc/polityka-prywatnosci.html`, with thresholds: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
-These commands are configured in the repository. `build:dist`, `check:predeploy` (and therefore `check:links`, `check:assets`, and `qa:a11y`), and `qa:functional` were run locally when the CI workflow was added and all pass. `npm run format` was later applied across the repository and `npm run format:check` now reports `All matched files use Prettier code style!`; `qa:lhci` and `images:build` have not been run.
+These commands are configured in the repository; running them was not part of preparing this documentation.
 
 ### Deployment
 
 The repository includes Netlify deployment configuration:
 
-- `netlify.toml` — build command `npm run build:dist`, publish directory `dist`. Because `build:dist` runs `npm run build`, the deploy regenerates the minified assets from the current sources instead of publishing the versions committed to the repository.
+- `netlify.toml` — build command `npm run build:dist`, publish directory `dist`.
 - `_redirects` — 301 redirects for extensionless and trailing-slash paths, plus a 404 rule pointing to `/404.html`.
 - `_headers` — `Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, and `X-Robots-Tag` headers.
 - The contact form is marked up for Netlify Forms (`netlify`, `netlify-honeypot="bot-field"` attributes and a hidden `form-name` field). The repository contains no custom submission handling implementation.
 
-### Continuous Integration (CI)
-
-The repository contains one GitHub Actions workflow — `.github/workflows/ci.yml`, named `CI`, with a single job `quality-gate`; GitHub reports the status check as `CI / quality-gate`.
-
-- Triggers: `push` to `main`, `pull_request` targeting `main`, and manual `workflow_dispatch`. Development branches are not built on every push — a pull request validates them before merge, and `main` is checked independently.
-- Environment: one `ubuntu-latest` runner, Node.js 24 LTS. The version is pinned in the workflow only — the `engines` field in `package.json` stays `">=18"`. There is no OS, Node, or browser matrix.
-- Steps, in order: `npm ci` (deterministic install from `package-lock.json`, with the npm cache), `npm run build:dist`, `npx playwright install --with-deps chromium`, `npm run check:predeploy`, `npm run qa:functional`. The build precedes the browser install because it needs none — a broken build fails the job before the Chromium download is paid for. The workflow invokes the existing project scripts and does not reproduce their internals in YAML.
-- The pre-deploy gate and the functional suite are separate steps, so the logs name which of the two failed; `check:predeploy` was not widened to absorb `qa:functional`.
-- Chromium is the only browser installed — it is the only one `qa:a11y` and `qa:functional` launch.
-- Permissions are `contents: read`. The workflow reads no secrets, writes nothing back to the repository, and deploys nothing — deployment remains Netlify's job.
-- A ref-aware `concurrency` group with `cancel-in-progress: true` cancels only the obsolete run of the same branch or pull request; the job carries `timeout-minutes: 15`. No step uses `continue-on-error`, so the first non-zero exit code fails the run.
-- The workflow does not run `qa:lhci`, Lighthouse, `format:check`, or any deployment.
-
-Making `CI / quality-gate` a required status check (branch protection) is a GitHub repository setting rather than a file in the repository, and remains a manual step. The full CI contract is documented in `settings.md`.
+Continuous integration: `.github/workflows/ci.yml` defines the `CI` workflow with a single `quality-gate` job (status `CI / quality-gate`), triggered on `push` to `main`, on pull requests targeting `main`, and manually. Steps: `npm ci`, `npm run build:dist`, Playwright Chromium installation, `npm run check:predeploy`, `npm run qa:functional`. The workflow runs on Node `24`, holds `contents: read` permissions, and deploys nothing — deployment stays with Netlify.
 
 ### Accessibility
 
@@ -540,12 +452,11 @@ Implemented mechanisms include:
 
 - semantic sections with `aria-labelledby` and `aria-describedby`, and a skip link to `#main`,
 - ARIA state synchronization in navigation (`aria-expanded`, `aria-haspopup`, `aria-controls`, `aria-current`) and in the theme toggle (`aria-pressed`),
-- keyboard support and a focus trap in the lightbox, with focus restore on close; the close, previous and next buttons are descendants of the `aria-modal` container, and each thumbnail control takes its accessible name from its own `alt`,
-- the same mechanisms in the first-visit modal: focus moved into the dialog, Tab cycling only within it, Escape dismissal, a background scroll lock, and focus restore on close,
-- one tab stop per gallery item — Enter/Space activation opens the lightbox instead of navigating to the image file,
-- form error messages linked to their fields, `aria-invalid` handling, and a `role="status"` region with `aria-live="polite"`; validation is owned entirely by the script (`novalidate`), so the messages also cover empty fields and missing consent,
+- keyboard support, a focus trap, and focus restore in the lightbox and in the informational modal,
+- form error messages linked to their fields, `aria-invalid` handling, and a `role="status"` region with `aria-live="polite"`,
 - `prefers-reduced-motion` handling in CSS and in the animation and scrolling scripts,
-- the `npm run qa:a11y` QA script based on axe-core.
+- SVG icons injected with `aria-hidden="true"` and `focusable="false"`,
+- QA gates: `npm run qa:a11y` (axe-core, 12 routes) and `npm run qa:functional` (keyboard paths for navigation and the lightbox).
 
 This documentation makes no claim of conformance with a specific WCAG level — only the implemented mechanisms are described.
 
@@ -553,57 +464,54 @@ This documentation makes no claim of conformance with a specific WCAG level — 
 
 - `title`, `meta description`, `canonical`, and `meta robots` across pages; `noindex` for `404.html`, `offline.html`, and `thank-you.html` (`noindex, follow`).
 - Open Graph and Twitter Card metadata with images in `assets/img/og/`.
-- JSON-LD structured data: `WebSite`, `CollectionPage`, and `FAQPage`. The site deliberately publishes no `GeneralContractor` or other `LocalBusiness` type — SolidCraft is a fictitious demo brand with no real address, telephone, email or social profiles (see "Project Overview" — project decision).
-- `robots.txt` referencing the public sitemap URL. The sitemap itself is not maintained by hand in the repository — `dist/sitemap.xml` is generated by `scripts/generate-sitemap.mjs` during `build:dist`.
+- JSON-LD structured data: `WebSite`, `CollectionPage`, `ItemList`, and `FAQPage`. Markup describing a fictitious business entity was removed, in line with the demonstrational nature of the site.
+- `robots.txt` points to `/sitemap.xml`; the sitemap file itself is not maintained in the repository — it is produced as `dist/sitemap.xml` during `build:dist`.
 
 ### PWA and Offline Support
 
 - `manifest.webmanifest` defines `id`, `start_url` and `scope` `/`, `standalone` display, theme colors, icons (including `maskable`), three app shortcuts, and screenshots for narrow and wide form factors.
 - `js/sw-register.js` registers `/sw.js` with scope `/` after the `load` event.
-- `sw.js` serves HTML documents network-first with an `/offline.html` fallback and static assets cache-first, hands the fetch handler's cache writes to `event.waitUntil`, and on activation deletes outdated caches carrying the `solidcraft-v` prefix — caches outside that prefix are never touched.
-- The precache contract is not maintained by hand. `npm run build:sw` (`scripts/generate-sw.js`) rewrites the marked block in `sw.js` from the finished `dist/` tree and writes the result as `dist/sw.js`: the cache name is `solidcraft-v<fingerprint>`, where the fingerprint is a SHA-256 over the URL-and-content pairs of every precached file, and the list covers all 13 HTML pages plus `/`, the manifest, `css/style.min.css`, `js/theme-init.min.js`, `js/script.min.js`, `js/sw-register.js`, the six `woff2` files and the full icon set in `assets/img/favicon/`. Changing any of those files changes the cache version; the rest of `dist/` — galleries, hero, screenshots, `sitemap.xml`, `robots.txt` — stays runtime-cached.
-- In the source tree that block is deliberately empty, because `css/style.min.css`, `js/theme-init.min.js` and `js/script.min.js` only exist in `dist/`. The worker therefore installs cleanly under `npm run dev` instead of aborting `cache.addAll()` on files the sources do not contain. The `"dev"` cache version also puts the worker in network-only mode: under `npm run dev` it precaches nothing, answers every same-origin `GET` straight from the network without reading or writing a cache, and clears every `solidcraft-v` cache on activation, so an edited file is never shadowed by an earlier copy. The network-first / cache-first strategies described above are therefore production behavior, which is what the generated `dist/sw.js` carries.
+- In the source tree `CACHE_VERSION` is `"dev"` and the precache list is empty — such a worker installs cleanly and runs network-only, so local edits are never shadowed by a cached copy.
+- In the production build `dist/sw.js` receives the derived precache list and cache version, serves HTML documents network-first with an `/offline.html` fallback and static assets cache-first while persisting network responses, and on activation deletes only keys prefixed `solidcraft-v`.
 
 The manifest and Service Worker are referenced by absolute paths, so they work when the site is served from the domain root. The repository contains no installability verification or offline behavior tests.
 
 ### Performance
 
 - CSS minification (`cssnano`) and JS minification (`esbuild`), with references rewritten to minified assets in the `dist/` build.
-- Hero image preload (AVIF `srcset`) with `fetchpriority="high"` and preload of four `woff2` files; fonts are self-hosted with `font-display: swap`.
+- Hero image preload (AVIF `srcset`) with `fetchpriority="high"` and `woff2` preloads; fonts are self-hosted, split into `latin` and `latin-ext` subsets with `unicode-range` and `font-display: swap`.
 - Responsive images generated by `scripts/images.js` in AVIF, WebP, and JPG formats, at defined sizes for hero, offer, and gallery images.
+- Interface icons injected from a single SVG registry instead of separate image files.
 - Prefetch of service subpages on `mouseenter`/`focus` with a 120 ms delay, skipped for `saveData` and 2G connections.
 - The map is loaded only after user consent, in an `iframe` with `loading="lazy"`.
-- Static asset caching in the Service Worker.
+- App-shell precaching and runtime caching in the Service Worker.
 - Quality thresholds defined in `lighthouserc.json`.
 
 The repository contains no recorded performance measurement results.
 
 ### Data and State Persistence
 
-- Site content is stored directly in the HTML files; there is no external data source or API.
-- `localStorage` holds interface preferences only: `theme` (theme), `consent.maps` (map embed consent), and `project-banner-accepted` (project notice acceptance).
+- Site content is stored directly in the HTML files and in `partials/`; there is no external data source or API.
+- `localStorage` holds interface preferences only: `theme` (theme), `consent.maps` (map embed consent), and `project-banner-accepted` (project notice acceptance). Storage access is guarded — an unavailable store does not block the interface.
 - The `?usluga=` URL parameter is copied into a hidden field of the contact form and then removed from the address via `history.replaceState`.
 - Form data is sent via POST to the address in the `action` attribute (`/thank-you.html`) and handled by Netlify Forms. The project has no user accounts, database, or cross-device synchronization.
 
 ### Project Maintenance
 
-- Editable source files: `css/style.css` and `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/sw-register.js`, `js/modules/**`, `partials/header.html` and `partials/footer.html`, `assets/img-src/**`, and the maintained HTML pages.
-- Generated artifacts that must not be edited manually: `dist/css/style.min.css`, `dist/js/script.min.js`, `dist/js/theme-init.min.js`, the HTML pages, `sitemap.xml` and `sw.js` inside `dist/`, `assets/img/**`, and the whole `dist/` directory. `dist/` is generated in full, is never maintained by hand, and stays out of version control.
-- Change the shared header and footer in `partials/`, never in a rendered copy — one edit reaches all 13 pages.
-- Repository hygiene: `.gitignore` keeps `node_modules/`, `/dist/`, the `*.min.css` / `*.min.js` artifacts, the report directories and the local agent directories (`.claude/`, `.codex/`) out of Git; `.gitattributes` normalises text files to LF and marks the binary extensions present in the project as `binary`. The tracked text files are already normalised to LF (`git ls-files --eol` reports `i/lf w/lf` for every one of them, and no entry is `crlf` or `mixed`), so no renormalisation is pending. Should `.gitattributes` ever change, `git add --renormalize .` remains a separate Git operation performed by the maintainer and is not part of any npm script.
-- Changing CSS/JS sources requires no build step during development — `npm run dev` serves the source files. The minified artifacts are produced in `dist/` by `npm run build:dist` only, locally and on deploy alike.
-- After changing source images run `npm run images:build` — that step stays manual and is not part of the deploy path.
-- The precache list and `CACHE_VERSION` are not maintained by hand: `npm run build:sw` derives them from the finished `dist/`, and the version is a fingerprint of the cached content, so changing a precached file invalidates the cache by itself. Only the runtime logic in `sw.js` outside the marked block is edited manually.
+- Editable source files: `partials/header.html`, `partials/footer.html`, `css/style.css` and `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/sw-register.js`, `js/modules/**`, `assets/img-src/**`, and the runtime logic in `sw.js`.
+- The shared layout has one source — edit the partial, not the rendered copy in `dist/`.
+- Do not edit by hand: anything under `dist/` (including `dist/sitemap.xml` and `dist/sw.js`), the block between the `build:sw-manifest` markers in `sw.js`, and `assets/img/**`.
+- After changing source files run `npm run build:dist`; after changing source images run `npm run images:build`.
+- The `CI` and `quality-gate` names are part of the contract — renaming either detaches the required status check in branch-protection settings.
 - Pipeline and tooling rules are documented in `settings.md`, which remains the single source of truth for that layer; the change history is kept in `CHANGELOG.md`.
-
-### Roadmap
-
-Based on the open items recorded in the repository:
-
-- make the `CI / quality-gate` status check required in the branch-protection rules for `main` on GitHub. The CI workflow described under "Continuous Integration (CI)" already runs `check:predeploy` and `qa:functional` automatically; enforcing a green status before merge is a repository setting rather than a file in the repository.
 
 ### License
 
 The project is covered by the **KP_CODE Proprietary Project License (version 1.0)** — the full text is available in the [`LICENSE`](LICENSE) file. The `license` field in `package.json` is set to `SEE LICENSE IN LICENSE`.
 
 The project is not open-source software. Commercial use, redistribution, public deployment, and use of the project as a template require prior written permission from the copyright owner: **kontakt@kp-code.pl**.
+
+### Attributions
+
+- The icon geometry in `js/modules/icons.js` comes from Font Awesome Free 7.3.1 (Fonticons, Inc.), as stated in the file header: <https://fontawesome.com>.
+- The Montserrat and Poppins typefaces are self-hosted as `woff2` files in `assets/fonts/`. The repository contains no license files for these typefaces.
