@@ -28,7 +28,7 @@
   box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
 }
 
-[data-reveal] {
+:where(.js) [data-reveal] {
   opacity: 0;
   transform: translate3d(0, var(--sr-distance), 0) scale(1);
   transition:
@@ -42,23 +42,23 @@
   transform: none;
 }
 
-[data-reveal="up"] {
+:where(.js) [data-reveal="up"] {
   transform: translate3d(0, var(--sr-distance), 0);
 }
 
-[data-reveal="down"] {
+:where(.js) [data-reveal="down"] {
   transform: translate3d(0, calc(var(--sr-distance) * -1), 0);
 }
 
-[data-reveal="left"] {
+:where(.js) [data-reveal="left"] {
   transform: translate3d(var(--sr-distance), 0, 0);
 }
 
-[data-reveal="right"] {
+:where(.js) [data-reveal="right"] {
   transform: translate3d(calc(var(--sr-distance) * -1), 0, 0);
 }
 
-[data-reveal="scale"] {
+:where(.js) [data-reveal="scale"] {
   transform: scale(0.96);
 }
 
@@ -80,15 +80,15 @@
     transform var(--sr-duration) var(--sr-ease);
 }
 
-.card.hover-card[data-reveal]:not(.is-revealed) {
+:where(.js) .card.hover-card[data-reveal]:not(.is-revealed) {
   opacity: 0;
 }
 
-.card.hover-card[data-reveal="up"]:not(.is-revealed) {
+:where(.js) .card.hover-card[data-reveal="up"]:not(.is-revealed) {
   transform: translate3d(0, var(--sr-distance), 0);
 }
 
-.card.hover-card[data-reveal="scale"]:not(.is-revealed) {
+:where(.js) .card.hover-card[data-reveal="scale"]:not(.is-revealed) {
   transform: scale(0.94);
 }
 
@@ -144,8 +144,8 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .card[data-reveal],
-  .hover-card[data-reveal] {
+  :where(.js) .card[data-reveal],
+  :where(.js) .hover-card[data-reveal] {
     animation: none !important;
     opacity: 0;
     transform: translate3d(0, var(--sr-distance), 0);

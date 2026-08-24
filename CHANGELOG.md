@@ -30,6 +30,7 @@ Detailed implementation history lives in the Git history, not here.
 
 ### Fixed
 
+- Kept `[data-reveal]` content visible without JavaScript while preserving reveal animations on JavaScript-enhanced pages.
 - Fixed the rendering of Polish diacritics by adding the six `latin-ext` font subsets with a per-face `unicode-range`.
 - Fixed the first-visit modal's three legal-document links, which returned HTTP 404.
 - Made the first-visit modal keyboard-operable and reliably dismissible, with focus management, Escape handling, a focus trap and a scroll lock.

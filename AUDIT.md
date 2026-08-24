@@ -69,6 +69,7 @@ None detected.
 
 ### [P1-01] Reveal styling removes core content when JavaScript is unavailable
 
+- **Status:** Resolved
 - **Classification:** Defect
 - **Affected area:** Progressive enhancement, content visibility, runtime resilience
 - **Evidence:** `css/modules/utilities.css:31-43`; `js/theme-init.js:1-4`; `index.html:2`
