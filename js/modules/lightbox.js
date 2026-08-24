@@ -1,5 +1,7 @@
 "use strict";
 
+import { createIcon } from "./icons.js";
+
 function initOfertaLightbox() {
   if (initOfertaLightbox._abort) initOfertaLightbox._abort.abort();
 
@@ -62,27 +64,21 @@ function initOfertaLightbox() {
     viewport.appendChild(img);
     wrap.appendChild(viewport);
 
-    const mkBtn = (cls, label, svg) => {
+    /* Geometry comes from the shared registry; the button keeps the
+       accessible name and the injected svg stays decorative. */
+    const mkBtn = (cls, label, icon) => {
       const b = $("button");
       b.type = "button";
       b.className = `lb-btn ${cls}`;
       b.setAttribute("aria-label", label);
-      b.innerHTML = svg;
+      const svg = createIcon(icon);
+      if (svg) b.appendChild(svg);
       return b;
     };
 
-    const svgX =
-      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7A1 1 0 0 0 5.7 7.1L10.6 12l-4.9 4.9a1 1 0 1 0 1.4 1.4L12 13.4l4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z"/></svg>';
-
-    const svgL =
-      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.7 5.3a1 1 0 0 1 0 1.4L11.4 11l4.3 4.3a 1 1 0 1 1-1.4 1.4l-5-5a 1 1 0 0 1 0-1.4l5-5a 1 1 0 0 1 1.4 0z"/></svg>';
-
-    const svgR =
-      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.3 5.3a 1 1 0 0 0 0 1.4L12.6 11l-4.3 4.3a 1 1 0 1 0 1.4 1.4l5-5a 1 1 0 0 0 0-1.4l-5-5a 1 1 0 0 0-1.4 0z"/></svg>';
-
-    btnClose = mkBtn("lb-close", "Zamknij podgląd", svgX);
-    btnPrev = mkBtn("lb-prev", "Poprzednie zdjęcie", svgL);
-    btnNext = mkBtn("lb-next", "Następne zdjęcie", svgR);
+    btnClose = mkBtn("lb-close", "Zamknij podgląd", "close");
+    btnPrev = mkBtn("lb-prev", "Poprzednie zdjęcie", "chevron-left");
+    btnNext = mkBtn("lb-next", "Następne zdjęcie", "chevron-right");
 
     wrap.append(btnClose, btnPrev, btnNext);
     document.body.append(backdrop, wrap);

@@ -103,9 +103,6 @@
   width: 24px;
   height: 24px;
 }
-.theme-toggle .icon-moon {
-  fill: currentColor;
-}
 .theme-toggle .icon-sun {
   display: none;
 }
@@ -114,6 +111,21 @@
 }
 :root[data-theme="dark"] .theme-toggle .icon-sun {
   display: block;
+}
+/* theme-init.js sets data-theme before first paint, but initIcons() only runs
+   with the deferred module, so the placeholder is briefly still empty. A
+   neutral ring holds the 24px box until the icon lands, and the button never
+   shows a blank hit area or reflows. */
+.theme-toggle [data-icon]:empty {
+  width: 24px;
+  height: 24px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  opacity: 0.3;
+}
+/* The toggle is inert without JS — hidden, as .nav-toggle already is. */
+.no-js .theme-toggle {
+  display: none;
 }
 .theme-toggle:hover {
   transform: translateY(-1px);

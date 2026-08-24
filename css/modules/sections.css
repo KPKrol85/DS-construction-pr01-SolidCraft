@@ -741,7 +741,6 @@
   border-radius: var(--radius-3);
   box-shadow: var(--shadow-sm);
   color: var(--c-ink);
-  text-align: start;
 }
 
 .contact-list > li + li {
@@ -750,9 +749,8 @@
 
 .contact-item {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: var(--space-3);
+  justify-items: center;
   min-height: 2.75rem;
   padding-block: var(--space-2);
   color: inherit;
@@ -776,24 +774,6 @@
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
-}
-
-.contact-icon {
-  display: inline-flex;
-  width: 18px;
-  height: 18px;
-  flex: 0 0 18px;
-  color: var(--c-accent);
-}
-
-.contact-icon svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.no-js .contact-icon {
-  display: none;
 }
 
 .contact__details {
