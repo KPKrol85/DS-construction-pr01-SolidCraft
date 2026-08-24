@@ -67,27 +67,6 @@ None detected.
 
 ## 5. P1 — Important issues worth fixing next
 
-### [P1-01] Reveal styling removes core content when JavaScript is unavailable
-
-- **Status:** Resolved
-- **Classification:** Defect
-- **Affected area:** Progressive enhancement, content visibility, runtime resilience
-- **Evidence:** `css/modules/utilities.css:31-43`; `js/theme-init.js:1-4`; `index.html:2`
-- **Current behavior:** The base `[data-reveal]` rule sets every reveal element to `opacity: 0`, and visibility returns only after JavaScript adds `.is-revealed`. There is no `.no-js` visibility fallback. JavaScript-disabled Chromium confirmed that all 51 reveal elements on the home page, all 29 on the representative service page, and all 5 on the privacy page remain visually hidden.
-- **Impact:** A script-disabled user, or a user affected by a module-loading failure, loses large parts of the service content, legal-page navigation/footer, and contact interface even though the project is otherwise a static multi-page site with explicit `.no-js` behavior.
-- **Recommended direction:** Make visible content the baseline and scope the hidden pre-reveal state to an established JavaScript-enhanced state, while retaining the existing reduced-motion behavior and reveal animation.
-- **Verification criteria:** With JavaScript disabled, every maintained route renders all content and controls visibly; with JavaScript enabled, reveal animations still complete and no element remains hidden after it enters the viewport.
-
-### [P1-02] Indexed direct-entry routes do not reliably disclose the fictional project identity
-
-- **Classification:** Content integrity risk
-- **Affected area:** Public content, service routes, demonstrational positioning
-- **Evidence:** `index.html:1316-1360`; `oferta/remonty.html:10-19`; `partials/footer.html:29-32`; `partials/footer.html:92-103`
-- **Current behavior:** The explicit project notice exists only on `index.html`, starts with `hidden`, and depends on JavaScript. The indexable service pages contain no equivalent notice. Their shared footer instead states that SolidCraft is a real renovation company, guarantees delivery, and publishes a sample address, NIP, and REGON without identifying those values as fictional in the same context.
-- **Impact:** Visitors who enter through an indexed service route, or who browse with JavaScript unavailable, can reasonably interpret the fictional business identity, service promises, contact paths, and identifiers as belonging to an operating construction company.
-- **Recommended direction:** Provide a persistent, non-JavaScript-dependent demonstrational disclosure through a shared source on every public entry route, and label or remove fictional business identifiers and real-company promises where they appear.
-- **Verification criteria:** Every indexable route, including direct service-page entry and the JavaScript-disabled home page, visibly identifies SolidCraft as a fictional demonstrational project alongside or before actionable business claims and contact details.
-
 ### [P1-03] Privacy and cookie disclosures do not match the implemented data contract
 
 - **Classification:** Content integrity risk
