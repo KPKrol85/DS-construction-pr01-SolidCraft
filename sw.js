@@ -25,7 +25,13 @@ const ASSETS = [];
 const CACHE_NAME = `${APP_ID}-v${CACHE_VERSION}`;
 const IS_DEV = CACHE_VERSION === "dev";
 
-const STATIC_DESTINATIONS = new Set(["style", "script", "font", "image", "manifest"]);
+const STATIC_DESTINATIONS = new Set([
+  "style",
+  "script",
+  "font",
+  "image",
+  "manifest",
+]);
 
 const isCacheableResponse = (response) => response && response.ok;
 
@@ -43,7 +49,9 @@ const persistRuntimeResponse = (event, request, responsePromise) => {
            put() below is never reached. */
         const copy = response.clone();
 
-        return caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+        return caches
+          .open(CACHE_NAME)
+          .then((cache) => cache.put(request, copy));
       },
       () => undefined,
     ),
@@ -52,14 +60,29 @@ const persistRuntimeResponse = (event, request, responsePromise) => {
 
 self.addEventListener("install", (event) => {
   if (!IS_DEV) {
-    event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
+    event.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)),
+    );
   }
 
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key.startsWith(`${APP_ID}-v`) && (IS_DEV || key !== CACHE_NAME)).map((key) => caches.delete(key)))));
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter(
+              (key) =>
+                key.startsWith(`${APP_ID}-v`) && (IS_DEV || key !== CACHE_NAME),
+            )
+            .map((key) => caches.delete(key)),
+        ),
+      ),
+  );
 
   self.clients.claim();
 });
@@ -77,9 +100,14 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  const isHTML = req.mode === "navigate" || req.headers.get("accept")?.includes("text/html");
+  const isHTML =
+    req.mode === "navigate" || req.headers.get("accept")?.includes("text/html");
 
-  const isStaticAsset = STATIC_DESTINATIONS.has(req.destination) || /\.(?:css|js|mjs|png|jpg|jpeg|gif|svg|webp|avif|ico|woff2?|ttf|otf|eot|webmanifest)$/i.test(url.pathname);
+  const isStaticAsset =
+    STATIC_DESTINATIONS.has(req.destination) ||
+    /\.(?:css|js|mjs|png|jpg|jpeg|gif|svg|webp|avif|ico|woff2?|ttf|otf|eot|webmanifest)$/i.test(
+      url.pathname,
+    );
 
   if (isHTML) {
     const responsePromise = fetch(req).then((response) => ({
@@ -89,7 +117,15 @@ self.addEventListener("fetch", (event) => {
 
     persistRuntimeResponse(event, req, responsePromise);
 
-    event.respondWith(responsePromise.then(({ response }) => response).catch(() => caches.match(req, { ignoreSearch: true }).then((cached) => cached || caches.match("/offline.html"))));
+    event.respondWith(
+      responsePromise
+        .then(({ response }) => response)
+        .catch(() =>
+          caches
+            .match(req, { ignoreSearch: true })
+            .then((cached) => cached || caches.match("/offline.html")),
+        ),
+    );
 
     return;
   }

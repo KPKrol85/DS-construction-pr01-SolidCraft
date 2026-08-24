@@ -169,7 +169,10 @@ function initContactForm() {
       e.preventDefault();
       if (submitting) return;
 
-      if ((hpInput && hpInput.value.trim() !== "") || looksSpammy(msgInput?.value)) {
+      if (
+        (hpInput && hpInput.value.trim() !== "") ||
+        looksSpammy(msgInput?.value)
+      ) {
         form.reset();
         return;
       }

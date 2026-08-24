@@ -2,11 +2,7 @@
   "ci": {
     "collect": {
       "staticDistDir": "dist",
-      "url": [
-        "/",
-        "/oferta/remonty.html",
-        "/doc/polityka-prywatnosci.html"
-      ],
+      "url": ["/", "/oferta/remonty.html", "/doc/polityka-prywatnosci.html"],
       "numberOfRuns": 1
     },
     "assert": {
