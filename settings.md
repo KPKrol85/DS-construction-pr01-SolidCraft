@@ -21,7 +21,7 @@ This file is the canonical source of truth for the Solidcraft build/development 
 ## Scripts
 
 - `start`: alias for `dev`.
-- `dev`: runs `scripts/dev-server.js`, which serves the project locally on port `15500`, opens `index.html`, and answers every HTML request through the shared partial renderer so `partials/` edits are visible on refresh.
+- `dev`: runs `scripts/dev-server.js`, which serves the project locally on port `15500`, opens the server root in the browser, and answers every HTML request through the shared partial renderer so `partials/` edits are visible on refresh.
 - `build:css`: builds `dist/css/style.min.css` and verifies no `@import` remains.
 - `build:js`: builds `dist/js/theme-init.min.js` and `dist/js/script.min.js` and verifies no `import`/`export` remains in either.
 - `build`: runs `build:css` and `build:js`.
@@ -36,6 +36,7 @@ This file is the canonical source of truth for the Solidcraft build/development 
 - `check:assets`: validates local asset references in HTML (`img/src`, `script/src`, `link[href]`, `source/srcset`, `img/srcset`).
 - `check:html`: runs `check:links` and `check:assets`.
 - `qa:a11y`: runs axe-based accessibility scans in a headless browser on key pages.
+- `qa:functional`: runs `scripts/qa-functional.mjs`, a Playwright-driven functional regression pass over the navigation drawer, the offer submenu, the lightbox and the contact-form submission paths.
 - `qa:lhci`: runs `build:dist` and then `lhci autorun` against `lighthouserc.json`.
 - `check:predeploy`: runs `check:html` and `qa:a11y` as the local pre-deploy gate.
 - `format`: applies Prettier writes.
@@ -110,7 +111,7 @@ This file is the canonical source of truth for the Solidcraft build/development 
 
 - `.gitignore` keeps generated and local output out of Git: `node_modules/`, `/dist/`, the minified artifacts `/css/*.min.css` and `/js/*.min.js`, report output (`/test-results/`, `/playwright-report/`, `/.lighthouseci/`), the local agent worktree directories `.claude/` and `.codex/`, `.netlify/`, environment files, logs, editor directories and OS files. `assets/` and `package-lock.json` are intentionally tracked.
 - `.gitattributes` declares one line-ending convention for tracked text files — `* text=auto eol=lf` — so line endings never appear as a diff. The binary extensions present in the project (`.avif`, `.ico`, `.jpg`, `.png`, `.webp`, `.woff2`) are marked `binary` so normalisation can never rewrite them; `.svg` stays under the text rule because it is XML.
-- `.gitattributes` governs already-tracked files only after the working tree is renormalised (`git add --renormalize .`). That is a Git operation performed by the maintainer and is not part of any npm script.
+- The tracked working tree is already normalised to that convention, so no renormalisation step is pending: `git ls-files --eol` reports `i/lf w/lf` for every tracked text file, no entry is `crlf` or `mixed`, and `git add --renormalize .` produces no change. Renormalisation would only become relevant again if `.gitattributes` itself changed; it is a Git operation performed by the maintainer and is not part of any npm script.
 - `.prettierignore` excludes `partials/` (Prettier cannot parse the `{{token}}` / `{{#if}}` template syntax), `dist/`, and any `*.min.css` / `*.min.js`.
 
 ## Logging Hygiene (tooling scripts)

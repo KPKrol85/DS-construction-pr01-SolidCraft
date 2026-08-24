@@ -1,290 +1,97 @@
 # SolidCraft — Development Plan
 
-**Last reviewed:** 2026-08-22
-**Project type:** Static multi-page front-end website (HTML, CSS, vanilla ES modules) with a Node-based build and QA tooling layer; no backend in the repository
-**Plan status:** Active
+**Last reviewed:** 2026-08-24
+**Plan status:** Active — implementation complete, release closure open
 
-## Planning principles
+Completed work is summarised in `CHANGELOG.md`; open findings, if any, are in `AUDIT.md`;
+the detailed implementation record is in the Git history. Source-vs-generated ownership and
+pipeline rules live in `settings.md`.
 
-- The plan reflects the current verified repository state; every item is backed by current source, configuration, or a re-verified `AUDIT.md` finding.
-- Main items are checked only when all required subtasks are complete and the stated completion condition holds.
-- Canonical sources are `css/style.css` + `css/modules/**`, `js/script.js` + `js/modules/**`, `js/theme-init.js`, `js/sw-register.js`, `partials/header.html` + `partials/footer.html`, the maintained HTML pages, and `assets/img-src/**`; `dist/css/style.min.css`, `dist/js/*.min.js`, the rendered HTML and `sitemap.xml` under `dist/`, and `assets/img/**` are generated and are never edited directly — the minified assets exist only under `dist/`, produced by the production build (`settings.md` — "Source vs Generated Assets").
-- Significant completed changes are recorded separately in `CHANGELOG.md`; pending items stay only in this file.
-- This plan is created from the current project state. No prior `PLAN.md` existed, so no completed planning history is reconstructed here.
+## Remaining work
 
-## Current priorities
+- [ ] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
 
-1. `PH9-02` — Run the pre-deploy gate end to end against the corrected implementation and confirm the produced `dist/` matches the current canonical sources.
-2. `PH1-04` — Renormalise the working tree (`git add --renormalize .`) so `.gitattributes` takes effect for the already-tracked files. This is the single outstanding part of an otherwise complete task and is a Git operation run by the maintainer, not an npm script; `AUDIT.md` — `P2-02` records it as the reason that finding stays "Partially addressed".
+  - [x] `npm run format:check`
+  - [ ] `npm run check:html`
+  - [ ] `npm run qa:a11y`, then review the reported violations
+  - [ ] `npm run build` and `npm run build:dist`, and confirm `dist/` matches the current sources
+  - Not re-run since the Phase 10 changes.
+
+- [ ] **PH9-03 — Manual final visual QA pass**
+
+  - [ ] home page and the six `oferta/` subpages, both themes, mobile/tablet/desktop
+  - [ ] Phase 10 presentation work: responsive treatments, testimonials, contact section, diacritics
+  - [ ] consolidated icons: footer, theme toggle, lightbox controls
+  - No automated gate covers visual appearance.
+
+- [ ] **PH9-04 — Close the release**
+  - [ ] confirm the canonical documents agree on the final state
+  - [ ] promote `CHANGELOG.md` `[Unreleased]` to a dated release heading
+  - [ ] create the release tag for the version in `package.json` (`1.0.0`)
+  - Depends on `PH9-02` and `PH9-03`.
 
 ## Phase 1 — Quality gates and build contracts
 
-**Goal:** Make the project's own validation and deployment contracts trustworthy, so every later phase can be verified against them.
-
-- [x] **PH1-01 — Serve correct MIME types from the accessibility gate's static server** — **Priority:** High
-
-  - [x] replace the `application/octet-stream` fallback in `scripts/qa-a11y.mjs` with a type map covering at least `.css`, `.js`, `.mjs`, `.json`, `.svg`, `.woff2`, `.png`, `.jpg`, `.webp`, `.avif`, `.ico`
-  - [x] align the equivalent branch in `scripts/check-links.mjs` so both harnesses share one convention
-  - [x] re-baseline the axe violation list produced against the corrected rendering and record which violations are pre-existing
-  - **Completion condition:** during `npm run qa:a11y` the scanned page has the project stylesheet applied and `window.SC` defined, and the reported violations are reviewed against that corrected baseline
-  - **Source:** `AUDIT.md` — P1-07
-
-- [x] **PH1-02 — Repair the first-visit modal's legal-document links** — **Priority:** High
-
-  - [x] point the `Regulamin`, `Polityka prywatności` and `Cookies` links in the project modal at the documents in `doc/`, using the document-relative `doc/<file>.html` convention already used by the footer
-  - [x] re-run the link checker and confirm no internal failures remain
-  - **Completion condition:** `npm run check:links` reports no internal failures and all three modal links open the corresponding `doc/` page
-  - **Source:** `AUDIT.md` — P1-01
-
-- [x] **PH1-03 — Make the deploy command produce the assets it publishes** — **Priority:** High
-
-  - [x] run the asset build (`build:css` + `build:js`) as part of the deploy path, or fail `scripts/build-dist.js` when a minified artefact is older than its canonical sources
-  - [x] keep the existing `ensureRequiredFilesExist()` presence check as a second guard
-  - [x] update `settings.md` — "Scripts" / "Deployment Notes" and the `README.md` maintenance sections to describe the new contract
-  - **Completion condition:** a commit that edits a file under `css/modules/` or `js/modules/` and is deployed without a manual local build either produces regenerated minified output or fails the build
-  - **Note:** the completion condition still holds, but the mechanics recorded in the subtasks were superseded later in the cycle, when the minified artefacts moved out of the source tree into `dist/`. `build:dist` now stages `dist/` before running the asset build, and the `ensureRequiredFilesExist()` presence check was dropped in favour of `scripts/verify-css-build.js` and `scripts/verify-js-build.js` validating the artefacts in `dist/`. See `AUDIT.md` — `P1-08` "Superseded detail" and `settings.md` — "Deployment Notes".
-  - **Source:** `AUDIT.md` — P1-08
-
-- [x] **PH1-04 — Add the missing repository hygiene controls** — **Priority:** Medium
-  - [x] create `.gitignore` (new file) covering `node_modules/`, `dist/` and `.lighthouseci/`
-  - [x] create `.gitattributes` (new file) normalising tracked text files to LF, then renormalise the working tree
-  - [x] remove the two tracked duplicate gallery renditions whose filenames contain `" (1)"` from `assets/img/gallery/`
-  - **Completion condition:** after a fresh `npm install` and `npm run build:dist`, `git status` is clean, `git diff --ignore-cr-at-eol` and `git diff` agree, and no tracked asset filename contains `" (1)"`
-  - **Outstanding:** the files are in place — `.gitignore` consolidated, `.gitattributes` added with `* text=auto eol=lf` plus `binary` for `.avif`, `.ico`, `.jpg`, `.png`, `.webp` and `.woff2`, and both `" (1)"` renditions deleted from `assets/img/gallery/`. Renormalising the working tree so `.gitattributes` takes effect for already-tracked files (`git add --renormalize .`) is a Git operation performed separately by the maintainer and was not carried out here; the `git status`-clean part of the completion condition holds only once it has been.
-  - **Source:** `AUDIT.md` — P2-02
+- [x] **PH1-01** — Serve correct MIME types from the accessibility gate's static server.
+- [x] **PH1-02** — Repair the first-visit modal's legal-document links.
+- [x] **PH1-03** — Make the deploy command produce the assets it publishes.
+- [x] **PH1-04** — Add the missing repository hygiene controls. Tracked text files are normalised to LF; `git add --renormalize .` is a no-op.
 
 ## Phase 2 — Entry-path and navigation accessibility
 
-**Goal:** Make the two blocking interaction paths a visitor cannot avoid — the first-visit modal and the header offer submenu — correct, keyboard-operable and truthful in their ARIA state.
-
-- [x] **PH2-01 — Make the first-visit modal operable and reliably dismissible** — **Priority:** High
-
-  - [x] move focus into the dialog on open and restore it to a sensible element on dismissal
-  - [x] constrain Tab within the dialog and add an Escape dismissal path, reusing the focus pattern already implemented in `js/modules/lightbox.js` instead of introducing a second one
-  - [x] apply the existing `body.has-project-modal` scroll-lock class, which no code currently sets
-  - [x] wrap the `localStorage` read and write in `js/modules/project-banner.js` with the guarded helpers already used by `js/theme-init.js`, `js/modules/map-consent.js` and `js/modules/ui-core.js`, and set the hidden state before persisting
-  - **Completion condition:** with the modal open, focus starts inside the dialog, Tab cycles only within it, Escape dismisses it, background scrolling is locked, focus returns after dismissal, and the modal is still dismissible when `localStorage` access throws
-  - **Source:** `AUDIT.md` — P1-02, P2-12
-
-- [x] **PH2-02 — Define the navigation breakpoint once** — **Priority:** Medium
-
-  - [x] reconcile the `992px` / `991.98px` media queries in `js/modules/nav.js` with the `1024px` header breakpoint in `css/modules/layout.css`
-  - [x] reference the single agreed value from both layers so the drawer UI and the drawer logic switch at the same width
-  - **Completion condition:** the viewport width at which the header switches between drawer and inline navigation is identical in CSS and JavaScript, verified at the boundary and at 1000 px
-  - **Source:** `AUDIT.md` — P2-01
-
-- [x] **PH2-03 — Make one mechanism authoritative for the offer submenu state** — **Priority:** High
-  - [x] select the `open` class on `#dd-oferta` as the authoritative visible-state mechanism
-  - [x] drive the mobile drawer and desktop dropdown from that class, synchronising `aria-expanded` in `setDd()`
-  - [x] open the rendered mobile submenu before moving focus to its first link
-  - [x] retain all six service subpages in the header below the navigation breakpoint
-  - **Depends on:** `PH2-02`
-  - **Completion condition:** below the navigation breakpoint, activating "Oferta" reveals the six submenu links and focus lands on the first one; at every viewport `aria-expanded` on the trigger matches the submenu's rendered visibility
+- [x] **PH2-01** — Make the first-visit modal operable and reliably dismissible.
+- [x] **PH2-02** — Define the navigation breakpoint once, at 1024 px.
+- [x] **PH2-03** — Make one mechanism authoritative for the offer submenu state.
 
 ## Phase 3 — Contrast and visible feedback states
 
-**Goal:** Bring the primary controls and the contact form's feedback text to WCAG AA against their real rendered backgrounds, in both themes.
-
-- [x] **PH3-01 — Bind button labels to a theme-stable on-brand foreground token** — **Priority:** High
-
-  - [x] add a dedicated on-brand foreground token in `css/modules/tokens.css` that does not invert with the theme
-  - [x] bind `.btn` and `.project-modal__actions .btn` in `css/modules/components.css` to that token instead of `--fg` / `--bg`
-  - [x] re-measure the affected controls in both themes: hero CTAs, contact submit, subpage CTAs, modal accept
-  - **Completion condition:** in both themes every `.btn` label measures at least 4.5:1 against its rendered background
-  - **Source:** `AUDIT.md` — P1-05
-
-- [x] **PH3-02 — Style the contact form's status and error states for the orange section background** — **Priority:** Medium
-  - [x] add explicit `.is-ok` and `.is-err` rules, which `showNote()` toggles but which have no CSS anywhere in `css/`
-  - [x] choose status-note and field-error colours that clear 4.5:1 across the `--brand-grad` gradient rendered by `.cta`
-  - [x] distinguish success from failure by more than hue alone
-  - **Completion condition:** success and error states are visually distinct, and both the status note and the field errors measure at least 4.5:1 against the contact section's rendered background
-  - **Note:** the states reachable today are the phone-format error, the send-failure error and the success confirmation; the remaining required-field error cases become reachable with `PH4-01`
-  - **Source:** `AUDIT.md` — P2-03
+- [x] **PH3-01** — Bind button labels to a theme-stable on-brand foreground token.
+- [x] **PH3-02** — Style the contact form's status and error states for the orange section background.
 
 ## Phase 4 — Contact form correctness
 
-**Goal:** Make the implemented and documented validation, accessible error messaging and anti-spam behaviour actually execute without destroying user input.
-
-- [x] **PH4-01 — Let the submit handler own contact form validation** — **Priority:** High
-
-  - [x] add `novalidate` to the contact form in `index.html`, keeping the native constraint attributes for semantics and the no-JavaScript fallback
-  - [x] confirm the existing branch in `js/modules/forms.js` then runs for missing, too-short, too-long and unchecked-consent cases
-  - [x] verify the Netlify Forms submission path (`name="contact"`, `netlify-honeypot`, `action="/thank-you.html"`) is unaffected
-  - **Completion condition:** submitting the empty form suppresses the browser bubble, sets `aria-invalid="true"` on each invalid field, renders the matching `.form-error` text, and announces the summary in the `role="status"` region
-  - **Source:** `AUDIT.md` — P1-04
-
-- [x] **PH4-02 — Stop discarding user input on the anti-spam timing branch** — **Priority:** Medium
-
-  - [x] keep the honeypot, content heuristic and 2000 ms timing checks
-  - [x] remove the `form.reset()` call from the timing rejection path so entered values are preserved
-  - [x] surface a short retry message in the existing status region instead of returning silently
-  - **Completion condition:** a submission rejected by the timing heuristic preserves all entered values and produces a visible, announced message
-  - **Source:** `AUDIT.md` — P2-04
-
-- [x] **PH4-03 — Tie the capture-phase trim listener to the module's abort signal** — **Priority:** Low
-  - [x] replace the four-argument `form.addEventListener("blur", handler, true, { signal })` call in `js/modules/forms.js` with a single options object carrying both `capture` and `signal`
-  - **Completion condition:** every listener registered in `js/modules/forms.js` is bound to the module's `AbortController` signal
-  - **Source:** `AUDIT.md` — P2-09
+- [x] **PH4-01** — Let the submit handler own contact form validation.
+- [x] **PH4-02** — Stop discarding user input on the anti-spam timing branch.
+- [x] **PH4-03** — Tie the capture-phase trim listener to the module's abort signal.
 
 ## Phase 5 — Error, offline and cache contracts
 
-**Goal:** Make the recovery pages and the service worker work in the nested-URL and offline situations they exist for.
-
-- [x] **PH5-01 — Convert `404.html` and `offline.html` to root-relative references** — **Priority:** High
-
-  - [x] rewrite stylesheet, script, favicon and navigation references in both documents to root-relative paths, matching the convention already used for `/manifest.webmanifest` and the `sw.js` precache list
-  - [x] re-run `npm run check:assets` and `npm run check:links`
-  - **Completion condition:** requesting a non-existent nested path renders the styled 404 page with working recovery links, and an offline navigation to a subpage renders the styled offline page
-  - **Source:** PH5-01 verification
-
-- [x] **PH5-02 — Complete the service-worker precache list and secure its runtime cache writes** — **Priority:** Medium
-  - [x] add `js/theme-init.min.js`, `js/sw-register.js` and the six `assets/fonts/*.woff2` files to the `ASSETS` list in `sw.js`
-  - [x] bump `CACHE_VERSION` alongside the precache change
-  - [x] pass the runtime cache writes in the fetch handler to `event.waitUntil` instead of leaving them as floating promises
-  - **Depends on:** `PH5-01`
-  - **Completion condition:** with the network disabled, a cached page renders with the stored theme, the enhanced (non-`no-js`) navigation and the project fonts
-  - **Source:** PH5-02 verification
+- [x] **PH5-01** — Convert `404.html` and `offline.html` to root-relative references.
+- [x] **PH5-02** — Complete the service-worker precache list and secure its runtime cache writes.
 
 ## Phase 6 — Gallery and lightbox interaction
 
-**Goal:** Make each gallery item a single, correct tab stop and give the lightbox an accessible structure that matches its `aria-modal` contract.
-
-- [x] **PH6-01 — Bind gallery activation to the anchor instead of the inner image** — **Priority:** High
-
-  - [x] bind the lightbox click and Enter/Space handlers to `a.gallery-item` and prevent its default navigation
-  - [x] stop promoting the inner `<img>` to a focusable control with `tabindex="0"` and `role="button"`
-  - [x] keep the raw-image `href` as the no-JavaScript fallback
-  - [x] confirm the corrected pattern across all six `oferta/` subpages
-  - **Completion condition:** each gallery item is a single tab stop, Enter and Space open the lightbox without navigating, and with JavaScript disabled the link still opens the full-size image
-
-- [x] **PH6-02 — Correct the lightbox's accessible structure** — **Priority:** Medium
-  - [x] append `.lb-close`, `.lb-prev` and `.lb-next` inside `.lb-wrap` so the `aria-modal` dialog contains its own controls, keeping the current fixed positioning
-  - [x] compose each thumbnail control's accessible name from its own `alt` text instead of overriding every one with `aria-label="Powiększ zdjęcie"`
-  - [x] keep the existing focus trap and focus-restore behaviour intact
-  - **Depends on:** `PH6-01`
-  - **Completion condition:** all lightbox controls are descendants of the `aria-modal` dialog element and remain Tab-reachable, and each thumbnail control exposes a name derived from its own `alt`
-  - **Source:** `AUDIT.md` — P2-06, P2-07
+- [x] **PH6-01** — Bind gallery activation to the anchor instead of the inner image.
+- [x] **PH6-02** — Correct the lightbox's accessible structure.
 
 ## Phase 7 — Public content integrity
 
-**Goal:** Resolve the mismatch between the site's demonstrational purpose and the indexable business identity it publishes.
-
-- [x] **PH7-01 — Align the published business identity with the project's demonstrational purpose** — **Priority:** High
-  - **Decision (recorded in `README.md` — "Przegląd projektu" / "Project Overview"):** SolidCraft stays publicly indexable (`index, follow`, present in `sitemap.xml`) as a demonstrational portfolio project. The `noindex` path is rejected, so the identity claims are neutralised instead and the trust content carries visible sample-content disclosures; the previously blocking alternative is closed.
-  - [x] remove the postal address, telephone, email and `sameAs` profile links from the `GeneralContractor` JSON-LD — the type itself was dropped, because `GeneralContractor` (a `LocalBusiness`) plus `openingHours` still asserts an operating local business once the contact fields are gone; the same block was duplicated on all 11 pages carrying it, and all were corrected so the completion condition holds site-wide
-  - [x] mark the 4.9/5 rating claim, the client-logo section and the testimonial cards as illustrative sample content
-  - [x] align the "Realizacje" navigation label with the heading of the section it opens
-  - **Completion condition:** no structured data asserts a physical business location or contact identity for SolidCraft, unsupported trust claims are visibly marked as sample content, and the navigation label matches its target section
-  - **Source:** `AUDIT.md` — P1-10
+- [x] **PH7-01** — Align the published business identity with the project's demonstrational purpose.
 
 ## Phase 8 — Runtime and styling corrections
 
-**Goal:** Remove the contained code-level defects that produce latent traps, console warnings and redundant work at runtime.
+- [x] **PH8-01** — Correct the `.ft-contact-icon` width declaration.
+- [x] **PH8-02** — Resolve the passive double-tap listener in the lightbox.
+- [x] **PH8-03** — Register the ScrollSpy `scrollend` listener once.
 
-- [x] **PH8-01 — Correct the `.ft-contact-icon` width declaration** — **Priority:** Low
+## Phase 9 — Documentation sync and release closure
 
-  - [x] replace the `width: 3318px` declaration in `css/modules/layout.css` with a value consistent with its `18px` height and flex basis
-  - **Completion condition:** `.ft-contact-icon` declares a width consistent with its height, and the footer renders unchanged
-  - **Source:** `AUDIT.md` — P2-08
+- [x] **PH9-01** — Synchronise the canonical documents with the corrected contracts.
+- Remaining items `PH9-02`–`PH9-04` are listed under "Remaining work" above.
 
-- [x] **PH8-02 — Resolve the passive double-tap listener in the lightbox** — **Priority:** Low
+## Phase 10 — Presentation and interface-system refinements
 
-  - [x] either register the `touchend` listener as non-passive so its `preventDefault()` applies, or drop the call and accept the browser default
-  - **Completion condition:** double-tapping the lightbox viewport produces the intended behaviour with no passive-listener warning in the console
-  - **Source:** `AUDIT.md` — P2-10
+- [x] **PH10-01** — Correct the development server launch and make the development Service Worker network-only.
+- [x] **PH10-02** — Refine the responsive, testimonials and contact-section presentation, and add the Latin Extended font subsets.
+- [x] **PH10-03** — Consolidate the interface icon system onto `js/modules/icons.js`.
+- [x] **PH10-04** — Normalise repository formatting; `npm run format:check` passes.
 
-- [x] **PH8-03 — Register the ScrollSpy `scrollend` listener once** — **Priority:** Low
-  - [x] register the `scrollend` listener for the module's lifetime, or guard `scheduleComputeAfterScroll()` so at most one pending listener exists
-  - **Completion condition:** at most one pending `scrollend` listener exists at any moment during continuous scrolling
-  - **Source:** `AUDIT.md` — P2-11
+## Optional improvements
 
-## Phase 9 — Documentation sync and final verification
-
-**Goal:** Bring the project's canonical documents back in line with the corrected implementation and confirm the pre-deploy gate passes end to end.
-
-- [x] **PH9-01 — Synchronise the canonical documents with the corrected contracts** — **Priority:** Medium
-
-  - [x] update `settings.md` where the pipeline contract changed (`PH1-03`, `PH1-04`)
-  - [x] update the `README.md` accessibility, PWA, testing and maintenance sections where the described behaviour changed
-  - [x] record the significant completed changes in `CHANGELOG.md` under `[Unreleased]`
-  - [x] mark the resolved `AUDIT.md` findings as addressed rather than deleting the audit record
-  - **Depends on:** `PH1-03`, `PH1-04`
-  - **Completion condition:** no canonical document describes behaviour that the implementation no longer has
-  - **Note:** ten findings — `P1-03`, `P1-04`, `P1-05`, `P1-06`, `P1-09`, `P2-01`, `P2-03`, `P2-04`, `P2-05`, `P2-09` — had been deleted from `AUDIT.md` as they were fixed instead of being marked resolved. They were restored verbatim from the original audit and each now carries a `Status: Addressed` line, so the audit again records all 22 findings. `P2-02` deliberately stays "Partially addressed": the working-tree renormalisation is still outstanding, as recorded under `PH1-04`.
-  - **Source:** `README.md`, `settings.md`, `CHANGELOG.md`, `AUDIT.md`
-
-- [ ] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation** — **Priority:** Medium
-  - [ ] run `npm run check:html`
-  - [ ] run `npm run qa:a11y` against the corrected static server and review the remaining violations
-  - [ ] run `npm run format:check`
-  - [ ] run `npm run build` and `npm run build:dist` and confirm the produced `dist/` contains regenerated minified assets
-  - **Depends on:** `PH1-01`, `PH1-02`, `PH1-03`
-  - **Completion condition:** `npm run check:predeploy` completes without failures and the produced `dist/` build matches the current canonical sources
-  - **Source:** `settings.md` — "QA / Validation", `AUDIT.md` — P1-01, P1-07
-
-## Optional future improvements
-
-- [x] **O-01 — Add functional browser tests on the existing Playwright dependency**
-
-  - **Value:** regression coverage for the navigation drawer, the offer submenu, the lightbox and the contact-form submission paths, at no new dependency cost — `playwright` is already declared and already drives the `qa:a11y` harness
-  - **Scope boundary:** explicitly non-blocking; the project ships without functional tests today
-  - **Resolution:** a new `npm run qa:functional` runs `scripts/qa-functional.mjs`, a plain Node script built on the `playwright` package already declared for `qa:a11y`. It follows that gate's shape rather than introducing a test framework: an in-process static server on an ephemeral `127.0.0.1` port, headless Chromium, one `PASS`/`FAIL` line per scenario and a non-zero exit code on the first unmet condition. No dependency was added and `@playwright/test` was not introduced — the raw `chromium` API covers everything the nine scenarios need. The scenarios live in `scripts/functional/` (`harness.mjs` plus `navigation.mjs`, `lightbox.mjs`, `contact-form.mjs`), and `scripts/utils/static-server.mjs` serves the maintained sources through the shared `renderHtmlFile()` renderer, so a test drives the same document `npm run dev` and `build:dist` produce instead of a test-only copy of the markup. `scripts/qa-a11y.mjs` was not touched: it keeps its own equivalent server, because rewiring a passing gate that carries the `O-05` route contract and the `O-06` verification is not part of adding tests. Isolation is handled in the harness, not in production code — every scenario gets a fresh browser context with the first-visit modal pre-accepted through its own `project-banner-accepted` key, service workers blocked and reduced motion emulated — and the browser and server are closed in a `finally` path on both the passing and the failing route. Coverage: the mobile drawer (rendered state, `aria-expanded`, `aria-label`, `is-nav-open`, focus in on open and back to the control on close, all below the shared 1024 px breakpoint); the `Oferta` submenu (its `open` class as the authoritative state, `aria-expanded` agreeing with it, no navigation on open, the six service links present in order and each reached by Tab, Escape closing it and returning focus to the trigger while the drawer stays open); the lightbox on `/oferta/lazienki.html` (one anchor and no nested control per item, the raw-image `href` intact, Enter opening the dialog instead of following the anchor, Space opening it without scrolling the page, `role="dialog"`/`aria-modal` with close, previous and next as descendants and no stray control outside, ArrowRight/ArrowLeft and both controls changing the displayed item, Tab staying inside the dialog, Escape closing it and restoring focus to the originating anchor); and the contact form in four separate scenarios (empty submission, anti-spam rejection, successful POST, failed POST). The form's own 2000 ms anti-spam window is waited out with real elapsed time; the production timing logic is untouched. `check:predeploy` is unchanged — whether the functional suite becomes a required gate is `O-02`'s decision.
-  - **Verification:** `npm run qa:functional` reports `PASS qa:functional (9 scenarios, 0 failures)` in roughly 26 s, identical across three consecutive runs. The contact-form POST is intercepted inside Playwright and answered locally: the success path asserts exactly one `POST` with `application/x-www-form-urlencoded` and a decoded body carrying `form-name=contact`, the entered name, the masked `533 537 091` phone, the UTF-8 message and `consent=yes`, then a reset form, the success message, `aria-busy="false"`, an enabled submit button and focus moved to the status region; the failure path returns HTTP 500 and asserts the error message with the entered values preserved and the busy state released. The validation and anti-spam scenarios assert that no `POST` is attempted at all. No real Netlify submission is possible: the form action is relative, so the request cannot leave `127.0.0.1` even unintercepted, and every scenario additionally fails if the page issues any off-origin request or raises any uncaught error — none did. The suite was confirmed to fail rather than pass vacuously: with `js/modules/nav.js` temporarily forced to report `aria-expanded="false"` on open, the drawer scenario failed with `the open drawer should report aria-expanded=true — expected "true", got "false"` and the run exited `1`; the file was then restored byte-identically (SHA-256 `1efd103b…8935d`, `git status` clean). `npm run qa:a11y` still reports `PASS qa:a11y (12 pages scanned, 0 serious/critical violations)`, so the new tooling disturbed neither `O-05` nor `O-06`.
-  - **Deliberately out of scope:** no production behaviour was changed to make anything testable and no application defect was found, so nothing was fixed under this item. Fullscreen and touch-gesture handling, the desktop hover dropdown, the form's 10 s fetch-timeout branch and the honeypot/heuristic spam branches are not covered — none was needed to make the core paths reliable. CI wiring stays with `O-02`, the Service Worker precache 404s with `O-03` (service workers are blocked in the test contexts, so they never reach the run) and the sitemap with `O-04`.
-  - **Source:** `README.md` — "Roadmap", `AUDIT.md` — section 7
-
-- [x] **O-02 — Adopt `check:predeploy` as a required gate in a CI workflow**
-
-  - **Value:** the documented pre-deploy gate would run automatically instead of depending on a local run; the repository currently contains no CI configuration
-  - **Scope boundary:** explicitly non-blocking; worth doing only after `PH1-01` and `PH1-02`, so the gate is meaningful and green
-  - **Resolution:** one workflow, `.github/workflows/ci.yml`, named `CI` with a single job `quality-gate` — together the `CI / quality-gate` status check a maintainer would select if branch protection is enabled. No `.github/` directory existed before this item, so nothing was replaced or merged. It triggers on `push` to `main`, `pull_request` targeting `main` and `workflow_dispatch`; development branches are deliberately not built on every push, because a pull request already validates a branch before merge and `main` is checked independently of it. One `ubuntu-latest` runner, one job, and no OS, Node or browser matrix. Node `24` LTS is pinned in the workflow only: `engines` stays `">=18"` and was not narrowed to suit CI, `netlify.toml` sets no `NODE_VERSION` and no `.nvmrc` exists, so the workflow tracks the current Active LTS line. The local verification below ran on the development machine's Node 22.14.0 — both versions satisfy `engines`, but Node 24 itself is first exercised on the hosted runner. Only the official `actions/checkout@v7` and `actions/setup-node@v7` are used, the latter with `cache: npm` and `cache-dependency-path: package-lock.json`; no third-party action is involved. Permissions are `contents: read` — the job reads no secret, writes nothing back to the repository, creates no release and deploys nothing. The five commands are the project's own scripts invoked by name rather than reproduced in YAML: `npm ci`, `npm run build:dist`, `npx playwright install --with-deps chromium`, `npm run check:predeploy` and `npm run qa:functional` — the build runs ahead of the browser install, so a broken build fails the job before the Chromium download is paid for. The pre-deploy gate and the functional suite are separate steps on purpose, so a red run names which of the two failed, and `check:predeploy` was not widened to absorb `qa:functional` — `package.json` is untouched by this item, and `qa:lhci` and `format:check` are absent. Chromium is installed alone because it is the only browser `qa:a11y` and `qa:functional` launch. `concurrency` is `${{ github.workflow }}-${{ github.ref }}` with `cancel-in-progress: true`, so a newer run supersedes only the same ref's obsolete one — `refs/heads/main` and each `refs/pull/<n>/merge` are distinct groups, and independent branches and pull requests never cancel each other. `timeout-minutes: 15` bounds the job, and no step carries `continue-on-error`, so the first non-zero exit code fails the run.
-  - **Verification:** the three commands the workflow exists to protect were run locally, in the workflow's own order, against this worktree. Dependencies were installed exactly as CI installs them — `npm ci` from the committed `package-lock.json` (`lockfileVersion` 3) into a tree with no `node_modules/` — and exited `0`. `npm run build:dist` exited `0` through all four steps: `OK: CSS build verification passed`, `OK: JS build verification passed`, `OK: sitemap generated with 10 URL(s) -> dist/sitemap.xml` and `OK: dist/sw.js generated (34 precached URL(s), cache solidcraft-v1df7cb51efb0c874)` — the same 34 URLs and the same fingerprint `O-03` recorded, so the generated Service Worker is reproducible on a clean install. `npm run check:predeploy` exited `0` with `PASS check:links (13 HTML files scanned)`, `PASS check:assets (13 HTML files scanned)` and `PASS qa:a11y (12 pages scanned, 0 serious/critical violations)`. `npm run qa:functional` exited `0` with `PASS qa:functional (9 scenarios, 0 failures)` in roughly 26 s, all nine scenarios passing individually. The browser strategy was measured rather than assumed: `playwright` resolves to `1.58.2`, and the lockfile records `hasInstallScript: false` for both `playwright` and `playwright-core`, so `npm ci` downloads no browser at all and the explicit install step is the only thing that provides one — an env-var guard against a browser postinstall would be dead configuration and was not added. `npx playwright install --dry-run chromium` reports only Chromium, its headless shell and the `ffmpeg`/`winldd` helpers; no Firefox and no WebKit. The YAML was parsed and the resulting object audited field by field: one job, the three intended event filters, `contents: read`, the ref-aware concurrency group with cancellation, the 15-minute timeout, `npm ci` rather than `npm install`, npm caching on `package-lock.json`, the exact project commands, and no matrix, artifact upload, secret reference, deployment step or `continue-on-error` anywhere. After the runs `git status` reports only the new untracked `.github/`, so the build and QA left the tracked tree unchanged.
-  - **Deliberately out of scope:** the workflow itself was not executed, and cannot be locally — that would need `act`, which is not a project dependency and was not added, so the hosted job receives its first runtime verification on the first push to GitHub. Making `CI / quality-gate` an actually _required_ check is a GitHub branch-protection setting rather than a file in the repository; no remote repository setting was changed, and `README.md` now records enabling it as the remaining manual step. Not added to this workflow, by instruction: `qa:lhci` and Lighthouse, Netlify deployment, `format:check`, repository renormalisation, image regeneration, multiple Node versions, multiple operating systems, a browser matrix, artifact upload, coverage services and dependency-update automation. No npm dependency was added, no npm script was changed, and no application code, Service Worker runtime logic, sitemap generation or generated asset was touched. `PH9-02` is not implemented, the `persistRuntimeResponse()` runtime-cache defect recorded under `O-03` is still unfixed, the repo-wide `format:check` drift is still outstanding, and no Git operation was performed.
-  - **Source:** `README.md` — "Roadmap"
-
-- [x] **O-03 — Derive the service-worker cache version and precache list during the build**
-
-  - **Value:** removes the silent-staleness class where a forgotten manual `CACHE_VERSION` bump leaves returning visitors on old unhashed `style.min.css` / `script.min.js`
-  - **Scope boundary:** explicitly non-blocking; the manual process is documented in `README.md` and currently consistent
-  - **Reproduced first:** the deferred development failure was measured before anything was edited, through the project's own `scripts/utils/static-server.mjs` rooted at the source tree and again through a faithful mirror of `npm run dev` — the same `live-server` and the same partials middleware, on port `15599` with the browser-open suppressed. Across `/index.html`, `/oferta/lazienki.html`, `/doc/regulamin.html` and `/404.html` the pre-change worker produced **64 failed or 404 responses**, 16 per route: `/css/style.min.css` 404, `/js/theme-init.min.js` 404 and 14 `net::ERR_ABORTED` for every remaining entry, because `cache.addAll()` is atomic and aborts the batch on the first rejection. Twelve of those were requests for the three production-only minified assets. The consequence was worse than console noise: `caches.keys()` held `solidcraft-v1.3` with **0 entries** and the registration reported `active=false, controlled=false` — the source/dev worker never installed at all, on any route, so it had no precache and no offline fallback, and every page load repeated the whole failed batch.
-  - **Resolution:** ownership of the precache contract moved to the build. `sw.js` stays canonical for worker logic, but its `CACHE_VERSION` and `ASSETS` now sit between `/* build:sw-manifest:start */` and `/* build:sw-manifest:end */` markers and are `"dev"` and `[]` in the source tree — the honest values there, since `dist/css/style.min.css`, `dist/js/theme-init.min.js` and `dist/js/script.min.js` do not exist beside their sources. An empty list installs cleanly, so development gets a worker that activates and serves instead of one that can never install; nothing is faked, no placeholder asset was created, no server fallback was added, and a genuinely missing file still returns 404. A new `npm run build:sw` (`scripts/generate-sw.js`, Node built-ins only, no dependency added) reads the finished `dist/`, derives the URL list from files that actually shipped, computes the cache version from their bytes, and writes the rewritten worker to `dist/sw.js`. `"sw.js"` was removed from `OPTIONAL_FILES` in `scripts/build-dist.js` with a comment recording why, so the generator is the single producer and nothing is staged for it to overwrite — the shape `O-04` established for the sitemap, not a second source of truth. `build:dist` is now `build-dist.js && build && build:sitemap && build:sw`, with the Service Worker last because it fingerprints the assets the earlier steps produce. Runtime behaviour is untouched: the network-first HTML path, the `/offline.html` fallback, the cache-first static path, the `event.waitUntil` writes and the `solidcraft-v`-prefixed cleanup are the same code, and `js/sw-register.js` still registers `/sw.js` at scope `/`.
-  - **Derivation rules:** the precache set is the app shell, expressed as six directory rules rather than filenames — every `.html` in `dist/` (recursive) plus `/` for the start URL, `manifest.webmanifest`, `dist/css/*.css`, `dist/js/*.js`, `dist/assets/fonts/*.woff2` and `dist/assets/img/favicon/*`. Everything else `dist/` carries stays runtime-cached exactly as before: the gallery, hero, oferta, og, logo, partner-logo, screenshot and shortcut imagery, `sitemap.xml`, `robots.txt` and the Netlify config files. Each rule is required, so running the step before `npm run build` fails the build rather than emitting a short manifest. The generated list is 34 URLs against the previous 31, and the diff is one-directional: **nothing was dropped**, and the three additions are all in `assets/img/favicon/`. Two of them — `favicon-32x32.png` and `web-app-manifest-144x144.png` — are referenced by 12 shipped documents each and had simply been missed by the hand-written list, which is the drift this item exists to end; the third, `web-app-manifest-1024x1024.png` (45 KB), is referenced by nothing and is precached only because the rule takes the icon directory whole.
-  - **Cache version:** `CACHE_VERSION` is a SHA-256 over each precached URL paired with the SHA-256 of the bytes served at it, in emitted order, truncated to 16 hex characters — currently `solidcraft-v1df7cb51efb0c874`. No timestamp, random value or absolute path enters the input. Because `sw.js` is not itself precached, editing the worker's own comments changes `dist/sw.js`, so browsers still pick up the new worker, without churning the cache name.
-  - **Verification:** three consecutive `npm run build:dist` runs produced a byte-identical `dist/sw.js` (SHA-256 `f7314545…1ecd5`), and re-running `build:sw` twice against an unchanged `dist/` reproduced it again. Negative controls, each restored byte-identically afterwards: appending a declaration to `css/style.css` — reaching the precache through `dist/css/style.min.css` — moved the version to `78b46b76ef3dfe81`; appending a comment to the verbatim-copied `js/sw-register.js` moved it to `37e0445dbfb3ad3f`; appending a line to the shipped-but-not-precached `robots.txt` left it at `1df7cb51efb0c874`, so the fingerprint tracks the precache contract and not `dist/` at large. All three sources hash back to their pre-test values. An independent audit of the emitted manifest confirms 34 entries, 34 unique, code-unit sorted, every one a site-root web path with no drive letter, backslash or `file:` form, and every one resolving to a real file in `dist/`. The generator's guards were exercised rather than assumed: run before the asset build it exits `1` with `No precache candidate matched rule "css"`, and with a marker removed from `sw.js` it exits `1` with the marker-count error; `sw.js` was restored byte-identically after that test. `node scripts/build-dist.js` alone leaves no `dist/sw.js`, confirming the single producer.
-  - **Runtime verification:** headless Chromium against a server rooted at `dist/`, with offline simulated by shutting the origin down rather than by browser emulation, passes 10 of 10 checks — the worker installs, activates and controls the page; the cache is named `solidcraft-v1df7cb51efb0c874`; it holds exactly the 34 generated URLs with nothing missing and nothing extra; no response during install is anything but 200; a pre-seeded stale `solidcraft-v1.3` is deleted on activation while a pre-seeded `vendor-analytics-v1` is left untouched; and offline, a precached page still renders with its precached CSS and Poppins fonts while an uncached navigation falls back to `/offline.html`. On the development side, the same four routes that previously produced 64 failures now produce **0 failed or non-200 responses and 0 requests for any `.min` asset**, with the worker reporting `active=true, controlled=true` and one owned cache, `solidcraft-vdev`.
-  - **Deliberately out of scope:** the runtime caching strategies, the `addAll` atomicity, the offline fallback and the cache-cleanup scope were not redesigned. One pre-existing defect was found while measuring and deliberately left unfixed: in `persistRuntimeResponse()` the `response.clone()` runs inside `caches.open(...).then(...)`, i.e. after an await, by which point `event.respondWith()` has already consumed the same response. Instrumented in the live worker, 43 of 43 clone attempts threw `TypeError: Failed to execute 'clone' on 'Response': Response body is already used` and `Cache.put()` was never reached, so the fetch handler has never written anything to the cache. It predates this item, affects only the runtime write-back rather than the precache this item owns, and is reported separately rather than folded in. `O-02` CI wiring, `PH9-02`, the sitemap, the accessibility and functional gates, repository renormalisation and the outstanding repo-wide formatting cleanup are untouched — `sw.js` was already failing `prettier -c` before this change and still is, in exactly the same way. _(Later: that defect was fixed under `O-07`. The record above is preserved as written when this item completed.)_
-  - **Source:** `README.md` — "Roadmap", `AUDIT.md` — section 7
-
-- [x] **O-04 — Consolidate the sitemap source of truth**
-
-  - **Value:** the tracked root `sitemap.xml` is copied into `dist/` and then overwritten by `build:sitemap`, so the file a maintainer edits never reaches production; removing or generating it in place eliminates the second source
-  - **Scope boundary:** explicitly non-blocking; no incorrect sitemap is currently published
-  - **Resolution:** the redundant state was deleted rather than re-plumbed. The hand-maintained root `sitemap.xml` — ten `<loc>` entries carrying September 2025 `lastmod` values — is gone, and `"sitemap.xml"` was removed from `OPTIONAL_FILES` in `scripts/build-dist.js`, so the staging step no longer copies a sitemap into `dist/` for the next step to overwrite. A three-line comment above `OPTIONAL_FILES` records why the entry is absent, so it is not restored as an apparent omission. `scripts/generate-sitemap.mjs` is untouched and is now the only sitemap producer in the repository: `SITE_URL` handling, HTML discovery, the excluded directories, the excluded `404.html` / `offline.html` / `thank-you.html`, the path-order sort, the duplicate elimination and the emitted XML are all exactly as they were. No replacement manual sitemap was introduced anywhere and no second generator exists; nothing in `dist/` is edited by hand. The published sitemap does not change as a result — the generated file was already the one that shipped — so this is a maintenance-surface fix, not a production-content fix.
-  - **Verification:** the duplication was measured before the change rather than assumed. `node scripts/build-dist.js` alone left a `dist/sitemap.xml` byte-identical to the tracked root file (both SHA-256 `7e559dd5…6f515`), and the following `npm run build:sitemap` replaced it with generated output (`8e2f2b8e…27eed`), confirming that the tracked file was staged and then discarded inside one build. After the change, with no `sitemap.xml` present at the root, `npm run build:dist` completes end to end — `build:css` with `scripts/verify-css-build.js`, `build:js` with `scripts/verify-js-build.js`, then `OK: sitemap generated with 10 URL(s) -> dist/sitemap.xml` — so no step required the removed file. The produced `dist/sitemap.xml` is byte-identical to the pre-change generated output (`8e2f2b8e…27eed`), which is the direct evidence that generation semantics were preserved. It holds ten `<loc>` entries, ten of them unique, all on `https://construction-pr01-solidcraft.netlify.app`: `/`, the six `oferta/` pages and the three `doc/` pages. `404.html`, `offline.html` and `thank-you.html` are absent, and no `.claude`, `.codex`, `node_modules`, `dist`, `partials` or worktree path appears. `dist/robots.txt` still advertises `Sitemap: https://construction-pr01-solidcraft.netlify.app/sitemap.xml`, which the generated file serves at that path, and `_redirects` is unchanged — its `/*` → `/404.html` catch-all cannot shadow a real file in the publish directory.
-  - **Deliberately out of scope:** `robots.txt`, `netlify.toml`, the publish directory, the public routes and the canonical HTML are unchanged. The generator's missing `lastmod` was not "fixed": the deleted file's dates never reached production, and adding `lastmod` would be a new sitemap feature rather than the consolidation this item asks for. `check:predeploy` is untouched, and no broad QA suite was run — the focused build proof above is the whole verification this item needs. The Service Worker precache 404s remain with `O-03` and CI wiring with `O-02`.
-  - **Source:** `AUDIT.md` — section 7
-
-- [x] **O-05 — Extend accessibility scanning beyond the four scanned pages**
-
-  - **Value:** the remaining five `oferta/` subpages and two `doc/` pages are unscanned, and the subpages carry the gallery structure addressed by `PH6-01`
-  - **Scope boundary:** explicitly non-blocking; valuable only after `PH1-01`, otherwise it scans more unstyled, script-less pages
-  - **Resolution:** the seven unscanned routes were added to the existing `basePages` contract in `scripts/qa-a11y.mjs` — `/oferta/elektryka.html`, `/oferta/hydraulika.html`, `/oferta/kafelkowanie.html`, `/oferta/malowanie.html`, `/oferta/remonty.html`, `/doc/cookies.html` and `/doc/regulamin.html` — so all six maintained service pages and all three legal pages are covered alongside `/index.html` and `/404.html`, with `/offline.html` still the one optional route. The change is the array literal plus a three-line comment; `resolvePages()`, the static server, `renderHtmlFile()`, the MIME resolver, the Chromium + `axe-core` execution path, the `serious`/`critical` threshold and the `page | rule | impact | selectors` failure output are untouched, and no rule was excluded, ignored or downgraded.
-  - **Verification:** `npm run qa:a11y` went from `PASS qa:a11y (5 pages scanned, 0 serious/critical violations)` to `PASS qa:a11y (12 pages scanned, 0 serious/critical violations)` — 11 required routes plus the optional `/offline.html`. Coverage was confirmed from the gate's own traffic rather than from the printed count: with its in-process static server wrapped by a preloaded tracer, the run performed exactly 12 navigations, in `basePages` order, one per intended route. Each of the 12 was then re-observed through a reproduction of the gate's server — same `resolveContentType()`, same `renderHtmlFile()`, same headless Chromium, same `waitUntil: "networkidle"`, same axe injection — and every route returned HTTP 200, rendered its shared header and footer with no surviving `@layout`/`@include` directive or `{{token}}`, applied `css/style.css` with its seven `@import`ed modules (`header` computes `position: fixed`, `body` computes `Poppins`), exposed `window.SC` with all ten modules, resolved its `[data-icon]` placeholders and logged no console error. `axe.run()` returned **zero violations at any impact** on all 12 routes, so the expanded pass is green on merit and nothing was suppressed to reach it. The required-route contract was re-checked behaviourally without touching a project file: running the gate against a throwaway directory missing one required route at a time failed all 11 times with `Required page not found: <route>` and exit `1` (for example `Error: Required page not found: /oferta/remonty.html`), while a tree with all 11 required routes present and `offline.html` absent raised no such error, so `/offline.html` remains optional.
-  - **O-06 regression check:** zero speculative document-relative `modules/*.css` requests across the whole run; all 168 `/css/modules/*.css` requests returned 200, and `CSSImportRule.href` reads root-relatively (`/css/modules/tokens.css` and its six siblings) on every route. The correction holds on the seven newly covered pages.
-  - **Deliberately out of scope:** the three production-only Service Worker precache 404s (`/css/style.min.css`, `/js/theme-init.min.js`, `/js/script.min.js`) are unchanged in cause and now appear once per scanned route — 15 across five routes before, 36 across twelve after; they remain reserved for `O-03`. `thank-you.html` is a maintained page but sits outside this item's stated `oferta/` + `doc/` scope and was not added. The `serious`/`critical` results in axe's `incomplete` set, which this gate does not evaluate, are unchanged in kind from the `P1-07` baseline: `aria-prohibited-attr` (serious) and `aria-valid-attr-value` (critical) on all 12 routes, `color-contrast` (serious) on `/index.html`, `/404.html`, the three `doc/` pages and `/offline.html`, and `link-in-text-block` (serious) on `/index.html`. The seven new routes introduced no new needs-review rule id.
-  - **Source:** `README.md` — "Roadmap", `AUDIT.md` — section 7
-
-- [x] **O-06 — Remove the speculative `modules/*.css` 404s from the development rendering**
-
-  - **Value:** every page load under `npm run dev` and `npm run qa:a11y` logs seven 404s for document-relative `modules/*.css` requests; the browser's speculative preloader resolves the `@import` paths in `css/style.css` against the document instead of against the stylesheet, while the correctly resolved `css/modules/*.css` requests all return 200 — nothing is broken, but the console noise obscures real errors during development and QA runs
-  - **Scope boundary:** explicitly non-blocking and development-only; `build:css` inlines every `@import` into `css/style.min.css` (enforced by `scripts/verify-css-build.js`) and `build:dist` rewrites the pages to the minified assets, so no deployed page issues these requests
-  - **Corrected attribution:** the requests come from `axe-core`, not from a browser preload scanner, so they occur under `npm run qa:a11y` only. `axe.run()` preloads the CSSOM: for every `@import` it reads `CSSImportRule.href`, which returns the specifier exactly as authored (`./modules/tokens.css`), and re-fetches it with `XMLHttpRequest` — an XHR resolves against the _page_, so `/index.html` requested `/modules/*.css`, `/oferta/lazienki.html` requested `/oferta/modules/*.css` and `/doc/polityka-prywatnosci.html` requested `/doc/modules/*.css`, seven each. Measured against the gate's own static server, `npm run dev` issued no such request on any route, before or after the fix; the value statement above overstated the reach.
-  - **Resolution:** `css/style.css` now addresses its modules root-relatively (`@import "/css/modules/tokens.css"`), so the authored specifier and the resolved URL are the same string and no consumer can re-resolve it to a different path. `postcss.config.js` gives `postcss-import` a four-line `resolve` that maps a leading `/` onto the project root and returns every other specifier untouched, so the plugin's own resolver still handles the rest. `css/style.css` remains the canonical entry point, `css/modules/**` keeps its source ownership, and no module was merged or moved. Verified: across the five `qa:a11y` routes the speculative 404s went from seven per page to zero, `npm run qa:a11y` still reports `PASS qa:a11y (5 pages scanned, 0 serious/critical violations)`, and under `npm run dev` `/index.html` and `/oferta/lazienki.html` load all seven modules from `/css/modules/*` with the tokens, layout, components, sections, utilities and subpages rules applied. Genuinely missing resources still 404 — `/css/modules/does-not-exist.css`, `/definitely/missing.png` and the old `/modules/tokens.css` and `/oferta/modules/tokens.css` paths all return 404; nothing is redirected or masked. `npm run build:css` passes `scripts/verify-css-build.js` and produces a `dist/css/style.min.css` byte-identical to the pre-change build (SHA-256 `75c3fd0d…92501`, 75,051 bytes), so the production CSS contract is unchanged.
-  - **Source:** `PH1-01` re-baseline run
-
-- [x] **O-07 — Fix the Service Worker runtime cache write-back** — follow-up to `O-03`
-  - **Finding:** the defect `O-03` recorded and deliberately left unfixed. `persistRuntimeResponse()` called `response.clone()` inside `caches.open(...).then(...)`, so the clone was attempted after an asynchronous boundary — by which point `event.respondWith()`, holding the same resolved `Response`, had already consumed its body. Instrumented in the live worker under `O-03`, 43 of 43 clone attempts threw `TypeError: Failed to execute 'clone' on 'Response': Response body is already used` and `Cache.put()` was never reached, so the fetch handler had never written anything to the cache.
-  - **Resolution:** the clone moved ahead of that boundary, in `sw.js` only. `persistRuntimeResponse()` now calls `response.clone()` synchronously inside the handler it already registers on `responsePromise` — registered before the one `event.respondWith()` adds, so it runs first, while the body is still untouched — and hands that clone to `cache.put()`. The original response stays with the `respondWith()` path and the write stays inside `event.waitUntil()`. Nothing else changed: the network-first HTML strategy, the cache-first static-asset strategy, the `/offline.html` fallback, the same-origin and GET guards, `STATIC_DESTINATIONS`, `isCacheableResponse()`, the cache name, the generated fingerprint, the precache derivation and the activation cleanup rules are all untouched, and `scripts/generate-sw.js` was not edited.
-  - **Verification:** headless Chromium through the project's declared `playwright`, against a hit-logging static server rooted at the built `dist/` tree, run twice — once on the generated worker and once on a throwaway control copy differing only in the old clone placement. The fixed worker passes 19 of 19 checks; the control fails 6, and only those that depend on a runtime write. A non-precached static asset (`/assets/img/screenshots/desktop.webp`) starts uncached, its first request reaches the network once (server-side hit count 0 → 1), the 36 644-byte body reaches the page intact, the same 36 644 bytes appear in `solidcraft-v1df7cb51efb0c874`, and the second request is answered from cache with no further server hit — against 0 → 1 → 2 hits and no cache entry on the control. A runtime HTML request not satisfied by the precache (`/index.html?rt=1`) reaches the network, renders in the page, and its full 53 714-byte document is written to the cache — never written on the control. A 404 is delivered to the page and not persisted, on both. The cache ends at 51 entries — the 34 generated precache URLs intact plus 17 runtime writes — against exactly 34 and zero runtime writes on the control. With the origin shut down the runtime-cached asset still serves (`TypeError: Failed to fetch` on the control), an uncached navigation still falls back to `/offline.html`, and a precached page still renders, on both. A stale `solidcraft-v-o03-stale` seeded before install is deleted on activation while `vendor-analytics-v1` survives with its entry intact, on both. Separately, a micro-reproduction of the two orderings against real `Response` and `Cache` objects reproduces the exact failure: the old ordering raises `Failed to execute 'clone' on 'Response': Response body is already used` and stores nothing, the new ordering stores the body and still delivers it in full. `npm run build:dist` regenerates `dist/sw.js` with the fix carried through and the `O-03` metadata unchanged — 34 precached URLs at `solidcraft-v1df7cb51efb0c874`, the value `O-03` recorded — and three consecutive generations are byte-identical.
-  - **Deliberately out of scope:** the fetch architecture was not redesigned and no strategy was added, removed or reordered; the `O-03` precache generator, the fingerprint derivation and the generated precache list are untouched. `dist/sw.js` was produced only by `npm run build:sw` and never edited. `PH9-02`, `O-02` CI wiring, the sitemap, `check:predeploy`, the accessibility and functional gates, repository renormalisation and the outstanding repo-wide formatting cleanup are unchanged — `sw.js` still fails `prettier -c` exactly as it did before. `README.md` and `settings.md` needed no correction: both describe the runtime strategies and the `event.waitUntil()` ownership this change restores rather than alters.
-  - **Source:** `O-03` — "Deliberately out of scope"
+- [x] **O-01** — Add functional browser tests on the existing Playwright dependency.
+- [x] **O-02** — Adopt `check:predeploy` as a gate in a CI workflow. Making `CI / quality-gate` a _required_ check is a GitHub branch-protection setting, still to be enabled by the maintainer.
+- [x] **O-03** — Derive the service-worker cache version and precache list during the build.
+- [x] **O-04** — Consolidate the sitemap source of truth.
+- [x] **O-05** — Extend accessibility scanning beyond the four scanned pages.
+- [x] **O-06** — Remove the speculative `modules/*.css` 404s from the development rendering.
+- [x] **O-07** — Fix the Service Worker runtime cache write-back.
