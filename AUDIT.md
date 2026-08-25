@@ -67,16 +67,6 @@ None detected.
 
 ## 5. P1 — Important issues worth fixing next
 
-### [P1-03] Privacy and cookie disclosures do not match the implemented data contract
-
-- **Classification:** Content integrity risk
-- **Affected area:** Contact form, privacy disclosure, browser storage, third-party processing
-- **Evidence:** `index.html:1174-1283`; `doc/polityka-prywatnosci.html:273-297`; `doc/polityka-prywatnosci.html:460-493`; `doc/cookies.html:279-318`
-- **Current behavior:** The active Netlify form collects a name, phone number, work description, and consent. The privacy policy lists an email address instead of the collected phone number and describes cookie identifiers and analytics cookies. The cookie policy describes `sessionStorage`, technical/functional/analytics cookies, and analytics providers, while the inspected frontend uses only three guarded `localStorage` keys (`theme`, `consent.maps`, and `project-banner-accepted`) and loads Google Maps only after a user action. No analytics implementation or `sessionStorage` use was detected.
-- **Impact:** Users are not given an accurate repository-backed description of the personal data submitted by the live form or the browser-side storage and third-party mechanisms currently implemented. The documents can also mislead maintainers reviewing future form or consent changes.
-- **Recommended direction:** Rewrite the technical facts in both documents around the exact current form fields, Netlify processing path, storage keys, map-consent behavior, and evidenced third parties; remove unsupported generic capabilities unless they are actually implemented.
-- **Verification criteria:** A source-to-document comparison finds every collected field, storage key, and third-party request accurately described, with no references to unimplemented analytics, cookies, or `sessionStorage`.
-
 ### [P1-04] The locked development and CI toolchain has critical and high advisories
 
 - **Classification:** Security exposure

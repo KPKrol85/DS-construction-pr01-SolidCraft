@@ -281,20 +281,34 @@
               </li>
               <li>zapewnienia bezpieczeństwa infrastruktury informatycznej.</li>
             </ul>
-            <p>Dane mogą obejmować w szczególności:</p>
+            <p>
+              Dane przekazywane za pośrednictwem aktywnego formularza
+              kontaktowego obejmują wyłącznie:
+            </p>
             <ul>
-              <li>imię,</li>
-              <li>adres e-mail,</li>
+              <li>imię i nazwisko,</li>
+              <li>numer telefonu,</li>
               <li>
-                inne informacje dobrowolnie podane przez Użytkownika w treści
-                wiadomości,
+                opis prac oraz inne informacje dobrowolnie podane przez
+                Użytkownika w treści tego opisu,
               </li>
+              <li>zgodę na kontakt w celu przygotowania wyceny,</li>
               <li>
-                dane techniczne związane z korzystaniem z Serwisu, takie jak
-                adres IP, typ przeglądarki, system operacyjny lub identyfikatory
-                plików cookies.
+                techniczne pola formularza wymagane przez zastosowany mechanizm
+                wysyłki, w tym pole antyspamowe (honeypot).
               </li>
             </ul>
+            <p>
+              Formularz nie zawiera pola adresu e-mail i nie wymaga jego
+              podania. Zgłoszenie przesyłane jest za pośrednictwem mechanizmu
+              Netlify Forms, udostępnianego przez dostawcę hostingu Serwisu.
+            </p>
+            <p>
+              Niezależnie od powyższego, w związku z samym udostępnianiem
+              Serwisu mogą być przetwarzane dane techniczne, takie jak adres IP,
+              typ przeglądarki lub system operacyjny – w zakresie wynikającym z
+              własnych mechanizmów i polityk dostawcy hostingu.
+            </p>
             <p>
               Dane osobowe nie są wykorzystywane do zautomatyzowanego
               podejmowania decyzji ani profilowania.
@@ -321,8 +335,8 @@
               </li>
               <li>
                 prawnie uzasadniony interes Administratora (art. 6 ust. 1 lit. f
-                RODO) – w zakresie zapewnienia bezpieczeństwa Serwisu, obsługi
-                zapytań oraz analizy technicznej działania strony,
+                RODO) – w zakresie zapewnienia bezpieczeństwa Serwisu oraz
+                obsługi zapytań,
               </li>
               <li>
                 obowiązek prawny ciążący na Administratorze (art. 6 ust. 1 lit.
@@ -345,17 +359,23 @@
               przetwarzania, w szczególności:
             </p>
             <ul>
-              <li>dostawcom usług hostingowych,</li>
-              <li>podmiotom zapewniającym infrastrukturę informatyczną,</li>
               <li>
-                dostawcom narzędzi technicznych wykorzystywanych do obsługi
-                formularzy lub komunikacji e-mail,
+                dostawcy usług hostingowych – obecnie Netlify, którego mechanizm
+                Netlify Forms obsługuje wysyłkę formularza kontaktowego,
               </li>
+              <li>podmiotom zapewniającym infrastrukturę informatyczną,</li>
               <li>
                 podmiotom uprawnionym do otrzymania danych na podstawie
                 obowiązujących przepisów prawa.
               </li>
             </ul>
+            <p>
+              Serwis udostępnia opcjonalną mapę dojazdu Google Maps jako treść
+              zewnętrzną. Mapa nie jest ładowana automatycznie – jej osadzenie
+              następuje wyłącznie po wyraźnym działaniu Użytkownika. Po
+              załadowaniu mapy jej dostawca może przetwarzać dane zgodnie z
+              własnymi mechanizmami i politykami.
+            </p>
             <p>
               Dane osobowe nie są sprzedawane ani udostępniane podmiotom trzecim
               w celach marketingowych.
@@ -467,30 +487,44 @@
               >
             </h2>
             <p>
-              Serwis może wykorzystywać pliki cookies w celu zapewnienia
-              prawidłowego działania strony oraz poprawy jakości świadczonych
-              usług.
+              Serwis nie zapisuje własnych plików cookies. Do zapamiętania
+              wybranych ustawień i decyzji Użytkownika wykorzystywany jest
+              mechanizm
+              <code>localStorage</code>
+              przeglądarki, obejmujący wyłącznie trzy klucze:
             </p>
-            <p>Pliki cookies mogą obejmować w szczególności:</p>
             <ul>
               <li>
-                cookies techniczne – niezbędne do prawidłowego funkcjonowania
-                Serwisu,
+                <code>theme</code>
+                – wybrany tryb kolorystyczny interfejsu (jasny lub ciemny),
               </li>
               <li>
-                cookies analityczne – umożliwiające analizę sposobu korzystania
-                z Serwisu,
+                <code>consent.maps</code>
+                – decyzja Użytkownika o załadowaniu zewnętrznej mapy Google
+                Maps,
               </li>
               <li>
-                cookies funkcjonalne – zapamiętujące wybrane ustawienia
-                Użytkownika.
+                <code>project-banner-accepted</code>
+                – potwierdzenie zapoznania się z informacją o demonstracyjnym
+                charakterze projektu.
               </li>
             </ul>
             <p>
-              Użytkownik może w każdej chwili zmienić ustawienia dotyczące
-              plików cookies w swojej przeglądarce internetowej. Ograniczenie
-              stosowania plików cookies może wpłynąć na niektóre funkcjonalności
-              Serwisu.
+              We wskazanych kluczach nie są zapisywane dane przekazane w
+              formularzu kontaktowym. Serwis nie korzysta z mechanizmu
+              <code>sessionStorage</code>
+              i nie wdraża własnego narzędzia analitycznego ani statystycznego.
+            </p>
+            <p>
+              Po samodzielnym załadowaniu mapy Google Maps przez Użytkownika jej
+              dostawca może stosować własne mechanizmy zapisu i odczytu
+              informacji na urządzeniu końcowym, zgodnie z własnymi politykami.
+            </p>
+            <p>
+              Użytkownik może w każdej chwili usunąć zapisane dane witryny lub
+              zmienić ustawienia dotyczące ich przechowywania w swojej
+              przeglądarce internetowej. Ograniczenie tych mechanizmów może
+              wpłynąć na niektóre funkcjonalności Serwisu.
             </p>
             <!-- 10. Kontakt -->
             <h2 id="privacy-10">
@@ -532,7 +566,7 @@
             </p>
             <small>
               Data ostatniej aktualizacji:
-              <time datetime="2026-03-04">04.03.2026</time>
+              <time datetime="2026-08-25">25.08.2026</time>
             </small>
           </article>
         </div>

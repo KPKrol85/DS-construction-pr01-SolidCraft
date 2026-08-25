@@ -54,6 +54,7 @@ Detailed implementation history lives in the Git history, not here.
 - Made the development Service Worker network-only, so a local edit is never shadowed by a cached copy.
 - Removed the seven speculative `modules/*.css` 404s from the development and accessibility-QA rendering.
 - Aligned the published business identity with the project's demonstrational purpose: the fictitious `GeneralContractor` JSON-LD was removed from all 11 pages that carried it, and sample content is now marked as such.
+- Aligned the privacy and cookie disclosures in `doc/` with the implemented data contract: the contact form is described by its actual `name`, `phone`, `msg` and `consent` fields on the Netlify Forms path instead of an e-mail address, the three `localStorage` keys (`theme`, `consent.maps`, `project-banner-accepted`) are documented individually, unsupported analytics and `sessionStorage` claims were removed, and Google Maps is described as user-triggered external content whose provider may then apply its own storage mechanisms.
 
 ### Build and Tooling
 
