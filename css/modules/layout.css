@@ -618,6 +618,13 @@
   color: var(--brand);
 }
 
+/* The social block lives outside .ft-grid, so it spans the footer width
+   and stays centred at every breakpoint. */
+.ft-social-bar {
+  margin-top: var(--space-4);
+  text-align: center;
+}
+
 .ft-social {
   display: flex;
   gap: var(--space-3);
@@ -652,7 +659,7 @@
   display: block;
   width: 30px;
   height: 30px;
-  /* .ft-col dims its text; the marks keep the footer foreground as before. */
+  /* Pinned to the footer foreground so the marks stay at full strength. */
   color: var(--ft-fg);
   opacity: 0.9;
   transition: opacity 0.2s ease;
@@ -828,10 +835,6 @@
   .ft-map {
     max-width: 100%;
     margin-inline: 0;
-  }
-  .ft-social {
-    justify-content: flex-start;
-    margin-inline: -3px 0;
   }
 }
 
