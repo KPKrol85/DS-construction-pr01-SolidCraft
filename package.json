@@ -11,7 +11,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "start": "npm run dev",
-    "dev": "node scripts/dev-server.js",
+    "dev": "node scripts/dev-server.mjs",
     "build:css": "postcss css/style.css --no-map -o dist/css/style.min.css && node scripts/verify-css-build.js",
     "build:js": "esbuild js/theme-init.js --bundle --minify --target=es2018 --format=iife --outfile=dist/js/theme-init.min.js && esbuild js/script.js --bundle --minify --target=es2018 --format=iife --outfile=dist/js/script.min.js && node scripts/verify-js-build.js",
     "build": "npm run build:css && npm run build:js",
@@ -25,7 +25,8 @@
     "check:html": "npm run check:links && npm run check:assets",
     "qa:a11y": "node scripts/qa-a11y.mjs",
     "qa:functional": "node scripts/qa-functional.mjs",
-    "qa:lhci": "npm run build:dist && lhci autorun --config=./lighthouserc.json",
+    "qa:lighthouse": "npm run build:dist && node scripts/qa-lighthouse.mjs",
+    "qa:lhci": "npm run qa:lighthouse",
     "check:predeploy": "npm run check:html && npm run qa:a11y",
     "images:build": "node scripts/images.js build",
     "images:clean": "node scripts/images.js clean",
@@ -36,21 +37,21 @@
     "autoprefixer": "^10.4.21",
     "axe-core": "^4.10.3",
     "baseline-browser-mapping": "^2.10.0",
+    "chrome-launcher": "^1.2.1",
     "cross-env": "^10.1.0",
     "cssnano": "^6.1.2",
     "esbuild": "^0.27.0",
-    "live-server": "1.2.2",
+    "lighthouse": "^13.4.1",
     "playwright": "^1.54.2",
     "postcss": "^8.5.6",
     "postcss-cli": "^11.0.1",
     "postcss-import": "^16.1.1",
     "postcss-preset-env": "^10.4.0",
     "prettier": "3.3.3",
-    "sharp": "^0.34.5",
-    "terser": "^5.31.0",
-    "@lhci/cli": "^0.15.1"
+    "sharp": "^0.35.3",
+    "terser": "^5.31.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22.19.0"
   }
 }

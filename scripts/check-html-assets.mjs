@@ -52,7 +52,7 @@ async function collectHtmlFiles(dir) {
   const files = [];
 
   for (const entry of entries) {
-    if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'dist' || entry.name === PARTIALS_DIR_NAME) continue;
+    if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'dist' || entry.name === '.lighthouse-reports' || entry.name === PARTIALS_DIR_NAME) continue;
 
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {

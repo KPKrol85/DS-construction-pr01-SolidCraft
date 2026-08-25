@@ -12,6 +12,7 @@ const EXCLUDED_TOP_LEVEL_DIRS = new Set([
   ".git",
   ".claude",
   ".codex",
+  ".lighthouse-reports",
   "node_modules",
   "dist",
   PARTIALS_DIR_NAME,

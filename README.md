@@ -37,14 +37,14 @@ Adres skonfigurowany jako `homepage` w `package.json` oraz jako adres kanoniczny
 
 **Tooling i build**
 
-- Node.js `>=18` (pole `engines`)
+- Node.js `>=22.19.0` (pole `engines`)
 - PostCSS z `postcss-cli` (`postcss-import`, `postcss-preset-env` stage 3, `autoprefixer`, `cssnano`)
 - esbuild (bundling i minifikacja JS, target `es2018`, format `iife`)
 - sharp (generowanie wariantów obrazów)
-- live-server uruchamiany przez `scripts/dev-server.js`
+- natywny serwer deweloperski Node.js (`scripts/dev-server.mjs`, bez zależności zewnętrznych)
 - Prettier (formatowanie)
 - Playwright + axe-core (QA dostępności i funkcjonalne testy przeglądarkowe)
-- Lighthouse CI (`@lhci/cli`)
+- Lighthouse (`lighthouse` + `chrome-launcher`, uruchamiany przez `scripts/qa-lighthouse.mjs`)
 - cross-env (przekazanie `SITE_URL` do generatora sitemapy)
 - GitHub Actions (jeden workflow `CI`)
 
@@ -105,7 +105,7 @@ DS-construction-pr01-SolidCraft/
 ├── _headers
 ├── _redirects
 ├── netlify.toml
-├── lighthouserc.json
+├── lighthouse.config.json
 ├── postcss.config.js
 ├── settings.md
 ├── CHANGELOG.md
@@ -119,7 +119,7 @@ DS-construction-pr01-SolidCraft/
 npm install
 ```
 
-Wymagania: Node.js w wersji `>=18`. Wszystkie zależności są zależnościami deweloperskimi — runtime strony nie korzysta z pakietów npm.
+Wymagania: Node.js w wersji `>=22.19.0`. Wszystkie zależności są zależnościami deweloperskimi — runtime strony nie korzysta z pakietów npm.
 
 ### Development lokalny
 
@@ -127,7 +127,7 @@ Wymagania: Node.js w wersji `>=18`. Wszystkie zależności są zależnościami d
 npm run dev
 ```
 
-`scripts/dev-server.js` uruchamia `live-server` na porcie `15500` i obsługuje każde żądanie HTML przez renderer partiali, więc zmiany w `partials/` są widoczne po odświeżeniu. Serwer HTTP jest konieczny — strony korzystają z modułów ES, Service Workera i manifestu wskazywanego ścieżką bezwzględną, więc otwarcie pliku przez `file://` nie odwzoruje zachowania produkcyjnego.
+`scripts/dev-server.mjs` uruchamia natywny serwer Node.js na `http://127.0.0.1:15500/` i obsługuje każde żądanie HTML przez renderer partiali, więc zmiany w `partials/` są widoczne po odświeżeniu. Zapis pliku przeładowuje stronę automatycznie; zmiana CSS odświeża arkusze bez pełnego przeładowania. Serwer HTTP jest konieczny — strony korzystają z modułów ES, Service Workera i manifestu wskazywanego ścieżką bezwzględną, więc otwarcie pliku przez `file://` nie odwzoruje zachowania produkcyjnego.
 
 Przebudowa assetów w tle (zapis do `dist/`):
 
@@ -152,7 +152,7 @@ npm run watch:js
 - `npm run qa:a11y` — skan axe-core w przeglądarce headless.
 - `npm run qa:functional` — funkcjonalny zestaw regresyjny w Playwright; obsługuje filtr `--only=<fragment nazwy scenariusza>`.
 - `npm run check:predeploy` — `check:html` i `qa:a11y` jako lokalna bramka przed wdrożeniem.
-- `npm run qa:lhci` — `build:dist` i `lhci autorun` z konfiguracją `lighthouserc.json`.
+- `npm run qa:lighthouse` — `build:dist` i audyt Lighthouse według `lighthouse.config.json`; `npm run qa:lhci` pozostaje aliasem.
 - `npm run format` / `npm run format:check` — Prettier w trybie zapisu i weryfikacji.
 
 ### Build produkcyjny
@@ -173,7 +173,7 @@ Kolejność jest deterministyczna: `dist/` jest tworzony od nowa, utrzymywane st
 - `scripts/qa-a11y.mjs` — axe-core uruchamiany przez Playwright na lokalnym serwerze statycznym; skanowane są `index.html`, `404.html`, wszystkie sześć podstron `oferta/`, wszystkie trzy strony `doc/` oraz `offline.html`, jeśli plik istnieje. Skrypt kończy się błędem przy naruszeniach o wadze `serious` lub `critical`.
 - `scripts/qa-functional.mjs` — dziewięć scenariuszy funkcjonalnych w headless Chromium: mobilna szuflada nawigacji i podmenu oferty, lightbox (pojedynczy tab stop, Enter/Escape z przywróceniem fokusa, Spacja i strzałki) oraz formularz kontaktowy (puste zgłoszenie, okno antyspamowe, poprawna wysyłka, nieudana wysyłka).
 - `scripts/verify-css-build.js` i `scripts/verify-js-build.js` — weryfikacja artefaktów wbudowana w komendy build.
-- `lighthouserc.json` — Lighthouse CI na katalogu `dist` dla `/`, `/oferta/remonty.html` i `/doc/polityka-prywatnosci.html`, z progami: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
+- `lighthouse.config.json` — Lighthouse na katalogu `dist` dla `/`, `/oferta/remonty.html` i `/doc/polityka-prywatnosci.html`, z progami: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
 Powyższe komendy są skonfigurowane w repozytorium; ich wykonanie nie było elementem przygotowania tej dokumentacji.
 
@@ -227,7 +227,7 @@ Manifest i Service Worker są wskazywane ścieżkami bezwzględnymi, więc dzia�
 - Prefetch podstron oferty przy `mouseenter`/`focus` z opóźnieniem 120 ms, pomijany przy `saveData` i połączeniach 2G.
 - Mapa ładowana dopiero po zgodzie użytkownika, w `iframe` z `loading="lazy"`.
 - Precache powłoki aplikacji i runtime cache w Service Workerze.
-- Progi jakości zdefiniowane w `lighthouserc.json`.
+- Progi jakości zdefiniowane w `lighthouse.config.json`.
 
 Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 
@@ -295,14 +295,14 @@ The address configured as `homepage` in `package.json` and as the canonical URL 
 
 **Tooling and build**
 
-- Node.js `>=18` (`engines` field)
+- Node.js `>=22.19.0` (`engines` field)
 - PostCSS with `postcss-cli` (`postcss-import`, `postcss-preset-env` stage 3, `autoprefixer`, `cssnano`)
 - esbuild (JS bundling and minification, target `es2018`, format `iife`)
 - sharp (image variant generation)
-- live-server launched through `scripts/dev-server.js`
+- native Node.js development server (`scripts/dev-server.mjs`, dependency-free)
 - Prettier (formatting)
 - Playwright + axe-core (accessibility QA and functional browser tests)
-- Lighthouse CI (`@lhci/cli`)
+- Lighthouse (`lighthouse` + `chrome-launcher`, run through `scripts/qa-lighthouse.mjs`)
 - cross-env (passing `SITE_URL` to the sitemap generator)
 - GitHub Actions (a single `CI` workflow)
 
@@ -363,7 +363,7 @@ DS-construction-pr01-SolidCraft/
 ├── _headers
 ├── _redirects
 ├── netlify.toml
-├── lighthouserc.json
+├── lighthouse.config.json
 ├── postcss.config.js
 ├── settings.md
 ├── CHANGELOG.md
@@ -377,7 +377,7 @@ DS-construction-pr01-SolidCraft/
 npm install
 ```
 
-Requirements: Node.js `>=18`. All dependencies are development dependencies — the site runtime does not use npm packages.
+Requirements: Node.js `>=22.19.0`. All dependencies are development dependencies — the site runtime does not use npm packages.
 
 ### Local Development
 
@@ -385,7 +385,7 @@ Requirements: Node.js `>=18`. All dependencies are development dependencies — 
 npm run dev
 ```
 
-`scripts/dev-server.js` starts `live-server` on port `15500` and answers every HTML request through the partial renderer, so `partials/` edits are visible after a plain refresh. An HTTP server is required — the pages rely on ES modules, a Service Worker, and a manifest referenced by an absolute path, so opening files over `file://` will not reproduce production behavior.
+`scripts/dev-server.mjs` starts a dependency-free native Node.js server on `http://127.0.0.1:15500/` and answers every HTML request through the partial renderer, so `partials/` edits are visible after a plain refresh. Saving a file reloads the page automatically; a CSS change refreshes stylesheets without a full reload. An HTTP server is required — the pages rely on ES modules, a Service Worker, and a manifest referenced by an absolute path, so opening files over `file://` will not reproduce production behavior.
 
 Rebuilding assets in the background (output goes to `dist/`):
 
@@ -410,7 +410,7 @@ npm run watch:js
 - `npm run qa:a11y` — axe-core scan in a headless browser.
 - `npm run qa:functional` — the Playwright functional regression suite; supports a `--only=<part of a scenario name>` filter.
 - `npm run check:predeploy` — runs `check:html` and `qa:a11y` as the local pre-deploy gate.
-- `npm run qa:lhci` — runs `build:dist` and `lhci autorun` with the `lighthouserc.json` configuration.
+- `npm run qa:lighthouse` — runs `build:dist` and the Lighthouse audit described by `lighthouse.config.json`; `npm run qa:lhci` is kept as an alias.
 - `npm run format` / `npm run format:check` — Prettier in write and verify modes.
 
 ### Production Build
@@ -431,7 +431,7 @@ The order is deterministic: `dist/` is recreated, the maintained pages are rende
 - `scripts/qa-a11y.mjs` — axe-core executed through Playwright against a local static server; the scanned routes are `index.html`, `404.html`, all six `oferta/` subpages, all three `doc/` pages, and `offline.html` when the file exists. The script fails on `serious` or `critical` violations.
 - `scripts/qa-functional.mjs` — nine functional scenarios in headless Chromium: the mobile navigation drawer and offer submenu, the lightbox (single tab stop, Enter/Escape with focus restore, Space and arrow keys), and the contact form (empty submission, anti-spam window, successful submission, failed submission).
 - `scripts/verify-css-build.js` and `scripts/verify-js-build.js` — artifact verification embedded in the build commands.
-- `lighthouserc.json` — Lighthouse CI over the `dist` directory for `/`, `/oferta/remonty.html`, and `/doc/polityka-prywatnosci.html`, with thresholds: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
+- `lighthouse.config.json` — Lighthouse over the `dist` directory for `/`, `/oferta/remonty.html`, and `/doc/polityka-prywatnosci.html`, with thresholds: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
 These commands are configured in the repository; running them was not part of preparing this documentation.
 
@@ -485,7 +485,7 @@ The manifest and Service Worker are referenced by absolute paths, so they work w
 - Prefetch of service subpages on `mouseenter`/`focus` with a 120 ms delay, skipped for `saveData` and 2G connections.
 - The map is loaded only after user consent, in an `iframe` with `loading="lazy"`.
 - App-shell precaching and runtime caching in the Service Worker.
-- Quality thresholds defined in `lighthouserc.json`.
+- Quality thresholds defined in `lighthouse.config.json`.
 
 The repository contains no recorded performance measurement results.
 

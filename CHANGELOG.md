@@ -63,8 +63,7 @@ Detailed implementation history lives in the Git history, not here.
 - Made the deploy command regenerate the assets it publishes, and moved the minified output out of the source tree into `dist/`.
 - Added a `sharp`-based responsive image pipeline (`scripts/images.js`) producing AVIF, WebP and JPG variants.
 - Added the local development workflow with CSS/JS watch tasks and Prettier scripts.
-- Made `npm run dev` render the shared partials through `scripts/dev-server.js`.
-- Fixed the development server's browser launch, which produced a malformed `localhost` URL on Windows.
+- Made `npm run dev` render the shared partials through `scripts/dev-server.mjs`.
 - Moved the Service Worker cache version and precache list from hand maintenance into the production build (`npm run build:sw`).
 - Consolidated the sitemap onto a single generated source of truth.
 - Stopped the local `.claude/` and `.codex/` worktree directories from being discovered as production content.
@@ -72,12 +71,13 @@ Detailed implementation history lives in the Git history, not here.
 - Standardised the npm package identity as `ds-construction-pr01-solidcraft`.
 - Added a GitHub Actions CI workflow (`CI / quality-gate`) running `check:predeploy` and `qa:functional` on `main` and pull requests.
 - Normalised repository formatting; `npm run format:check` now passes across the repository.
+- Cleared the development and CI toolchain of its critical and high advisories: compatible lockfile re-resolution plus a controlled `sharp` 0.35 upgrade, `live-server` replaced by a dependency-free native Node development server (`scripts/dev-server.mjs`), and `@lhci/cli` replaced by direct Lighthouse 13 tooling (`scripts/qa-lighthouse.mjs` with `lighthouse.config.json`) that keeps the three audited URLs and all four category thresholds unchanged; Lighthouse report output no longer reaches `dist/`, the sitemap, the Service Worker precache or the HTML checks. The Node baseline is now `>=22.19.0`, `npm audit` reports 0 critical, 0 high, 1 moderate and 1 low, and the build, HTML, accessibility, functional, image and Lighthouse contracts all pass.
 
 ### Testing
 
 - Added an accessibility QA script (`scripts/qa-a11y.mjs`) running axe-core through Playwright.
 - Added internal link and HTML asset reference checkers, combined with the accessibility run into the `check:predeploy` gate.
-- Added a Lighthouse CI configuration (`lighthouserc.json`) with defined quality thresholds.
+- Added a Lighthouse quality gate with defined category thresholds (`lighthouse.config.json`).
 - Corrected the content types served by the QA static servers, which had made the accessibility gate scan an unstyled, script-less page.
 - Extended `qa:a11y` coverage to every maintained service and legal page — 12 routes.
 - Added a functional browser suite (`scripts/qa-functional.mjs`, nine scenarios) on the Playwright dependency already declared.

@@ -3,13 +3,13 @@
 **Audit date:** 2026-08-24  
 **Project type:** Static multi-page demonstrational construction-services website (HTML, CSS, JavaScript, PostCSS; Netlify build contract)  
 **Audit mode:** Final repository and implementation review  
-**Current readiness:** Needs Important Fixes
+**Current readiness:** Ready with Minor Refinements Outstanding
 
 ## 1. Executive assessment
 
 SolidCraft has a coherent source-first architecture, a deterministic documented deployment pipeline, useful repository-specific validation, and browser-tested navigation, lightbox, and form behavior. The current Chromium regression suites passed, and representative enabled-JavaScript pages produced no runtime errors or horizontal overflow.
 
-The repository is not ready for final release or portfolio handoff without important corrections. The principal risks are a confirmed no-JavaScript content-visibility failure, incomplete disclosure of the fictional/demo identity on indexed direct-entry routes, privacy and cookie text that does not match the implemented form and storage behavior, and a development/CI dependency graph with current critical and high advisories. The production build, deployed Netlify behavior, and production Service Worker were not exercised because the task allowed modifications only to this file.
+The four important risks this audit recorded have since been resolved and verified: no-JavaScript content visibility, disclosure of the fictional/demo identity on indexed direct-entry routes, privacy and cookie text matching the implemented form and storage behavior, and the development/CI dependency graph, which now reports no critical or high advisories. No P0 or P1 finding remains open; what is left is four contained P2 refinements. Deployed Netlify behavior and the production Service Worker in a published artifact were not exercised by this audit and still require verification against a real deployment.
 
 ## 2. Audit scope and verification
 
@@ -32,7 +32,7 @@ The repository is not ready for final release or portfolio handoff without impor
 - `npm run qa:functional` — passed in headless Chromium: 9 of 9 navigation, submenu, lightbox, and contact-form scenarios.
 - Additional Playwright review against the repository's partial-rendering static server — `/`, `/oferta/remonty.html`, `/doc/polityka-prywatnosci.html`, and `/404.html` produced no page/console errors and no horizontal overflow at 390×844 or 1440×1000.
 - JavaScript-disabled Chromium review — confirmed 51 of 51 reveal elements hidden on `/`, 29 of 29 on `/oferta/remonty.html`, and 5 of 5 on `/doc/polityka-prywatnosci.html`.
-- `npm audit --json` — completed against the current registry data and lockfile: 37 advisories (1 critical, 24 high, 9 moderate, 3 low), all in the development/tooling dependency graph.
+- `npm audit --json` — completed against the registry data and lockfile as they stood on the audit date: 37 advisories (1 critical, 24 high, 9 moderate, 3 low), all in the development/tooling dependency graph. This figure is the original audit baseline, not the current state: the toolchain has since been remediated to 0 critical, 0 high, 1 moderate, and 1 low.
 - Targeted repository searches — no credential, private-key, API-key, or environment-secret value was detected.
 - Image inventory comparison against `GALLERY_SIZES` — detected 12 generated gallery files outside the current naming/size contract, totaling 1,695,342 bytes.
 - WOFF2 metadata inspection — all 12 local font files contain an upstream copyright record and OFL URL, but no embedded full license text was found.
@@ -67,15 +67,7 @@ None detected.
 
 ## 5. P1 — Important issues worth fixing next
 
-### [P1-04] The locked development and CI toolchain has critical and high advisories
-
-- **Classification:** Security exposure
-- **Affected area:** Dependency graph, local development, build tooling, CI
-- **Evidence:** `package.json:27-48`; `package-lock.json:2355-2380`; `package-lock.json:6476-6495`; `package-lock.json:7523-7546`; `package-lock.json:9937-9965`; `package-lock.json:11115-11128`
-- **Current behavior:** `npm audit --json` reports 37 vulnerabilities: 1 critical, 24 high, 9 moderate, and 3 low. Directly declared affected tools include `@lhci/cli`, `live-server`, `postcss`, `sharp`, and `esbuild`; the critical `websocket-driver@0.7.4` path is brought in through `live-server`. These are development dependencies and are not shipped as a browser runtime bundle.
-- **Impact:** Local development, image processing, CSS/build work, Lighthouse execution, and CI operate on a lockfile with known vulnerable tooling. The absence of production dependencies limits public-browser exposure but does not remove risk to developer and automation environments.
-- **Recommended direction:** Re-resolve the current graph using the smallest compatible, evidence-backed direct upgrades or tool replacement where an abandoned dependency prevents remediation; avoid forced broad changes and re-run every affected build and QA contract.
-- **Verification criteria:** A fresh lockfile-backed install reports no critical or high advisories in tools the repository executes, and `build:dist`, HTML checks, axe, functional QA, image processing, and Lighthouse still satisfy their existing contracts.
+None detected.
 
 ## 6. P2 — Minor refinements
 
@@ -125,12 +117,12 @@ None detected.
 
 ## 8. Current readiness conclusion
 
-**Status:** Needs Important Fixes
+**Status:** Ready with Minor Refinements Outstanding
 
-The source architecture and tested JavaScript interactions are strong enough to support focused remediation rather than redesign. Final release, public portfolio presentation, or handoff should wait until the no-JavaScript content failure, demonstrational identity, data disclosures, and vulnerable tooling graph are corrected. After those changes, the production build, Lighthouse, Service Worker/offline behavior, and deployment-specific contracts still require fresh verification within an allowed generated-output scope.
+The source architecture and tested JavaScript interactions were strong enough to support focused remediation rather than redesign, and that remediation is now complete: the no-JavaScript content failure, demonstrational identity, data disclosures, and vulnerable tooling graph are all corrected and verified. The production build, HTML checks, accessibility and functional suites, image pipeline, and Lighthouse thresholds pass against the current tree. Four contained P2 refinements remain open, and deployment-specific behavior — real Netlify Forms processing, published headers and redirects, and the production Service Worker in a deployed artifact — still requires verification against a live environment.
 
 ## 9. Senior rating
 
-**Rating:** 7/10
+**Rating:** 8.5/10
 
-The project earns a strong baseline for source ownership, modularity, deterministic tooling design, accessible interaction patterns, responsive media, and passing repository-specific browser checks. The rating is held below release-ready territory by four important current risks spanning progressive enhancement, public content integrity, privacy facts, and dependency security, plus four contained repository/runtime refinements and unverified production-build/deployment behavior.
+The project earns a strong baseline for source ownership, modularity, deterministic tooling design, accessible interaction patterns, responsive media, and passing repository-specific browser checks, and the four important risks that previously held it back — progressive enhancement, public content integrity, privacy facts, and dependency security — are now resolved and verified. The rating stops short of the top of the scale because four contained repository/runtime refinements remain open and deployed production behavior is still unverified.

@@ -6,8 +6,8 @@ This file is the canonical source of truth for the Solidcraft build/development 
 
 ## Tooling Overview
 
-- Runtime baseline: Node.js `>=18`.
-- Local dev server: `live-server`, launched through `scripts/dev-server.js`.
+- Runtime baseline: Node.js `>=22.19.0`.
+- Local dev server: dependency-free native Node.js server (`scripts/dev-server.mjs`).
 - HTML composition: build-time partial renderer (`scripts/utils/partials.js`) expanding `partials/header.html` and `partials/footer.html` into every maintained page.
 - CSS pipeline: PostCSS (`postcss-import`, `postcss-preset-env`, `autoprefixer`, `cssnano`) via `postcss-cli`.
 - JS pipeline: `esbuild` (bundle + minify, target `es2018`, format `iife`).
@@ -15,13 +15,13 @@ This file is the canonical source of truth for the Solidcraft build/development 
 - Sitemap: `scripts/generate-sitemap.mjs`, invoked with `SITE_URL` supplied through `cross-env`.
 - Service Worker: `scripts/generate-sw.js`, which derives the production precache list and cache version from the finished `dist/` tree.
 - Formatting: `prettier`.
-- Lighthouse CI: `@lhci/cli` via `lighthouserc.json`.
+- Lighthouse: `lighthouse` + `chrome-launcher`, run by `scripts/qa-lighthouse.mjs` via `lighthouse.config.json`.
 - Continuous integration: GitHub Actions, one workflow (`.github/workflows/ci.yml`).
 
 ## Scripts
 
 - `start`: alias for `dev`.
-- `dev`: runs `scripts/dev-server.js`, which serves the project locally on port `15500`, opens the server root in the browser, and answers every HTML request through the shared partial renderer so `partials/` edits are visible on refresh.
+- `dev`: runs `scripts/dev-server.mjs`, which serves the project locally on `127.0.0.1:15500`, opens the server root in the browser, and answers every HTML request through the shared partial renderer so `partials/` edits are visible on refresh. Live reload is delivered over Server-Sent Events: a CSS change refreshes stylesheets in place, any other source change reloads the page.
 - `build:css`: builds `dist/css/style.min.css` and verifies no `@import` remains.
 - `build:js`: builds `dist/js/theme-init.min.js` and `dist/js/script.min.js` and verifies no `import`/`export` remains in either.
 - `build`: runs `build:css` and `build:js`.
@@ -37,7 +37,7 @@ This file is the canonical source of truth for the Solidcraft build/development 
 - `check:html`: runs `check:links` and `check:assets`.
 - `qa:a11y`: runs axe-based accessibility scans in a headless browser on key pages.
 - `qa:functional`: runs `scripts/qa-functional.mjs`, a Playwright-driven functional regression pass over the navigation drawer, the offer submenu, the lightbox and the contact-form submission paths.
-- `qa:lhci`: runs `build:dist` and then `lhci autorun` against `lighthouserc.json`.
+- `qa:lighthouse`: runs `build:dist` and then `scripts/qa-lighthouse.mjs` against `lighthouse.config.json`, serving `dist/` on an ephemeral loopback port and failing when a category falls below its threshold. `qa:lhci` is retained as an alias.
 - `check:predeploy`: runs `check:html` and `qa:a11y` as the local pre-deploy gate.
 - `format`: applies Prettier writes.
 - `format:check`: validates formatting without writes.
@@ -82,7 +82,7 @@ This file is the canonical source of truth for the Solidcraft build/development 
 - One workflow: `.github/workflows/ci.yml`, workflow name `CI`, one job `quality-gate`. GitHub reports the status check as `CI / quality-gate`. Both names are part of the contract — branch protection selects a check by name, so renaming either silently detaches a required check.
 - Triggers: `push` to `main`, `pull_request` targeting `main`, and `workflow_dispatch`. Development branches are not built on every push: a pull request validates a branch before merge, and `main` is validated independently of it.
 - Runner: one `ubuntu-latest`. No OS matrix, no Node matrix, no browser matrix.
-- Node: `24` LTS, pinned in the workflow only, tracking the current Active LTS line. `engines` stays `">=18"` and is not narrowed to match CI; the repository pins no version elsewhere (no `.nvmrc`, and `netlify.toml` sets no `NODE_VERSION`).
+- Node: `24` LTS, pinned in the workflow only, tracking the current Active LTS line. `engines` is `">=22.19.0"`, the floor required by the Lighthouse QA tooling; the repository pins no version elsewhere (no `.nvmrc`, and `netlify.toml` sets no `NODE_VERSION`).
 - Actions: `actions/checkout@v7` and `actions/setup-node@v7` only. `setup-node` supplies the npm cache, keyed on `package-lock.json`. No third-party action is used.
 - Permissions: `contents: read`. No secret is read, nothing is written back to the repository, no release is created, and nothing is deployed — deployment stays with Netlify.
 - Step order: `npm ci` → `npm run build:dist` → `npx playwright install --with-deps chromium` → `npm run check:predeploy` → `npm run qa:functional`. The build precedes the browser install because it needs no browser, so a broken build fails the job before the Chromium download is paid for.
@@ -91,7 +91,7 @@ This file is the canonical source of truth for the Solidcraft build/development 
 - The workflow invokes existing npm scripts and never reproduces their internals in YAML. `check:predeploy` and `qa:functional` are separate steps so a failed run identifies which gate broke, and `check:predeploy` is not widened to absorb `qa:functional`.
 - Concurrency: group `${{ github.workflow }}-${{ github.ref }}` with `cancel-in-progress: true`. Groups are already repository-scoped, and `refs/heads/main` and each `refs/pull/<n>/merge` are distinct, so a newer run cancels only the same ref's obsolete run and independent branches and pull requests never cancel each other.
 - Timeout: `timeout-minutes: 15`. No step uses `continue-on-error`, so the first non-zero exit code fails the run.
-- Deliberately absent from CI: `qa:lhci` and Lighthouse, `format:check`, Netlify deployment, artifact upload, coverage services, dependency-update automation, and any OS, Node or browser matrix.
+- Deliberately absent from CI: `qa:lighthouse` and Lighthouse, `format:check`, Netlify deployment, artifact upload, coverage services, dependency-update automation, and any OS, Node or browser matrix.
 - Making `CI / quality-gate` a required status check is a GitHub branch-protection setting rather than a repository file. It is performed by the maintainer and is not part of any npm script.
 
 ## Deployment Notes
@@ -109,7 +109,7 @@ This file is the canonical source of truth for the Solidcraft build/development 
 
 ## Repository Hygiene
 
-- `.gitignore` keeps generated and local output out of Git: `node_modules/`, `/dist/`, the minified artifacts `/css/*.min.css` and `/js/*.min.js`, report output (`/test-results/`, `/playwright-report/`, `/.lighthouseci/`), the local agent worktree directories `.claude/` and `.codex/`, `.netlify/`, environment files, logs, editor directories and OS files. `assets/` and `package-lock.json` are intentionally tracked.
+- `.gitignore` keeps generated and local output out of Git: `node_modules/`, `/dist/`, the minified artifacts `/css/*.min.css` and `/js/*.min.js`, report output (`/test-results/`, `/playwright-report/`, `/.lighthouse-reports/`), the local agent worktree directories `.claude/` and `.codex/`, `.netlify/`, environment files, logs, editor directories and OS files. `assets/` and `package-lock.json` are intentionally tracked.
 - `.gitattributes` declares one line-ending convention for tracked text files — `* text=auto eol=lf` — so line endings never appear as a diff. The binary extensions present in the project (`.avif`, `.ico`, `.jpg`, `.png`, `.webp`, `.woff2`) are marked `binary` so normalisation can never rewrite them; `.svg` stays under the text rule because it is XML.
 - The tracked working tree is already normalised to that convention, so no renormalisation step is pending: `git ls-files --eol` reports `i/lf w/lf` for every tracked text file, no entry is `crlf` or `mixed`, and `git add --renormalize .` produces no change. Renormalisation would only become relevant again if `.gitattributes` itself changed; it is a Git operation performed by the maintainer and is not part of any npm script.
 - `.prettierignore` excludes `partials/` (Prettier cannot parse the `{{token}}` / `{{#if}}` template syntax), `dist/`, and any `*.min.css` / `*.min.js`.
