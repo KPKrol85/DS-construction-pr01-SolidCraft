@@ -62,7 +62,7 @@
       "name": "Dokumenty",
       "short_name": "Dokumenty",
       "description": "Zobacz regulamin i politykę prywatności",
-      "url": "/doc/regulamin.html",
+      "url": "/regulamin.html",
       "icons": [
         {
           "src": "/assets/img/shortcuts/legal-96.png",

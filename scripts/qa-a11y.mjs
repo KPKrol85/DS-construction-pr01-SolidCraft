@@ -14,8 +14,9 @@ const thresholds = {
 };
 
 // Required routes: the entry and error pages plus every maintained oferta/
-// service page and doc/ legal page, so each shipped page variant is scanned.
-// A missing entry fails the run instead of silently shrinking the gate.
+// service page and root-level legal page, so each shipped page variant is
+// scanned. A missing entry fails the run instead of silently shrinking the
+// gate.
 const basePages = [
   "/index.html",
   "/404.html",
@@ -25,9 +26,9 @@ const basePages = [
   "/oferta/lazienki.html",
   "/oferta/malowanie.html",
   "/oferta/remonty.html",
-  "/doc/cookies.html",
-  "/doc/polityka-prywatnosci.html",
-  "/doc/regulamin.html",
+  "/cookies.html",
+  "/polityka-prywatnosci.html",
+  "/regulamin.html",
 ];
 
 const optionalPages = ["/offline.html"];

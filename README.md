@@ -4,7 +4,7 @@
 
 ### Przegląd projektu
 
-SolidCraft to statyczny, wielostronicowy serwis WWW firmy remontowo-budowlanej, zbudowany w oparciu o HTML, CSS i JavaScript, bez frameworka frontendowego. Repozytorium zawiera stronę główną, sześć podstron usług w `oferta/`, trzy strony dokumentów w `doc/` (regulamin, polityka prywatności, cookies) oraz strony `thank-you.html`, `404.html` i `offline.html`. Językiem interfejsu jest polski (`lang="pl"`).
+SolidCraft to statyczny, wielostronicowy serwis WWW firmy remontowo-budowlanej, zbudowany w oparciu o HTML, CSS i JavaScript, bez frameworka frontendowego. Repozytorium zawiera stronę główną, sześć podstron usług w `oferta/`, trzy strony dokumentów w katalogu głównym (`regulamin.html`, `polityka-prywatnosci.html`, `cookies.html`) oraz strony `thank-you.html`, `404.html` i `offline.html`. Językiem interfejsu jest polski (`lang="pl"`).
 
 Serwis ma charakter demonstracyjny i jest tak oznaczony w treści: modal na pierwszej wizycie wskazuje KP_Code Digital Studio jako autora przykładowej realizacji, a sekcje z logotypami klientów i opiniami są opisane jako przykładowe. Repozytorium nie zawiera backendu ani bazy danych; warstwa serwerowa ogranicza się do konfiguracji hostingu statycznego.
 
@@ -66,8 +66,10 @@ DS-construction-pr01-SolidCraft/
 ├── 404.html
 ├── offline.html
 ├── thank-you.html
+├── regulamin.html               # strony dokumentów
+├── polityka-prywatnosci.html
+├── cookies.html
 ├── oferta/                      # 6 podstron usług
-├── doc/                         # regulamin, polityka prywatności, cookies
 ├── partials/
 │   ├── header.html              # wspólny nagłówek (źródło)
 │   └── footer.html              # wspólna stopka (źródło)
@@ -170,10 +172,10 @@ Kolejność jest deterministyczna: `dist/` jest tworzony od nowa, utrzymywane st
 ### Testy i walidacja
 
 - `scripts/check-links.mjs` i `scripts/check-html-assets.mjs` — statyczna walidacja linków i odwołań do zasobów; obie renderują strony przez `scripts/utils/partials.js`, więc sprawdzają dokument w takiej postaci, w jakiej trafia do `dist/`.
-- `scripts/qa-a11y.mjs` — axe-core uruchamiany przez Playwright na lokalnym serwerze statycznym; skanowane są `index.html`, `404.html`, wszystkie sześć podstron `oferta/`, wszystkie trzy strony `doc/` oraz `offline.html`, jeśli plik istnieje. Skrypt kończy się błędem przy naruszeniach o wadze `serious` lub `critical`.
+- `scripts/qa-a11y.mjs` — axe-core uruchamiany przez Playwright na lokalnym serwerze statycznym; skanowane są `index.html`, `404.html`, wszystkie sześć podstron `oferta/`, wszystkie trzy strony dokumentów w katalogu głównym oraz `offline.html`, jeśli plik istnieje. Skrypt kończy się błędem przy naruszeniach o wadze `serious` lub `critical`.
 - `scripts/qa-functional.mjs` — dziewięć scenariuszy funkcjonalnych w headless Chromium: mobilna szuflada nawigacji i podmenu oferty, lightbox (pojedynczy tab stop, Enter/Escape z przywróceniem fokusa, Spacja i strzałki) oraz formularz kontaktowy (puste zgłoszenie, okno antyspamowe, poprawna wysyłka, nieudana wysyłka).
 - `scripts/verify-css-build.js` i `scripts/verify-js-build.js` — weryfikacja artefaktów wbudowana w komendy build.
-- `lighthouse.config.json` — Lighthouse na katalogu `dist` dla `/`, `/oferta/remonty.html` i `/doc/polityka-prywatnosci.html`, z progami: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
+- `lighthouse.config.json` — Lighthouse na katalogu `dist` dla `/`, `/oferta/remonty.html` i `/polityka-prywatnosci.html`, z progami: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
 Powyższe komendy są skonfigurowane w repozytorium; ich wykonanie nie było elementem przygotowania tej dokumentacji.
 
@@ -262,7 +264,7 @@ Projekt nie jest oprogramowaniem open source. Wykorzystanie komercyjne, redystry
 
 ### Project Overview
 
-SolidCraft is a static, multi-page website for a construction and renovation company, built with HTML, CSS, and JavaScript, without a frontend framework. The repository contains the home page, six service subpages in `oferta/`, three legal pages in `doc/` (terms, privacy policy, cookies), and the `thank-you.html`, `404.html`, and `offline.html` pages. The interface language is Polish (`lang="pl"`).
+SolidCraft is a static, multi-page website for a construction and renovation company, built with HTML, CSS, and JavaScript, without a frontend framework. The repository contains the home page, six service subpages in `oferta/`, three legal pages at the repository root (`regulamin.html`, `polityka-prywatnosci.html`, `cookies.html`), and the `thank-you.html`, `404.html`, and `offline.html` pages. The interface language is Polish (`lang="pl"`).
 
 The site is demonstrational and labeled as such in its content: a first-visit modal credits KP_Code Digital Studio as the author of this sample implementation, and the client-logo and testimonial sections are marked as examples. The repository contains no backend and no database; the server-side layer is limited to static hosting configuration.
 
@@ -324,8 +326,10 @@ DS-construction-pr01-SolidCraft/
 ├── 404.html
 ├── offline.html
 ├── thank-you.html
+├── regulamin.html               # legal pages
+├── polityka-prywatnosci.html
+├── cookies.html
 ├── oferta/                      # 6 service subpages
-├── doc/                         # terms, privacy policy, cookies
 ├── partials/
 │   ├── header.html              # shared header (source)
 │   └── footer.html              # shared footer (source)
@@ -428,10 +432,10 @@ The order is deterministic: `dist/` is recreated, the maintained pages are rende
 ### Testing and Validation
 
 - `scripts/check-links.mjs` and `scripts/check-html-assets.mjs` — static validation of links and asset references; both render pages through `scripts/utils/partials.js`, so they inspect the document in the form that ships to `dist/`.
-- `scripts/qa-a11y.mjs` — axe-core executed through Playwright against a local static server; the scanned routes are `index.html`, `404.html`, all six `oferta/` subpages, all three `doc/` pages, and `offline.html` when the file exists. The script fails on `serious` or `critical` violations.
+- `scripts/qa-a11y.mjs` — axe-core executed through Playwright against a local static server; the scanned routes are `index.html`, `404.html`, all six `oferta/` subpages, all three root-level legal pages, and `offline.html` when the file exists. The script fails on `serious` or `critical` violations.
 - `scripts/qa-functional.mjs` — nine functional scenarios in headless Chromium: the mobile navigation drawer and offer submenu, the lightbox (single tab stop, Enter/Escape with focus restore, Space and arrow keys), and the contact form (empty submission, anti-spam window, successful submission, failed submission).
 - `scripts/verify-css-build.js` and `scripts/verify-js-build.js` — artifact verification embedded in the build commands.
-- `lighthouse.config.json` — Lighthouse over the `dist` directory for `/`, `/oferta/remonty.html`, and `/doc/polityka-prywatnosci.html`, with thresholds: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
+- `lighthouse.config.json` — Lighthouse over the `dist` directory for `/`, `/oferta/remonty.html`, and `/polityka-prywatnosci.html`, with thresholds: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
 These commands are configured in the repository; running them was not part of preparing this documentation.
 

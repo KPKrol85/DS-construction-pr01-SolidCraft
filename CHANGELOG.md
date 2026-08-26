@@ -27,6 +27,7 @@ Detailed implementation history lives in the Git history, not here.
 - Refined the testimonials section layout, rating summary and card behaviour in both themes.
 - Refined responsive presentation details: the ghost-button backdrop, the footer map button colours, and hero title and lead widths across breakpoints.
 - Cleaned up the stylesheets — obsolete comments and stray whitespace removed, with no rendering change.
+- Moved the three legal pages out of `doc/` to the project root — `polityka-prywatnosci.html`, `regulamin.html` and `cookies.html` — and repointed every active reference to the new locations: navigation and footer links, canonical, Open Graph, Twitter and JSON-LD URLs, the generated sitemap and Service Worker precache, the Lighthouse URL list, the accessibility QA routes and the `manifest.webmanifest` shortcut. The previous `/doc/…` addresses stay reachable through 301 redirects in `_redirects`, and the production build now publishes the three documents only at their root-level locations. The legal text itself is unchanged.
 
 ### Fixed
 

@@ -1,6 +1,6 @@
 {
   "distDir": "dist",
-  "urls": ["/", "/oferta/remonty.html", "/doc/polityka-prywatnosci.html"],
+  "urls": ["/", "/oferta/remonty.html", "/polityka-prywatnosci.html"],
   "numberOfRuns": 1,
   "reportDir": ".lighthouse-reports",
   "thresholds": {

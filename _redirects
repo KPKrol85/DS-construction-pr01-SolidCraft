@@ -1,14 +1,28 @@
 /index        /   301
 /index.html   /   301
 
-/doc/polityka-prywatnosci      /doc/polityka-prywatnosci.html   301
-/doc/polityka-prywatnosci/     /doc/polityka-prywatnosci.html   301
+/polityka-prywatnosci          /polityka-prywatnosci.html       301
+/polityka-prywatnosci/         /polityka-prywatnosci.html       301
 
-/doc/regulamin                 /doc/regulamin.html              301
-/doc/regulamin/                /doc/regulamin.html              301
+/regulamin                     /regulamin.html                  301
+/regulamin/                    /regulamin.html                  301
 
-/doc/cookies                   /doc/cookies.html                301
-/doc/cookies/                  /doc/cookies.html                301
+/cookies                       /cookies.html                    301
+/cookies/                      /cookies.html                    301
+
+# Legacy legal-page locations. The three documents moved from /doc/ to the
+# site root; these keep indexed and bookmarked /doc/ URLs reaching them.
+/doc/polityka-prywatnosci.html /polityka-prywatnosci.html       301
+/doc/polityka-prywatnosci      /polityka-prywatnosci.html       301
+/doc/polityka-prywatnosci/     /polityka-prywatnosci.html       301
+
+/doc/regulamin.html            /regulamin.html                  301
+/doc/regulamin                 /regulamin.html                  301
+/doc/regulamin/                /regulamin.html                  301
+
+/doc/cookies.html              /cookies.html                    301
+/doc/cookies                   /cookies.html                    301
+/doc/cookies/                  /cookies.html                    301
 
 /oferta/malowanie              /oferta/malowanie.html           301
 /oferta/malowanie/             /oferta/malowanie.html           301
