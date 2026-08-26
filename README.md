@@ -256,7 +256,7 @@ Projekt nie jest oprogramowaniem open source. Wykorzystanie komercyjne, redystry
 ### Atrybucje
 
 - Geometria ikon w `js/modules/icons.js` pochodzi z Font Awesome Free 7.3.1 (Fonticons, Inc.), zgodnie z notą w nagłówku pliku: <https://fontawesome.com>.
-- Kroje Montserrat i Poppins są hostowane lokalnie w `assets/fonts/` jako pliki `woff2`. Repozytorium nie zawiera plików licencyjnych tych krojów.
+- Kroje Montserrat i Poppins są hostowane lokalnie w `assets/fonts/` jako pliki `woff2` i podlegają licencji SIL Open Font License 1.1. Zapis proweniencji znajduje się w [`assets/fonts/README.md`](assets/fonts/README.md), a pełny tekst licencji w [`assets/fonts/OFL-1.1.txt`](assets/fonts/OFL-1.1.txt).
 
 ## EN
 
@@ -514,4 +514,4 @@ The project is not open-source software. Commercial use, redistribution, public 
 ### Attributions
 
 - The icon geometry in `js/modules/icons.js` comes from Font Awesome Free 7.3.1 (Fonticons, Inc.), as stated in the file header: <https://fontawesome.com>.
-- The Montserrat and Poppins typefaces are self-hosted as `woff2` files in `assets/fonts/`. The repository contains no license files for these typefaces.
+- The Montserrat and Poppins typefaces are self-hosted as `woff2` files in `assets/fonts/` and are licensed under the SIL Open Font License 1.1. The provenance record is in [`assets/fonts/README.md`](assets/fonts/README.md) and the full license text in [`assets/fonts/OFL-1.1.txt`](assets/fonts/OFL-1.1.txt).

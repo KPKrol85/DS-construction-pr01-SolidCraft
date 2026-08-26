@@ -3,13 +3,13 @@
 **Audit date:** 2026-08-24  
 **Project type:** Static multi-page demonstrational construction-services website (HTML, CSS, JavaScript, PostCSS; Netlify build contract)  
 **Audit mode:** Final repository and implementation review  
-**Current readiness:** Ready with Minor Refinements Outstanding
+**Current readiness:** Ready with Deployment Verification Outstanding
 
 ## 1. Executive assessment
 
 SolidCraft has a coherent source-first architecture, a deterministic documented deployment pipeline, useful repository-specific validation, and browser-tested navigation, lightbox, and form behavior. The current Chromium regression suites passed, and representative enabled-JavaScript pages produced no runtime errors or horizontal overflow.
 
-The four important risks this audit recorded have since been resolved and verified: no-JavaScript content visibility, disclosure of the fictional/demo identity on indexed direct-entry routes, privacy and cookie text matching the implemented form and storage behavior, and the development/CI dependency graph, which now reports no critical or high advisories. No P0 or P1 finding remains open; what is left is one contained P2 refinement. Deployed Netlify behavior and the production Service Worker in a published artifact were not exercised by this audit and still require verification against a real deployment.
+The four important risks this audit recorded have since been resolved and verified: no-JavaScript content visibility, disclosure of the fictional/demo identity on indexed direct-entry routes, privacy and cookie text matching the implemented form and storage behavior, and the development/CI dependency graph, which now reports no critical or high advisories. The one contained P2 refinement — the absent self-contained font licensing record — has since been resolved and verified as well: the repository and the production artifact now expose a human-readable SIL Open Font License 1.1 record together with a Montserrat and Poppins provenance record derived from embedded font metadata and authoritative upstream licensing sources, while the proprietary project license, the font binaries, and font loading are unchanged. Exact upstream release, commit, and download provenance could not be reconstructed from the repository and is deliberately not claimed. No P0, P1, or P2 finding remains open. Deployed Netlify behavior and the production Service Worker in a published artifact were not exercised by this audit and still require verification against a real deployment.
 
 ## 2. Audit scope and verification
 
@@ -71,15 +71,7 @@ None detected.
 
 ## 6. P2 — Minor refinements
 
-### [P2-04] The font package lacks a self-contained human-readable licensing record
-
-- **Classification:** Maintenance risk
-- **Affected area:** Third-party licensing, font provenance, release/handoff
-- **Evidence:** `assets/fonts/`; `README.md:256-259`; `README.md:514-517`; `LICENSE:176-204`; [Montserrat upstream license](https://github.com/google/fonts/blob/main/ofl/montserrat/OFL.txt); [Poppins upstream license](https://github.com/google/fonts/blob/main/ofl/poppins/OFL.txt)
-- **Current behavior:** The repository distributes twelve Montserrat and Poppins `woff2` files and states that no separate font license files are present. Direct metadata inspection found an upstream copyright record and OFL URL in every binary, so an absent-notice violation is not established. However, no binary contained a full license text, and the repository has no human-readable OFL copy or provenance/version map; reviewers must leave the release package to determine the applicable terms.
-- **Impact:** License review, artifact handoff, and future font replacement are needlessly fragile even though the binaries retain basic attribution metadata. The proprietary project license correctly excludes third-party materials but does not identify the exact font terms within the repository.
-- **Recommended direction:** Record the exact upstream family/version provenance and include the corresponding human-readable OFL text or an equivalent reviewed third-party-notices file, without placing the fonts under the proprietary project license.
-- **Verification criteria:** The repository and deployment artifact expose a correct, human-readable licensing record that maps both families to their distributed files and agrees with the embedded metadata.
+None detected.
 
 ## 7. Extra quality improvements
 
@@ -87,12 +79,12 @@ None detected.
 
 ## 8. Current readiness conclusion
 
-**Status:** Ready with Minor Refinements Outstanding
+**Status:** Ready with Deployment Verification Outstanding
 
-The source architecture and tested JavaScript interactions were strong enough to support focused remediation rather than redesign, and that remediation is now complete: the no-JavaScript content failure, demonstrational identity, data disclosures, and vulnerable tooling graph are all corrected and verified. The production build, HTML checks, accessibility and functional suites, image pipeline, and Lighthouse thresholds pass against the current tree. One contained P2 refinement remains open, and deployment-specific behavior — real Netlify Forms processing, published headers and redirects, and the production Service Worker in a deployed artifact — still requires verification against a live environment.
+The source architecture and tested JavaScript interactions were strong enough to support focused remediation rather than redesign, and that remediation is now complete: the no-JavaScript content failure, demonstrational identity, data disclosures, vulnerable tooling graph, and font licensing record are all corrected and verified. The production build, HTML checks, accessibility and functional suites, image pipeline, and Lighthouse thresholds pass against the current tree. No audit finding remains open, and deployment-specific behavior — real Netlify Forms processing, published headers and redirects, and the production Service Worker in a deployed artifact — still requires verification against a live environment.
 
 ## 9. Senior rating
 
 **Rating:** 8.5/10
 
-The project earns a strong baseline for source ownership, modularity, deterministic tooling design, accessible interaction patterns, responsive media, and passing repository-specific browser checks, and the four important risks that previously held it back — progressive enhancement, public content integrity, privacy facts, and dependency security — are now resolved and verified. The rating stops short of the top of the scale because one contained repository refinement remains open and deployed production behavior is still unverified.
+The project earns a strong baseline for source ownership, modularity, deterministic tooling design, accessible interaction patterns, responsive media, and passing repository-specific browser checks, and the four important risks that previously held it back — progressive enhancement, public content integrity, privacy facts, and dependency security — are now resolved and verified. The rating stops short of the top of the scale because deployed production behavior is still unverified.
