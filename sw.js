@@ -58,14 +58,19 @@ const persistRuntimeResponse = (event, request, responsePromise) => {
   );
 };
 
-self.addEventListener("install", (event) => {
-  if (!IS_DEV) {
-    event.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)),
-    );
-  }
+/* Both lifecycle handlers pass event.waitUntil() one promise covering the
+   cache work *and* the worker/client transition that follows it, so the
+   browser is required to keep the event alive until that transition has
+   settled — not only until the cache step has.
 
-  self.skipWaiting();
+   Development still precaches nothing: the manifest block is empty there, so
+   the install promise is the transition alone. */
+self.addEventListener("install", (event) => {
+  const precached = IS_DEV
+    ? Promise.resolve()
+    : caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS));
+
+  event.waitUntil(precached.then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
@@ -81,10 +86,9 @@ self.addEventListener("activate", (event) => {
             )
             .map((key) => caches.delete(key)),
         ),
-      ),
+      )
+      .then(() => self.clients.claim()),
   );
-
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {

@@ -25,6 +25,7 @@
     "check:html": "npm run check:links && npm run check:assets",
     "qa:a11y": "node scripts/qa-a11y.mjs",
     "qa:functional": "node scripts/qa-functional.mjs",
+    "qa:sw": "node scripts/qa-sw-lifecycle.mjs",
     "qa:lighthouse": "npm run build:dist && node scripts/qa-lighthouse.mjs",
     "qa:lhci": "npm run qa:lighthouse",
     "check:predeploy": "npm run check:html && npm run qa:a11y",
