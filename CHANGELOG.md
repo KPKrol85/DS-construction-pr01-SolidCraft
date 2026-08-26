@@ -44,6 +44,7 @@ Detailed implementation history lives in the Git history, not here.
 - Made the offer submenu's `open` class authoritative across the mobile drawer and desktop dropdown, keeping `aria-expanded` truthful.
 - Bound button labels to a theme-stable on-brand foreground token, restoring WCAG AA contrast in both themes.
 - Made `404.html` and `offline.html` URL-depth independent by resolving their references from the site root.
+- Removed the duplicate `<title>` element from `404.html`, so the document exposes exactly one title: `404 — Strona nie została znaleziona | SolidCraft`.
 - Made each service-gallery anchor the sole lightbox trigger, removing the nested tab stop.
 - Gave the lightbox an accessible structure matching its `aria-modal` contract, and kept each thumbnail's descriptive `alt`.
 - Resolved the conflict between the lightbox's passive double-tap listener and its `preventDefault()` call.

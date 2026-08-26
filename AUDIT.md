@@ -81,16 +81,6 @@ None detected.
 - **Recommended direction:** Make each install/activate lifecycle promise cover both its cache work and the related worker/client transition, preserving the existing cache namespace and generated-manifest architecture.
 - **Verification criteria:** An automated Service Worker update test proves successful installation, activation, old-cache cleanup, and control of an already-open client before the lifecycle event is considered complete.
 
-### [P2-02] The 404 document defines two competing page titles
-
-- **Classification:** Defect
-- **Affected area:** HTML validity, browser title, utility-page metadata
-- **Evidence:** `404.html:10-11`
-- **Current behavior:** The 404 page contains two consecutive `<title>` elements. Chromium selects the first (`SolidCraft — 404`), leaving the more descriptive second title unused.
-- **Impact:** Browser and crawler title selection is ambiguous, and the document violates the single-title head contract used by the other maintained pages.
-- **Recommended direction:** Retain one intentional title consistent with the 404 page's visible purpose and social metadata.
-- **Verification criteria:** The rendered 404 document contains exactly one `<title>` element and exposes that value as `document.title`.
-
 ### [P2-03] Obsolete generated gallery variants are copied into every deployment artifact
 
 - **Classification:** Maintenance risk
