@@ -33,6 +33,11 @@ const GALLERY_SIZES = [
   { width: 2048, height: 1536 },
 ];
 
+/* Every outputDir below is owned outright by this script: its whole content is
+   regenerated from assets/img-src/, so anything found there that the current
+   configuration would not produce is an obsolete leftover. Directories under
+   assets/img/ that are absent from this list (favicon/, logo/, partners-logos/,
+   shortcuts/) are hand-maintained and are never touched. */
 const CONFIG = [
   {
     name: "hero",
@@ -115,14 +120,10 @@ function outputPathFor(outputDir, baseName, format) {
   return path.join(outputDir, `${baseName}.${format}`);
 }
 
-function formatLabel(format, sourceExt) {
-  if (format === "source") {
-    return sourceExt.replace(".", "");
-  }
-  return format;
-}
-
-async function buildForFile(filePath, config) {
+/* Single source of truth for "which files does this source image produce".
+   Generation and cleanup both read it, so the canonical set can never drift
+   into a second, hand-maintained list of allowed filenames. */
+function expectedOutputsForFile(filePath, config) {
   const ext = path.extname(filePath).toLowerCase();
   if (!INPUT_EXTS.has(ext)) {
     return [];
@@ -130,81 +131,105 @@ async function buildForFile(filePath, config) {
 
   const baseName = path.basename(filePath, ext);
   const outputDir = path.join(OUT_ROOT, config.outputDir);
-  await ensureDir(outputDir);
-
   const sizes = config.sizes || [null];
-  const buffer = await fs.readFile(filePath);
   const outputs = [];
 
   for (const size of sizes) {
     const outputBase = config.nameFor(baseName, size);
     for (const format of config.formats) {
       const actualFormat = format === "source" ? ext.slice(1) : format;
-      const outPath = outputPathFor(outputDir, outputBase, actualFormat);
-      if (await pathExists(outPath)) {
-        continue;
-      }
-
-      let pipeline = sharp(buffer).rotate();
-      if (size) {
-        pipeline = pipeline.resize(size.width, size.height, {
-          fit: "cover",
-          position: "center",
-        });
-      }
-
-      if (actualFormat === "avif") {
-        pipeline = pipeline.avif(QUALITY.avif);
-      } else if (actualFormat === "webp") {
-        pipeline = pipeline.webp(QUALITY.webp);
-      } else if (actualFormat === "jpg" || actualFormat === "jpeg") {
-        pipeline = pipeline.jpeg(QUALITY.jpg);
-      } else if (actualFormat === "png") {
-        pipeline = pipeline.png();
-      }
-
-      await pipeline.toFile(outPath);
-      outputs.push(outPath);
+      outputs.push({
+        path: outputPathFor(outputDir, outputBase, actualFormat),
+        format: actualFormat,
+        size,
+      });
     }
   }
 
   return outputs;
 }
 
-async function cleanForFile(filePath, config) {
-  const ext = path.extname(filePath).toLowerCase();
-  if (!INPUT_EXTS.has(ext)) {
+async function buildForFile(filePath, config, expectedOutputs) {
+  if (expectedOutputs.length === 0) {
     return [];
   }
 
-  const baseName = path.basename(filePath, ext);
-  const outputDir = path.join(OUT_ROOT, config.outputDir);
-  const sizes = config.sizes || [null];
-  const removed = [];
+  await ensureDir(path.join(OUT_ROOT, config.outputDir));
+  const buffer = await fs.readFile(filePath);
+  const created = [];
 
-  for (const size of sizes) {
-    const outputBase = config.nameFor(baseName, size);
-    for (const format of config.formats) {
-      const actualFormat = format === "source" ? ext.slice(1) : format;
-      const outPath = outputPathFor(outputDir, outputBase, actualFormat);
-      if (await pathExists(outPath)) {
-        await fs.unlink(outPath);
-        removed.push(outPath);
+  for (const output of expectedOutputs) {
+    if (await pathExists(output.path)) {
+      continue;
+    }
+
+    let pipeline = sharp(buffer).rotate();
+    if (output.size) {
+      pipeline = pipeline.resize(output.size.width, output.size.height, {
+        fit: "cover",
+        position: "center",
+      });
+    }
+
+    if (output.format === "avif") {
+      pipeline = pipeline.avif(QUALITY.avif);
+    } else if (output.format === "webp") {
+      pipeline = pipeline.webp(QUALITY.webp);
+    } else if (output.format === "jpg" || output.format === "jpeg") {
+      pipeline = pipeline.jpeg(QUALITY.jpg);
+    } else if (output.format === "png") {
+      pipeline = pipeline.png();
+    }
+
+    await pipeline.toFile(output.path);
+    created.push(output.path);
+  }
+
+  return created;
+}
+
+/* Converges the owned output directories to `expected` by deleting everything
+   else inside them. Cleanup is therefore driven by what the configuration can
+   currently generate rather than by filename guesswork, so outputs left behind
+   by superseded naming or sizing rules cannot survive another cycle. */
+async function pruneObsolete(ownedDirs, expected, { dryRun = false } = {}) {
+  const obsolete = [];
+
+  for (const ownedDir of ownedDirs) {
+    const relative = path.relative(OUT_ROOT, ownedDir);
+    if (relative.startsWith("..") || path.isAbsolute(relative)) {
+      throw new Error(`refusing to prune outside ${OUT_ROOT}: ${ownedDir}`);
+    }
+    if (!(await pathExists(ownedDir))) {
+      continue;
+    }
+
+    for (const filePath of await walk(ownedDir)) {
+      if (expected.has(filePath)) {
+        continue;
+      }
+      obsolete.push(filePath);
+      if (!dryRun) {
+        await fs.unlink(filePath);
       }
     }
   }
 
-  return removed;
+  return obsolete.sort();
 }
 
-async function run(mode) {
-  const summary = [];
+async function run(mode, { dryRun = false } = {}) {
+  const created = [];
+  const expected = new Set();
+  const ownedDirs = [];
   let scanned = 0;
 
-  logger.debug(`images:${mode} started`);
+  logger.debug(`images:${mode} started${dryRun ? " (dry run)" : ""}`);
   for (const config of CONFIG) {
     const inputDir = path.join(SRC_ROOT, config.inputDir);
     if (!(await pathExists(inputDir))) {
+      /* Without its sources the canonical set for this group is unknowable, so
+         its output directory is left alone instead of being emptied. */
       logger.debug(
         `images:${mode} skip missing input directory ${config.inputDir}`,
       );
@@ -212,47 +237,71 @@ async function run(mode) {
     }
 
     logger.debug(`images:${mode} scanning ${config.inputDir}`);
+    ownedDirs.push(path.join(OUT_ROOT, config.outputDir));
+
     const files = await walk(inputDir);
     for (const filePath of files) {
       scanned += 1;
-      if (mode === "build") {
-        const outputs = await buildForFile(filePath, config);
-        if (outputs.length > 0) {
-          logger.debug(
-            `images:build created ${outputs.length} output(s) from ${path.relative(PROJECT_ROOT, filePath)}`,
-          );
-        }
-        summary.push(...outputs);
-      } else if (mode === "clean") {
-        const removed = await cleanForFile(filePath, config);
-        if (removed.length > 0) {
-          logger.debug(
-            `images:clean removed ${removed.length} output(s) from ${path.relative(PROJECT_ROOT, filePath)}`,
-          );
-        }
-        summary.push(...removed);
+      /* "clean" keeps nothing, so it contributes no expected outputs and the
+         prune below empties every owned directory. */
+      if (mode !== "build") {
+        continue;
       }
+
+      const outputs = expectedOutputsForFile(filePath, config);
+      for (const output of outputs) {
+        expected.add(output.path);
+      }
+
+      if (dryRun) {
+        continue;
+      }
+
+      const createdForFile = await buildForFile(filePath, config, outputs);
+      if (createdForFile.length > 0) {
+        logger.debug(
+          `images:build created ${createdForFile.length} output(s) from ${path.relative(PROJECT_ROOT, filePath)}`,
+        );
+      }
+      created.push(...createdForFile);
     }
   }
 
-  if (mode === "build") {
+  const obsolete = await pruneObsolete(ownedDirs, expected, { dryRun });
+  for (const filePath of obsolete) {
+    const relPath = path.relative(PROJECT_ROOT, filePath);
+    if (dryRun) {
+      logger.log(`- ${relPath}`);
+    } else {
+      logger.debug(`images:${mode} removed obsolete output ${relPath}`);
+    }
+  }
+
+  if (dryRun) {
     logger.summary(
-      `OK: images:build created ${summary.length} file(s) from ${scanned} scanned source file(s).`,
+      `OK: images:${mode} --dry-run found ${obsolete.length} obsolete output(s) across ${ownedDirs.length} pipeline-owned directory(ies) from ${scanned} scanned source file(s).`,
+    );
+  } else if (mode === "build") {
+    logger.summary(
+      `OK: images:build created ${created.length} file(s) and removed ${obsolete.length} obsolete file(s) from ${scanned} scanned source file(s).`,
     );
   } else if (mode === "clean") {
     logger.summary(
-      `OK: images:clean removed ${summary.length} file(s) from ${scanned} scanned source file(s).`,
+      `OK: images:clean removed ${obsolete.length} file(s) from ${scanned} scanned source file(s).`,
     );
   }
 }
 
-const mode = process.argv.slice(2).find((arg) => !arg.startsWith("-"));
+const args = process.argv.slice(2);
+const mode = args.find((arg) => !arg.startsWith("-"));
 if (!mode || !["build", "clean"].includes(mode)) {
-  logger.error("Usage: node scripts/images.js <build|clean> [--verbose]");
+  logger.error(
+    "Usage: node scripts/images.js <build|clean> [--dry-run] [--verbose]",
+  );
   process.exit(1);
 }
 
-run(mode).catch((error) => {
+run(mode, { dryRun: args.includes("--dry-run") }).catch((error) => {
   logger.error("FAIL: image processing failed.");
   logger.error(error.stack || String(error));
   process.exit(1);

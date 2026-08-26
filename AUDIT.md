@@ -9,7 +9,7 @@
 
 SolidCraft has a coherent source-first architecture, a deterministic documented deployment pipeline, useful repository-specific validation, and browser-tested navigation, lightbox, and form behavior. The current Chromium regression suites passed, and representative enabled-JavaScript pages produced no runtime errors or horizontal overflow.
 
-The four important risks this audit recorded have since been resolved and verified: no-JavaScript content visibility, disclosure of the fictional/demo identity on indexed direct-entry routes, privacy and cookie text matching the implemented form and storage behavior, and the development/CI dependency graph, which now reports no critical or high advisories. No P0 or P1 finding remains open; what is left is two contained P2 refinements. Deployed Netlify behavior and the production Service Worker in a published artifact were not exercised by this audit and still require verification against a real deployment.
+The four important risks this audit recorded have since been resolved and verified: no-JavaScript content visibility, disclosure of the fictional/demo identity on indexed direct-entry routes, privacy and cookie text matching the implemented form and storage behavior, and the development/CI dependency graph, which now reports no critical or high advisories. No P0 or P1 finding remains open; what is left is one contained P2 refinement. Deployed Netlify behavior and the production Service Worker in a published artifact were not exercised by this audit and still require verification against a real deployment.
 
 ## 2. Audit scope and verification
 
@@ -71,16 +71,6 @@ None detected.
 
 ## 6. P2 — Minor refinements
 
-### [P2-03] Obsolete generated gallery variants are copied into every deployment artifact
-
-- **Classification:** Maintenance risk
-- **Affected area:** Image pipeline, repository size, deployment artifact hygiene
-- **Evidence:** `scripts/images.js:28-33`; `scripts/images.js:174-197`; `scripts/build-dist.js:142-150`; `assets/img/gallery/paint-04-430x360.avif`; `assets/img/gallery/reno-01-1563x1152.jpg`; `assets/img/gallery/reno-05-480x360-.webp`; `assets/img/gallery/reno-06-768-576.jpg`
-- **Current behavior:** Twelve tracked gallery files do not match the five configured gallery dimensions/naming forms. They total 1,695,342 bytes and are not referenced by maintained HTML. `images:clean` removes only currently expected names, so these obsolete variants survive cleanup; `build-dist.js` copies the entire generated image tree into `dist/`.
-- **Impact:** Each source checkout and deployment artifact carries unused binary data, and the current clean/build workflow cannot converge the generated directory to the configured output set after naming changes.
-- **Recommended direction:** Reconcile the generated tree with the canonical source/configuration and make the image pipeline remove or fail on obsolete outputs within its owned directories.
-- **Verification criteria:** A clean image build produces only configured variants, a reference/inventory check reports no orphan outputs, and the deployment artifact excludes the twelve obsolete files.
-
 ### [P2-04] The font package lacks a self-contained human-readable licensing record
 
 - **Classification:** Maintenance risk
@@ -99,10 +89,10 @@ None detected.
 
 **Status:** Ready with Minor Refinements Outstanding
 
-The source architecture and tested JavaScript interactions were strong enough to support focused remediation rather than redesign, and that remediation is now complete: the no-JavaScript content failure, demonstrational identity, data disclosures, and vulnerable tooling graph are all corrected and verified. The production build, HTML checks, accessibility and functional suites, image pipeline, and Lighthouse thresholds pass against the current tree. Two contained P2 refinements remain open, and deployment-specific behavior — real Netlify Forms processing, published headers and redirects, and the production Service Worker in a deployed artifact — still requires verification against a live environment.
+The source architecture and tested JavaScript interactions were strong enough to support focused remediation rather than redesign, and that remediation is now complete: the no-JavaScript content failure, demonstrational identity, data disclosures, and vulnerable tooling graph are all corrected and verified. The production build, HTML checks, accessibility and functional suites, image pipeline, and Lighthouse thresholds pass against the current tree. One contained P2 refinement remains open, and deployment-specific behavior — real Netlify Forms processing, published headers and redirects, and the production Service Worker in a deployed artifact — still requires verification against a live environment.
 
 ## 9. Senior rating
 
 **Rating:** 8.5/10
 
-The project earns a strong baseline for source ownership, modularity, deterministic tooling design, accessible interaction patterns, responsive media, and passing repository-specific browser checks, and the four important risks that previously held it back — progressive enhancement, public content integrity, privacy facts, and dependency security — are now resolved and verified. The rating stops short of the top of the scale because two contained repository/runtime refinements remain open and deployed production behavior is still unverified.
+The project earns a strong baseline for source ownership, modularity, deterministic tooling design, accessible interaction patterns, responsive media, and passing repository-specific browser checks, and the four important risks that previously held it back — progressive enhancement, public content integrity, privacy facts, and dependency security — are now resolved and verified. The rating stops short of the top of the scale because one contained repository refinement remains open and deployed production behavior is still unverified.
