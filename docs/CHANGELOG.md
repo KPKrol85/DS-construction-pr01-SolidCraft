@@ -85,6 +85,7 @@ Detailed implementation history lives in the Git history, not here.
 - Corrected the content types served by the QA static servers, which had made the accessibility gate scan an unstyled, script-less page.
 - Extended `qa:a11y` coverage to every maintained service and legal page — 12 routes.
 - Added a functional browser suite (`scripts/qa-functional.mjs`, nine scenarios) on the Playwright dependency already declared.
+- Traced the CI `color-contrast` failure reported for `#oswietlenie > p` on `oferta/elektryka.html` to reveal-animation timing rather than a colour defect: the settled text measures 5.46:1 in the light theme and 7.13:1 in the dark theme against the 4.5:1 AA threshold for normal text, and the reduced ratio is only reported when axe samples the card mid-fade. No stylesheet change was required; `npm run qa:a11y` passes with 12 pages scanned and 0 serious/critical violations.
 
 ### Documentation
 
