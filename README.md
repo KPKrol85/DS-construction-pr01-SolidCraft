@@ -109,8 +109,10 @@ DS-construction-pr01-SolidCraft/
 ├── netlify.toml
 ├── lighthouse.config.json
 ├── postcss.config.js
-├── settings.md
-├── CHANGELOG.md
+├── docs/
+│   ├── settings.md
+│   ├── CHANGELOG.md
+│   └── archive/                 # zakończone audyty i plany
 ├── LICENSE
 └── package.json
 ```
@@ -247,7 +249,7 @@ Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 - Nie edytuj ręcznie: zawartości `dist/` (w tym `dist/sitemap.xml` i `dist/sw.js`), bloku między znacznikami `build:sw-manifest` w `sw.js` oraz `assets/img/**`.
 - Po zmianie plików źródłowych uruchom `npm run build:dist`, a po zmianie obrazów źródłowych `npm run images:build`.
 - Nazwy `CI` i `quality-gate` są częścią kontraktu — zmiana którejkolwiek odłącza wymagany status check w ustawieniach ochrony gałęzi.
-- Zasady pipeline'u i narzędzi są opisane w `settings.md`, który pozostaje jedynym źródłem prawdy dla tej warstwy; historia zmian jest prowadzona w `CHANGELOG.md`.
+- Zasady pipeline'u i narzędzi są opisane w `docs/settings.md`, który pozostaje jedynym źródłem prawdy dla tej warstwy; historia zmian jest prowadzona w `docs/CHANGELOG.md`.
 
 ### Licencja
 
@@ -369,8 +371,10 @@ DS-construction-pr01-SolidCraft/
 ├── netlify.toml
 ├── lighthouse.config.json
 ├── postcss.config.js
-├── settings.md
-├── CHANGELOG.md
+├── docs/
+│   ├── settings.md
+│   ├── CHANGELOG.md
+│   └── archive/                 # archived audits and plans
 ├── LICENSE
 └── package.json
 ```
@@ -507,7 +511,7 @@ The repository contains no recorded performance measurement results.
 - Do not edit by hand: anything under `dist/` (including `dist/sitemap.xml` and `dist/sw.js`), the block between the `build:sw-manifest` markers in `sw.js`, and `assets/img/**`.
 - After changing source files run `npm run build:dist`; after changing source images run `npm run images:build`.
 - The `CI` and `quality-gate` names are part of the contract — renaming either detaches the required status check in branch-protection settings.
-- Pipeline and tooling rules are documented in `settings.md`, which remains the single source of truth for that layer; the change history is kept in `CHANGELOG.md`.
+- Pipeline and tooling rules are documented in `docs/settings.md`, which remains the single source of truth for that layer; the change history is kept in `docs/CHANGELOG.md`.
 
 ### License
 
