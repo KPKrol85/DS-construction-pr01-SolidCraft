@@ -113,7 +113,7 @@ DS-construction-pr01-SolidCraft/
 │   ├── settings.md
 │   ├── CHANGELOG.md
 │   └── archive/                 # zakończone audyty i plany
-├── LICENSE
+├── LICENSE.md
 └── package.json
 ```
 
@@ -253,7 +253,7 @@ Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 
 ### Licencja
 
-Projekt jest objęty licencją **Własnościowa Licencja Projektu KP_CODE (wersja 1.0)** — pełna treść znajduje się w pliku [`LICENSE`](LICENSE). Pole `license` w `package.json` ma wartość `SEE LICENSE IN LICENSE`.
+Projekt jest objęty licencją **Własnościowa Licencja Projektu KP_CODE (wersja 1.0)** — pełna treść znajduje się w pliku [`LICENSE.md`](LICENSE.md). Pole `license` w `package.json` ma wartość `SEE LICENSE IN LICENSE.md`.
 
 Projekt nie jest oprogramowaniem open source. Wykorzystanie komercyjne, redystrybucja, publiczne wdrożenie oraz wykorzystanie projektu jako szablonu wymagają uprzedniej, pisemnej zgody właściciela praw: **kontakt@kp-code.pl**.
 
@@ -375,7 +375,7 @@ DS-construction-pr01-SolidCraft/
 │   ├── settings.md
 │   ├── CHANGELOG.md
 │   └── archive/                 # archived audits and plans
-├── LICENSE
+├── LICENSE.md
 └── package.json
 ```
 
@@ -515,7 +515,7 @@ The repository contains no recorded performance measurement results.
 
 ### License
 
-The project is covered by the **KP_CODE Proprietary Project License (version 1.0)** — the full text is available in the [`LICENSE`](LICENSE) file. The `license` field in `package.json` is set to `SEE LICENSE IN LICENSE`.
+The project is covered by the **KP_CODE Proprietary Project License (version 1.0)** — the full text is available in the [`LICENSE.md`](LICENSE.md) file. The `license` field in `package.json` is set to `SEE LICENSE IN LICENSE.md`.
 
 The project is not open-source software. Commercial use, redistribution, public deployment, and use of the project as a template require prior written permission from the copyright owner: **kontakt@kp-code.pl**.
 
