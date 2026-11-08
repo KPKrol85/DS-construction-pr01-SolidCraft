@@ -1,17 +1,15 @@
 {
   "id": "/",
-  "name": "SolidCraft — firma budowlano-remontowa",
+  "name": "SolidCraft — demonstracyjny serwis budowlano-remontowy",
   "short_name": "SolidCraft",
-  "description": "SolidCraft — firma budowlano-remontowa: oferta, realizacje, opinie, FAQ oraz formularz wyceny. Sprawdź zakres usług i skontaktuj się z nami.",
+  "description": "Demonstracyjna strona firmy remontowo-budowlanej przygotowana przez KP_Code Digital Studio. Przykładowa oferta usług, realizacje i formularz kontaktowy.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "window-controls-overlay"],
   "orientation": "any",
-  "theme_color": "#0ea5e9",
   "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
   "categories": ["business", "productivity"],
-  "prefer_related_applications": false,
   "lang": "pl-PL",
   "dir": "ltr",
   "icons": [
@@ -47,7 +45,7 @@
     {
       "name": "Oferta",
       "short_name": "Oferta",
-      "description": "Przejdź do sekcji Oferta na stronie głównej",
+      "description": "Zobacz przykładową ofertę usług",
       "url": "/#oferta",
       "icons": [
         {
@@ -75,7 +73,7 @@
     {
       "name": "Kontakt",
       "short_name": "Kontakt",
-      "description": "Otwórz sekcję kontaktową z formularzem wyceny",
+      "description": "Przejdź do demonstracyjnego formularza kontaktowego",
       "url": "/#kontakt",
       "icons": [
         {
@@ -92,15 +90,15 @@
       "src": "/assets/img/screenshots/mobile.jpg",
       "sizes": "720x1280",
       "type": "image/jpeg",
-      "label": "Strona główna — widok mobilny",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Strona główna — widok mobilny"
     },
     {
       "src": "/assets/img/screenshots/desktop.jpg",
       "sizes": "1280x720",
       "type": "image/jpeg",
-      "label": "Strona główna — widok desktopowy",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "Strona główna — widok desktopowy"
     }
   ]
 }
