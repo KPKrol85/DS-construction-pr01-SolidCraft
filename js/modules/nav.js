@@ -476,9 +476,7 @@ function initHeaderShrink() {
   const measureHeader = () => Math.round(header.getBoundingClientRect().height);
   const syncVar = () => {
     const h = measureHeader();
-    document.documentElement.style.setProperty("--header-h", `${h}px`);
-    if (typeof utils?.refreshHeaderH === "function") utils.refreshHeaderH();
-    else if (window.utils?.refreshHeaderH) window.utils.refreshHeaderH();
+    utils.syncHeaderCssVar(h);
     window.dispatchEvent(
       new CustomEvent("header:sync", { detail: { height: h } }),
     );

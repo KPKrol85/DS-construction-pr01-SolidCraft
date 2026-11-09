@@ -37,10 +37,11 @@ const utils = (() => {
     return getHeaderH();
   };
 
-  const syncHeaderCssVar = () => {
-    const h = computeHeaderH();
+  const syncHeaderCssVar = (measuredPx) => {
+    const h = Number.isFinite(measuredPx) ? measuredPx : computeHeaderH();
     docEl.style.setProperty("--header-h", `${h}px`);
-    cached = h;
+    cached = h > 0 ? h : computeHeaderH();
+    lastW = window.innerWidth || 0;
     return h;
   };
 

@@ -31,13 +31,9 @@ No active `PLAN.md`, previous `IMPROVEMENTS-TECH.md`, or other improvement repor
 
 ### IMP-TECH-03 — Centralize header height publication and cache updates
 
-- **Affected area:** Header geometry utilities and header-shrink integration.
-- **Evidence:** `js/modules/utils.js:5-58`; `js/modules/nav.js:279-284`; `js/modules/nav.js:462-542`; `js/script.js:43-44`; `css/modules/base.css:1-20`.
-- **Current implementation:** Utilities own cached header-height reads, fallback resolution, a CSS-variable synchronization method, and resize invalidation. Header shrink separately measures the header, writes `--header-h`, refreshes the utility cache, and dispatches `header:sync`. Startup and live updates therefore publish related state through separate code paths.
-- **Proposed improvement:** Make the existing utility module the owner of publishing header height to both the CSS variable and its cache; let header shrink retain control of when live measurements occur.
-- **Expected engineering value:** The relationship between the published height and cached value becomes explicit in one module, reducing coordination when header sizing changes.
-- **Implementation scope:** Adjust `utils.js` and the publication call in `initHeaderShrink`, retaining startup fallback semantics, observer/event scheduling, shrink thresholds, existing utility methods, and `header:sync`. Do not introduce another observer service or change CSS offsets.
-- **Acceptance criteria:** Runtime writes to `--header-h` and corresponding cache updates pass through the utility API. Initial fallback, live shrink/expand measurements, resize and font-load updates, and event payloads retain their current behavior; ScrollSpy and CSS consumers receive the same heights as before.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** `utils.syncHeaderCssVar()` now accepts an optional measured height and publishes it to `--header-h`, the cache, and the cached viewport width; the no-argument path keeps the 74 px fallback. `initHeaderShrink` measures the header and publishes through this single call before dispatching an unchanged `header:sync`.
+- **Verification:** `node --check` passed for both modules. A browser check on the dev server confirmed matching live height, `--header-h`, `getHeaderH()`, and `header:sync` payloads at top (80 px), shrunk (67 px), expanded, and 375 px viewport (75 px) states, with unchanged utility exports and no console errors; Prettier was not run because dependencies are not installed in the worktree.
 - **Impact:** Medium
 - **Effort:** Small
 
