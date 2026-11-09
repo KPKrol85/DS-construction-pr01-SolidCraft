@@ -39,13 +39,9 @@ No active `PLAN.md`, previous `IMPROVEMENTS-TECH.md`, or other improvement repor
 
 ### IMP-TECH-04 — Share source-page discovery between build and sitemap
 
-- **Affected area:** Canonical HTML input discovery for generated production documents.
-- **Evidence:** `scripts/build-dist.js:11-19`; `scripts/build-dist.js:63-86`; `scripts/build-dist.js:123-130`; `scripts/generate-sitemap.mjs:11-59`; `scripts/generate-sitemap.mjs:94-97`.
-- **Current implementation:** Production staging and sitemap generation independently traverse source HTML and maintain overlapping top-level directory exclusions. Sitemap discovery additionally excludes `build/` and the three non-indexable status pages. Both generators discover their inputs from source rather than from a shared discovery function.
-- **Proposed improvement:** Extract the common source-HTML traversal and shared exclusions into one utility, retaining explicit consumer-specific filtering.
-- **Expected engineering value:** Changes to common source-discovery rules have one owner, while the distinction between deployable documents and indexable pages remains visible.
-- **Implementation scope:** Add one utility under `scripts/utils/` and adapt only the two generators. Preserve their current path normalization, sorting, top-level exclusion semantics, and sitemap-only exclusions. Leave QA collectors, npm commands, CI, rendering, asset copying, and Service Worker generation unchanged.
-- **Acceptance criteria:** Both generators use the shared discovery implementation. The current tree still yields 13 deployable HTML documents and 10 sitemap URLs, with `/` representing `index.html`; sitemap status-page and `build/` exclusions remain explicit. Generated HTML, sitemap URL ordering, and public paths match the pre-change baseline.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** `scripts/utils/html-discovery.js` (CommonJS) now owns recursive source-HTML traversal, entry ordering, case-insensitive `.html` matching, and shared top-level exclusions. `build-dist.js` and `generate-sitemap.mjs` both use it; the sitemap keeps its explicit `build/`, status-page, prefix, normalization, and sorting rules.
+- **Verification:** `node --check` passed for all three files. Pre- and post-change runs of `build-dist.js`, `generate-sitemap.mjs`, and `generate-sw.js` produced a byte-identical 706-file `dist/` (13 HTML documents, 10 sitemap URLs, unchanged `sw.js` cache version), and a probe confirmed identical old/new discovery lists and order on the source tree and an edge-case fixture. Full `npm run build:dist` and Prettier were not run because dependencies are not installed; the Service Worker step used source CSS/JS as stand-ins for the minified bundles.
 - **Impact:** Medium
 - **Effort:** Small
 

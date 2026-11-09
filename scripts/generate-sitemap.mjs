@@ -1,14 +1,15 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
-import partials from "./utils/partials.js";
+import htmlDiscovery from "./utils/html-discovery.js";
 
-const { PARTIALS_DIR_NAME } = partials;
+const { listSourceHtmlFiles } = htmlDiscovery;
 
 const rootDir = process.cwd();
 const publishDir = path.join(rootDir, "dist");
 
-const EXCLUDED_DIRS = new Set([".git", ".claude", ".codex", ".lighthouse-reports", "node_modules", "dist", "build", PARTIALS_DIR_NAME]);
+// Sitemap-only exclusions on top of the shared source-discovery rules.
+const EXCLUDED_TOP_LEVEL_DIRS = ["build"];
 const EXCLUDED_FILES = new Set(["404.html", "offline.html", "thank-you.html"]);
 const EXCLUDED_PREFIXES = [];
 
@@ -27,36 +28,9 @@ function shouldExclude(relativePath) {
   return EXCLUDED_PREFIXES.some((prefix) => normalized === prefix.slice(0, -1) || normalized.startsWith(prefix));
 }
 
-async function listHtmlFiles(dir, collector = []) {
-  const entries = await fs.readdir(dir, { withFileTypes: true });
-  entries.sort((a, b) => a.name.localeCompare(b.name));
-
-  for (const entry of entries) {
-    const absPath = path.join(dir, entry.name);
-    const relPath = path.relative(rootDir, absPath);
-
-    if (entry.isDirectory()) {
-      const topLevel = relPath.split(path.sep)[0];
-      if (EXCLUDED_DIRS.has(topLevel)) {
-        continue;
-      }
-
-      await listHtmlFiles(absPath, collector);
-      continue;
-    }
-
-    if (!entry.isFile() || path.extname(entry.name).toLowerCase() !== ".html") {
-      continue;
-    }
-
-    if (shouldExclude(relPath)) {
-      continue;
-    }
-
-    collector.push(normalizeSlashes(relPath));
-  }
-
-  return collector;
+async function listIndexableHtmlFiles() {
+  const htmlFiles = await listSourceHtmlFiles(rootDir, { excludedTopLevelDirs: EXCLUDED_TOP_LEVEL_DIRS });
+  return htmlFiles.filter((relPath) => !shouldExclude(relPath)).map(normalizeSlashes);
 }
 
 function buildPageUrl(siteUrl, relHtmlPath) {
@@ -91,7 +65,7 @@ async function main() {
     process.exit(1);
   }
 
-  const htmlFiles = await listHtmlFiles(rootDir);
+  const htmlFiles = await listIndexableHtmlFiles();
   const uniqueFiles = [...new Set(htmlFiles)].sort((a, b) => a.localeCompare(b));
 
   const urls = uniqueFiles.map((file) => buildPageUrl(siteUrl, file));

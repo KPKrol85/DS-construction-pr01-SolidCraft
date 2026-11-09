@@ -1,22 +1,13 @@
 const fs = require("fs/promises");
 const path = require("path");
 const { createLogger } = require("./utils/logger");
+const { listSourceHtmlFiles } = require("./utils/html-discovery");
 const { PARTIALS_DIR_NAME, renderHtmlFile } = require("./utils/partials");
 
 const logger = createLogger();
 
 const rootDir = process.cwd();
 const distDir = path.join(rootDir, "dist");
-
-const EXCLUDED_TOP_LEVEL_DIRS = new Set([
-  ".git",
-  ".claude",
-  ".codex",
-  ".lighthouse-reports",
-  "node_modules",
-  "dist",
-  PARTIALS_DIR_NAME,
-]);
 
 /* sitemap.xml and sw.js are deliberately absent: dist/sitemap.xml is produced
    by scripts/generate-sitemap.mjs in the build:sitemap step and dist/sw.js by
@@ -60,31 +51,6 @@ async function renderHtmlFileToDist(relPath) {
   return partials;
 }
 
-async function listHtmlFilesRecursively(dir) {
-  const entries = await fs.readdir(dir, { withFileTypes: true });
-  entries.sort((a, b) => a.name.localeCompare(b.name));
-
-  const results = [];
-  for (const entry of entries) {
-    const absPath = path.join(dir, entry.name);
-    const relPath = path.relative(rootDir, absPath);
-    const topLevel = relPath.split(path.sep)[0];
-
-    if (entry.isDirectory()) {
-      if (EXCLUDED_TOP_LEVEL_DIRS.has(topLevel)) continue;
-      const nested = await listHtmlFilesRecursively(absPath);
-      results.push(...nested);
-      continue;
-    }
-
-    if (entry.isFile() && path.extname(entry.name).toLowerCase() === ".html") {
-      results.push(relPath);
-    }
-  }
-
-  return results;
-}
-
 async function copyDirRecursive(
   srcDir,
   destDir,
@@ -120,7 +86,7 @@ async function copyRuntimeFilesToDist() {
   await fs.rm(distDir, { recursive: true, force: true });
   await fs.mkdir(distDir, { recursive: true });
 
-  const htmlFiles = await listHtmlFilesRecursively(rootDir);
+  const htmlFiles = await listSourceHtmlFiles(rootDir);
   logger.debug(`build-dist: discovered ${htmlFiles.length} HTML file(s)`);
 
   const usedPartials = new Set();

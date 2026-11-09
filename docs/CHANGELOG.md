@@ -87,6 +87,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Automated Service Worker versioning and precache generation during production builds.
 - Centralized sitemap generation.
 - Excluded `.claude/` and `.codex/` worktrees from production content discovery.
+- Consolidated source-HTML discovery for production staging and sitemap generation into a shared utility.
 - Standardized Git ignore rules and LF normalization through `.gitattributes`.
 - Standardized the npm package identity as `ds-construction-pr01-solidcraft`.
 - Added GitHub Actions CI checks for predeployment and functional verification.
