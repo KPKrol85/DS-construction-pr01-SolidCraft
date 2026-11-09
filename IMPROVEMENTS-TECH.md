@@ -1,8 +1,8 @@
 # SolidCraft — Technical Improvements
 
-**Analysis date:** 2026-11-08  
-**Project type:** Static, multi-page demonstrational construction-services website using HTML, modular CSS, JavaScript ES modules, PostCSS, esbuild, and Netlify hosting.  
-**Analysis mode:** Evidence-based technical improvement review  
+**Analysis date:** 2026-11-08
+**Project type:** Static, multi-page demonstrational construction-services website using HTML, modular CSS, JavaScript ES modules, PostCSS, esbuild, and Netlify hosting.
+**Analysis mode:** Evidence-based technical improvement review
 **Focus:** Project-wide technical implementation
 
 ## Improvement overview
@@ -15,13 +15,9 @@ No active `PLAN.md`, previous `IMPROVEMENTS-TECH.md`, or other improvement repor
 
 ### IMP-TECH-01 — Reuse partials for shared head asset declarations
 
-- **Affected area:** Maintained HTML heads and build-time partial composition.
-- **Evidence:** `index.html:185-257`; `oferta/remonty.html:158-230`; `oferta/elektryka.html:152-224`; `regulamin.html:122-165`; `offline.html:35-44`; `scripts/utils/partials.js:201-245`.
-- **Current implementation:** The home page and six service pages repeat the same font preloads. Full favicon/application metadata is also repeated across pages, while the offline page intentionally uses a smaller set. Every page already declares a `base` layout variable; the renderer resolves that context before expanding includes throughout the document.
-- **Proposed improvement:** Give the repeated font-preload and full favicon/application blocks canonical partials, using the existing `base` variable for asset paths.
-- **Expected engineering value:** Font filenames and shared icon metadata can be maintained once instead of coordinated across multiple page heads.
-- **Implementation scope:** Add narrowly scoped partials under `partials/` and replace matching blocks in their current HTML consumers. Retain the reduced offline block, page-specific metadata, stylesheet placement, and synchronous theme bootstrap. Use the existing renderer and build workflow without editing generated output.
-- **Acceptance criteria:** Repeated blocks come from the shared partials; rendered pages retain their current resource URLs, attributes, order, and preload sets. All 13 pages render without unresolved directives, `check:assets` passes, and production asset-reference rewriting still produces the existing public URLs.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Consolidated four font preloads across seven pages and shared favicon/application metadata across twelve pages into two reusable HTML partials using `{{base}}`. Preserved page-specific metadata, declaration order, and the reduced offline configuration.
+- **Verification:** `npm run check:assets` passed for 13 pages, `npm run check:links` passed (11 external links skipped), and `npm run build:dist` completed successfully. Baseline comparisons confirmed byte-identical rendered HTML, production HTML, and `dist/sw.js`, with no unresolved directives. Accessibility, functional browser tests, and Lighthouse were not run.
 - **Impact:** Medium
 - **Effort:** Small
 
