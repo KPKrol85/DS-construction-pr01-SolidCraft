@@ -414,6 +414,9 @@ function initScrollSpy() {
       "click",
       (e) => {
         const raw = a.getAttribute("href") || "";
+        // Top links are owned by initSmoothTop; drawer closure comes from
+        // initNav and the active state follows the resulting scroll.
+        if (raw === "#top") return;
         const href = mapHref(raw);
         if (!href.startsWith("#")) return;
         e.preventDefault();

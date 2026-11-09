@@ -14,7 +14,15 @@ function initFooterYear() {
   if (el.textContent !== yearNow) el.textContent = yearNow;
 }
 
-/* Scroll to Top */
+/* Scroll to Top
+   Sole owner of same-page top-link activation: one click performs the
+   scroll, focus placement and URL update. ScrollSpy and home helpers leave
+   top links to this handler. URL policy: the home page clears the fragment
+   and keeps the query string without adding a history entry; other pages
+   push "#top". */
+const HOME_PAGE_MARKERS = "#kontakt, #oferta, #strona-glowna";
+const TOP_TABINDEX_RELEASE_MS = 800;
+
 function initSmoothTop() {
   if (initSmoothTop._abort) initSmoothTop._abort.abort();
   const ac = new AbortController();
@@ -51,7 +59,21 @@ function initSmoothTop() {
     const hadTabindex = target.hasAttribute("tabindex");
     if (!hadTabindex) target.setAttribute("tabindex", "-1");
     target.focus({ preventScroll: true });
-    if (!hadTabindex) target.removeAttribute("tabindex");
+    if (!hadTabindex) {
+      setTimeout(
+        () => target.removeAttribute("tabindex"),
+        TOP_TABINDEX_RELEASE_MS,
+      );
+    }
+  };
+  const updateUrl = () => {
+    if (document.querySelector(HOME_PAGE_MARKERS)) {
+      history.replaceState(null, "", location.pathname + location.search);
+    } else if (history.pushState) {
+      history.pushState(null, "", "#top");
+    } else {
+      location.hash = "#top";
+    }
   };
   const isPrimaryClick = (e) =>
     e.button === 0 &&
@@ -93,8 +115,7 @@ function initSmoothTop() {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior });
       focusTarget();
-      if (history.pushState) history.pushState(null, "", "#top");
-      else location.hash = "#top";
+      updateUrl();
     },
     { signal },
   );

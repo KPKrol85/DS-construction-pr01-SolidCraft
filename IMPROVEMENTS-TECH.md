@@ -23,13 +23,9 @@ No active `PLAN.md`, previous `IMPROVEMENTS-TECH.md`, or other improvement repor
 
 ### IMP-TECH-02 — Consolidate same-page scroll-to-top orchestration
 
-- **Affected area:** UI navigation, home helpers, and ScrollSpy click handling.
-- **Evidence:** `js/modules/ui-core.js:18-101`; `js/modules/home.js:26-100`; `js/modules/nav.js:265-268`; `js/modules/nav.js:412-442`; `js/script.js:50-71`; `partials/header.html:37`.
-- **Current implementation:** UI core and home helpers both register delegated top-link listeners and repeat focus-target selection and scrolling logic. ScrollSpy separately handles the home navigation's `#top` link through its section mapping. Home helpers subsequently remove the fragment while retaining the query string.
-- **Proposed improvement:** Give same-page top-link activation one orchestration path for scrolling, focus, and URL handling, with the existing home-page URL policy made explicit.
-- **Expected engineering value:** Changes to one interaction no longer require tracing overlapping handlers and their `defaultPrevented` and registration-order relationships across three modules.
-- **Implementation scope:** Limit changes to the top-link paths in `ui-core.js`, `home.js`, and `nav.js`, plus entry-point wiring if needed. Keep service prefill in home helpers and retain ScrollSpy's active-state and drawer responsibilities. Preserve the exposed `window.SC` initializer interface.
-- **Acceptance criteria:** A same-page top activation performs one coordinated scroll/focus/URL action. Home links retain query parameters and clear the fragment; subpage top links retain their existing URL behavior, and cross-page home links still navigate normally. Keyboard activation, reduced-motion behavior, focus placement, drawer closure, and active navigation states match the pre-change baseline.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** `initSmoothTop` in `ui-core.js` is the sole owner of same-page top-link scrolling, focus, and an explicit URL policy (home: fragment cleared via `replaceState`, query kept; other pages: `#top` pushed). The duplicate handler in `home.js` and ScrollSpy's `#top` click path were removed; service prefill, drawer closure, and active states remain with their modules.
+- **Verification:** New `nav-top-link-same-page-and-cross-page` Playwright scenario and both existing navigation scenarios passed; the scenario failed against the pre-change baseline, which pushed a redundant history entry. A no-reduced-motion probe at 390 px and 1280 px matched the baseline URL, active state, and drawer state; Prettier and `node --check` passed. Run with locally cached Playwright 1.60 and Chromium, as project dependencies are not installed; the full `qa:functional` suite was not run.
 - **Impact:** Medium
 - **Effort:** Medium
 

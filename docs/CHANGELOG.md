@@ -46,6 +46,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Refined responsive hero typography, ghost buttons, and footer map controls.
 - Moved legal pages to the project root, updated active references, and preserved legacy URLs through 301 redirects.
 - Consolidated shared font preloads and favicon/application metadata into reusable HTML partials.
+- Consolidated same-page scroll-to-top handling into a single owner, eliminating redundant history entries and preserving native modified clicks on home-page top links.
 
 ### Fixed
 

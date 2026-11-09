@@ -239,6 +239,162 @@ const navigationScenarios = [
       );
     },
   },
+
+  {
+    name: "nav-top-link-same-page-and-cross-page",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: MOBILE_VIEWPORT },
+        async ({ page }) => {
+          const homeRoute = "/index.html?ref=qa";
+          await openPage(page, homeRoute);
+          const homeURL = new URL(homeRoute, baseURL).href;
+
+          /* Records each scroll, focus and history call made by the top-link
+             path, so a single activation can be shown to act exactly once. */
+          await page.evaluate(() => {
+            const calls = { scroll: 0, push: 0, replace: 0, focus: 0 };
+            window.__topCalls = calls;
+            const wrap = (obj, key, counter) => {
+              const original = obj[key];
+              obj[key] = function (...args) {
+                calls[counter] += 1;
+                return original.apply(this, args);
+              };
+            };
+            wrap(window, "scrollTo", "scroll");
+            wrap(history, "pushState", "push");
+            wrap(history, "replaceState", "replace");
+            wrap(HTMLElement.prototype, "focus", "focus");
+          });
+          const resetCalls = () =>
+            page.evaluate(() => {
+              Object.keys(window.__topCalls).forEach((key) => {
+                window.__topCalls[key] = 0;
+              });
+            });
+          const readCalls = () =>
+            page.evaluate(() => ({ ...window.__topCalls }));
+          const scrollAway = async () => {
+            await page.evaluate(() => {
+              document.querySelector("#kontakt").scrollIntoView();
+            });
+            await page.waitForFunction(() => window.scrollY > 0);
+          };
+
+          /* Drawer "Strona główna" link: one coordinated action. */
+          await scrollAway();
+          const historyLength = await page.evaluate(() => history.length);
+          await page.locator(".nav-toggle").click();
+          await resetCalls();
+          await page.locator("#navMenu a.scroll-top").click();
+
+          const drawerCalls = await readCalls();
+          assertEqual(drawerCalls.scroll, 1, "one scroll per top activation");
+          assertEqual(
+            drawerCalls.push,
+            0,
+            "no history entry is pushed on home",
+          );
+          assertEqual(drawerCalls.replace, 1, "one URL replacement on home");
+          assertEqual(
+            await page.evaluate(() => window.scrollY),
+            0,
+            "the page should be scrolled to the top",
+          );
+          assertEqual(page.url(), homeURL, "home keeps the query, drops #top");
+          assertEqual(
+            await page.evaluate(() => history.length),
+            historyLength,
+            "the activation should not add a history entry",
+          );
+          assert(
+            !(await hasClass(page, "#navMenu", "open")),
+            "activating the top link should close the drawer",
+          );
+          assertEqual(
+            await page.locator(".nav-toggle").getAttribute("aria-expanded"),
+            "false",
+            "the drawer control should report aria-expanded=false",
+          );
+          await assertFocusOn(page, "#main", "focus should move to main");
+          assertEqual(
+            await page.locator("#main").getAttribute("tabindex"),
+            "-1",
+            "main should be temporarily focusable",
+          );
+          await page.waitForFunction(
+            () => !document.querySelector("#main").hasAttribute("tabindex"),
+            null,
+            { timeout: 2000 },
+          );
+          await page.waitForFunction(
+            () =>
+              document
+                .querySelector("#navMenu a.scroll-top")
+                .getAttribute("aria-current") === "true",
+            null,
+            { timeout: 2000 },
+          );
+
+          /* Keyboard activation of the header brand link. */
+          await scrollAway();
+          await resetCalls();
+          await page.locator(".site-header a.brand").focus();
+          await page.keyboard.press("Enter");
+          const keyCalls = await readCalls();
+          assertEqual(keyCalls.scroll, 1, "Enter should scroll once");
+          assertEqual(keyCalls.replace, 1, "Enter should update the URL once");
+          assertEqual(
+            await page.evaluate(() => window.scrollY),
+            0,
+            "Enter should reach the top",
+          );
+          assertEqual(page.url(), homeURL, "Enter keeps the home URL policy");
+          await assertFocusOn(page, "#main", "Enter should focus main");
+
+          /* Modified clicks keep native behaviour. */
+          const modifiedPrevented = await page.evaluate(() => {
+            const link = document.querySelector("#footer a.brand-footer");
+            let prevented = null;
+            const probe = (e) => {
+              prevented = e.defaultPrevented;
+              e.preventDefault();
+            };
+            window.addEventListener("click", probe, { once: true });
+            link.dispatchEvent(
+              new MouseEvent("click", {
+                bubbles: true,
+                cancelable: true,
+                button: 0,
+                ctrlKey: true,
+              }),
+            );
+            return prevented;
+          });
+          assertEqual(
+            modifiedPrevented,
+            false,
+            "a modified click should not be intercepted",
+          );
+
+          /* Subpage top links still navigate to the home page natively. */
+          await openPage(page, "/oferta/lazienki.html");
+          await page.locator(".nav-toggle").click();
+          await Promise.all([
+            page.waitForURL("**/index.html#top"),
+            page.locator("#navMenu a.scroll-top").click(),
+          ]);
+          assertEqual(
+            new URL(page.url()).pathname,
+            "/index.html",
+            "the subpage home link should load the home page",
+          );
+        },
+      );
+    },
+  },
 ];
 
 export { navigationScenarios };
