@@ -16,7 +16,11 @@
 
    withPage() also asserts, after the scenario body, that the page raised no
    uncaught error and issued no off-origin request — the second is what keeps
-   the suite independent of Netlify and of network availability in general. */
+   the suite independent of Netlify and of network availability in general.
+   The one exception is `allowedOffOriginUrls`: exact URLs a scenario expects
+   the page to request and intercepts itself, aborting them before they reach
+   the network. Only the consented map embed uses it; any other off-origin
+   request still fails the scenario. */
 
 const NAVIGATION_BREAKPOINT = 1024;
 const MOBILE_VIEWPORT = { width: 390, height: 844 };
@@ -66,7 +70,12 @@ function assertIncludes(haystack, needle, message) {
 
 async function withPage(
   browser,
-  { baseURL, viewport, preAcceptProjectBanner = true },
+  {
+    baseURL,
+    viewport,
+    preAcceptProjectBanner = true,
+    allowedOffOriginUrls = [],
+  },
   run,
 ) {
   const context = await browser.newContext({
@@ -97,6 +106,7 @@ async function withPage(
     const url = request.url();
     if (!/^https?:/i.test(url)) return;
     if (url.startsWith(baseURL)) return;
+    if (allowedOffOriginUrls.includes(url)) return;
     offOriginRequests.push(`${request.method()} ${url}`);
   });
 

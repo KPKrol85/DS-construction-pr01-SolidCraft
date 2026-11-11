@@ -39,13 +39,9 @@ The main opportunities lie in the conditions and scope of that verification rath
 
 ### IMP-QUALITY-04 — Add regression protection for the consent-gated map embed
 
-- **Affected area:** Google Maps consent gate in the shared footer (all 13 pages).
-- **Evidence:** `js/modules/map-consent.js:3-37`, `partials/footer.html:72-91`, `_headers:9`, `cookies.html:271`, `scripts/functional/harness.mjs:84-106`.
-- **Current implementation:** The footer renders a placeholder and a **Załaduj mapę** button. Only a click, or a stored `consent.maps` value of `"true"`, inserts the titled, lazy-loaded Google iframe, and the click persists consent. Storage access is guarded. The harness's off-origin guard incidentally shows that existing scenarios trigger no Google request, but no scenario verifies the consent action, the inserted iframe, or the stored-consent path.
-- **Proposed improvement:** Add a functional scenario that verifies the consent gate end to end without contacting Google.
-- **Expected quality value:** Protects a privacy contract disclosed on the cookies and privacy pages: no third-party embed before explicit consent, and the stored decision honored afterwards.
-- **Implementation scope:** Add the scenario under `scripts/functional/` and register it in `scripts/qa-functional.mjs`. Intercept and abort the embed request locally. Any harness allowance must be scoped to this scenario and the exact embed origin, leaving the off-origin guard intact elsewhere. `map-consent.js`, the footer markup, and the CSP stay unchanged.
-- **Acceptance criteria:** Before consent, `.ft-map` contains no iframe, the placeholder and button are present, and no request targets `www.google.com`. After the click, exactly one iframe exists with `src` equal to `data-map-src`, a non-empty `title`, and `loading="lazy"`, the placeholder is gone, and `consent.maps` is `"true"`. After a reload with stored consent, the iframe is inserted without a click. When storage access throws, the click still loads the map with no uncaught page error.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** A `qa:functional` scenario on `/cookies.html` verifies that no off-origin request occurs before consent with the map area in view, that the click inserts one titled, lazy-loaded iframe matching `data-map-src` and stores `consent.maps`, that a reload restores the map without a click, and that the click still works when `localStorage` access or its operations throw. All off-origin requests are aborted in the browser, and a new `withPage()` option, `allowedOffOriginUrls`, exempts only the exact embed URL from the off-origin guard in the consenting contexts.
+- **Verification:** `node --check`, Prettier, the `--only` run, and two consecutive `npm run qa:functional` runs passed, the latter with 14 scenarios and 0 failures. Fourteen temporary `map-consent.js` mutants served through `context.route()` each failed the scenario, an exact-match probe rejected every non-allowed URL, and every embed request ended in `net::ERR_BLOCKED_BY_CLIENT` with no off-origin response. Verified locally in Chromium only; no GitHub Actions run was observed.
 - **Impact:** Medium
 - **Effort:** Small
 
