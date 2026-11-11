@@ -103,6 +103,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Introduced Lighthouse quality thresholds.
 - Corrected QA server content types to ensure CSS and JavaScript load during accessibility scans.
 - Extended accessibility coverage to 12 maintained routes.
+- Made accessibility scans deterministic across 13 routes in both themes and both home-page modal states, failing on unsettled reveal content or unexpected theme and modal state.
 - Added nine functional browser scenarios using Playwright.
 - Added `qa:sw` verification for Service Worker lifecycle behavior.
 
