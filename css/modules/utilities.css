@@ -1,33 +1,3 @@
-.hover-card {
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    background-color 0.25s ease,
-    border-color 0.25s ease;
-  will-change: transform;
-  border-radius: var(--radius-3);
-}
-
-.hover-card:hover,
-.hover-card:focus-within {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
-}
-
-.hover-card:active {
-  transform: translateY(-1px);
-}
-
-.hover-card:focus-within {
-  outline: 3px solid var(--ring);
-  outline-offset: 2px;
-}
-
-:root[data-theme="dark"] .hover-card:hover,
-:root[data-theme="dark"] .hover-card:focus-within {
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
-}
-
 :where(.js) [data-reveal] {
   opacity: 0;
   transform: translate3d(0, var(--sr-distance), 0) scale(1);
@@ -121,25 +91,11 @@
   }
 }
 
-@media (hover: hover) {
-  .btn:hover {
-    filter: contrast(1.05);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   [data-reveal] {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
-  }
-  .hover-card {
-    transition: box-shadow 0.2s ease;
-  }
-  .hover-card:hover,
-  .hover-card:focus-within,
-  .hover-card:active {
-    transform: none;
   }
 }
 
@@ -188,9 +144,9 @@
 
 @supports not (color: color-mix(in oklab, white, black)) {
   :root {
-    --brand-weak: rgba(245, 158, 11, 0.14);
-    --line-strong: #c5cbd8;
-    --ring: rgba(245, 158, 11, 0.55);
+    --line-strong: #c9c5bb;
+    --c-tint: rgba(11, 18, 32, 0.06);
+    --brand-strong: #e88a0b;
   }
 }
 

@@ -48,6 +48,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Consolidated shared font preloads and favicon/application metadata into reusable HTML partials.
 - Consolidated same-page scroll-to-top handling into a single owner, eliminating redundant history entries and preserving native modified clicks on home-page top links.
 - Centralized header-height publication to `--header-h` and its cache in the shared utility module.
+- Established the Measured Craft material and accent system, reserving amber for actions, states, focus, and section markers and aligning theme and PWA colors with the palette.
 
 ### Fixed
 

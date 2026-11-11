@@ -220,10 +220,8 @@
   text-decoration: none;
   text-underline-offset: 2px;
 }
-.nav .nav-menu > li > a:hover,
-.nav .nav-menu > li > .dropdown-trigger:hover {
-  color: var(--brand);
-}
+/* Navigation text stays in ink; the amber marking line carries hover and
+   the active state. */
 .nav .nav-menu > li > a::after,
 .nav .nav-menu > li > .dropdown-trigger::after {
   content: "";
@@ -231,9 +229,8 @@
   left: 0;
   bottom: 2px;
   width: 0%;
-  height: 1px;
-  border-radius: var(--radius-pill);
-  background: var(--brand);
+  height: 2px;
+  background: var(--c-mark);
   transition: width 0.25s ease;
 }
 .nav .nav-menu > li > a:hover::after,
@@ -241,10 +238,6 @@
 .nav .nav-menu > li > a.is-active::after,
 .nav .nav-menu > li > .dropdown-trigger.is-active::after {
   width: 100%;
-}
-.nav .nav-menu > li > a.is-active,
-.nav .nav-menu > li > .dropdown-trigger.is-active {
-  color: var(--brand);
 }
 .nav .nav-menu > li > a:focus-visible,
 .nav .nav-menu > li > .dropdown-trigger:focus-visible {
@@ -278,7 +271,6 @@
   max-height: none !important;
   padding: var(--space-2) !important;
   margin: var(--space-1) 0 0 !important;
-  box-shadow: var(--shadow) !important;
   border: 1px solid var(--line) !important;
   transform: none;
 }
@@ -292,7 +284,6 @@
   max-height: none !important;
   padding: var(--space-2) !important;
   margin: var(--space-1) 0 0 !important;
-  box-shadow: var(--shadow) !important;
   border: 1px solid var(--line) !important;
 }
 .dropdown {
@@ -306,7 +297,7 @@
   list-style: none;
   border: 1px solid var(--line);
   border-radius: var(--radius-3);
-  background: var(--bg);
+  background: var(--card);
   box-shadow: var(--shadow);
   opacity: 0;
   visibility: hidden;
@@ -323,20 +314,7 @@
 }
 .dropdown a:hover,
 .dropdown a:focus-visible {
-  background: var(--line);
-}
-:root[data-theme="dark"] .dropdown {
-  background: var(--card);
-  border-color: color-mix(in srgb, #fff 10%, var(--line));
-  box-shadow: var(--shadow-xl);
-}
-:root[data-theme="dark"] .dropdown a {
-  color: var(--fg);
-}
-:root[data-theme="dark"] .dropdown a:hover,
-:root[data-theme="dark"] .dropdown a:focus-visible {
-  background: color-mix(in srgb, var(--brand) 22%, transparent);
-  color: #fff;
+  background: var(--c-tint);
 }
 :root[data-theme="dark"][data-accent="sand"] {
   --line: #2a2f3a;
@@ -458,8 +436,10 @@
 
 /* Footer */
 
+/* The footer stands on the navy ink ground of each theme: the palette's ink
+   in light, a recessed navy below the page ground in dark. */
 .site-footer {
-  --ft-bg: #0f1115;
+  --ft-bg: var(--bg-ink);
   --ft-fg: #eef2f8;
   --ft-muted: hsl(220 20% 80% / 0.7);
   --ft-border: hsl(0 0% 100% / 0.08);
@@ -615,7 +595,7 @@
 .ft-address > p:first-child {
   font-size: var(--fs-4);
   font-weight: 600;
-  color: var(--brand);
+  color: var(--ft-fg);
 }
 
 /* The social block lives outside .ft-grid, so it spans the footer width
@@ -642,15 +622,6 @@
   border: none;
   border-radius: var(--radius-pill);
   background: transparent;
-  transition:
-    transform 0.18s ease,
-    filter 0.18s ease;
-}
-
-.ft-social a:hover,
-.ft-social a:focus-visible {
-  transform: translateY(-1px);
-  filter: brightness(1.15) drop-shadow(0 0 6px hsl(0 0% 100% / 0.25));
 }
 
 /* Icons are injected from the shared registry (js/modules/icons.js); the
@@ -662,7 +633,9 @@
   /* Pinned to the footer foreground so the marks stay at full strength. */
   color: var(--ft-fg);
   opacity: 0.9;
-  transition: opacity 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
 }
 
 .ft-social__icon svg {
@@ -674,6 +647,7 @@
 .ft-social a:hover .ft-social__icon,
 .ft-social a:focus-visible .ft-social__icon {
   opacity: 1;
+  color: var(--brand);
 }
 
 /* Label text backs the icon-only social links; the link keeps its aria-label. */
@@ -752,10 +726,10 @@
 }
 
 .ft-contact-link:hover {
-  color: color-mix(in oklab, var(--ft-fg) 65%, var(--c-accent));
   text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+  text-decoration-color: var(--brand);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .ft-contact-link:focus-visible {
@@ -858,14 +832,16 @@
 
 @media (hover: hover) {
   .site-footer a {
-    transition:
-      color 0.2s ease,
-      filter 0.2s ease;
+    transition: color 0.2s ease;
   }
   .site-footer a:hover {
     color: #fff;
-    text-decoration: none;
-    filter: drop-shadow(0 0 4px hsl(0 0% 100% / 0.35));
+  }
+  .ft-links a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--brand);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
   }
 }
 
@@ -896,7 +872,7 @@
 }
 
 .block.alt {
-  background: var(--card);
+  background: var(--bg-2);
   border-block: 1px solid var(--line);
   overflow: visible;
 }

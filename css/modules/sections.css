@@ -77,13 +77,10 @@
     0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
+/* The promise line takes the title ink: amber is reserved for the hero's
+   primary action. */
 .hero__accent {
-  background: var(--brand-grad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
-  filter: brightness(1.06) contrast(1.04);
+  color: inherit;
 }
 
 .hero__lead {
@@ -156,6 +153,26 @@
   text-align: center;
 }
 
+/* Measured Craft marker: a short amber dimension line (|—|) set above each
+   section title. Decorative only; it travels with the heading's reveal. */
+:is(
+    .block-head > :is(h1, h2):first-child,
+    .cta__title,
+    .page-status__title
+  )::before {
+  content: "";
+  display: block;
+  width: var(--marker-w);
+  height: var(--marker-h);
+  margin: 0 auto var(--space-4);
+  background:
+    linear-gradient(var(--c-mark) 0 0) center / 100% var(--marker-t) no-repeat,
+    linear-gradient(var(--c-mark) 0 0) left center / var(--marker-t) 100%
+      no-repeat,
+    linear-gradient(var(--c-mark) 0 0) right center / var(--marker-t) 100%
+      no-repeat;
+}
+
 .block-head__lead {
   max-width: 32ch;
   margin: var(--space-4) auto;
@@ -164,40 +181,18 @@
 .services-list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-4);
+  gap: var(--space-7) var(--space-5);
   padding: 0;
   margin-top: var(--space-6);
   overflow: visible;
 }
 
+/* Service entries sit on open ground; only the image link is framed. */
 .card {
   position: relative;
-  z-index: 0;
-  overflow: visible;
-  will-change: transform;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  padding: var(--space-2);
-  border: 1px solid var(--c-border);
-  background: var(--c-surface);
-  border-radius: var(--radius-3);
-  box-shadow: var(--shadow);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.card:hover,
-.card:focus-within {
-  transform: translateY(-2px);
-  border-color: var(
-    --c-border-strong,
-    color-mix(in oklab, var(--c-border), black 14%)
-  );
-  box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.18);
-  z-index: 10;
 }
 
 .card > a {
@@ -209,6 +204,8 @@
   aspect-ratio: 4/3;
   overflow: hidden;
   border-radius: var(--radius-3);
+  background: var(--c-surface);
+  box-shadow: 0 0 0 1px var(--c-border);
 }
 
 .card picture img {
@@ -216,17 +213,12 @@
   height: 100%;
   display: block;
   object-fit: cover;
-  cursor: pointer;
-  will-change: transform;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .card a:hover picture img,
 .card a:focus-visible picture img {
   transform: scale(1.03);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .card a:focus-visible picture {
@@ -260,14 +252,7 @@
   bottom: -2px;
   width: 0%;
   height: 2px;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    var(--brand) 20%,
-    var(--brand) 80%,
-    transparent 100%
-  );
-  border-radius: var(--radius-pill);
+  background: var(--c-mark);
   transform: translateX(-50%);
   transition: width 0.3s ease;
 }
@@ -299,53 +284,24 @@
   min-width: 220px;
 }
 
-:is(#oferta, .logos, #faq) {
+/* Consecutive open-ground sections are divided by one hairline rule set to
+   the container measure; closing bands (.cta) carry their own edge. */
+#main > section + section:not(.cta) {
   position: relative;
 }
 
-:is(#oferta, .logos, #faq)::before {
+#main > section + section:not(.cta)::before {
   content: "";
   position: absolute;
-  inset: 0 0 auto 0;
+  inset-block-start: 0;
+  inset-inline: max(var(--space-3), calc((100% - 1140px) / 2 + var(--space-3)));
   height: var(--sep-h);
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--c-border) 85%, transparent),
-    transparent
-  );
+  background: var(--c-border);
   pointer-events: none;
 }
 
-:is(#oferta, .logos, #faq) > .container {
+:is(#oferta, #faq) > .container {
   padding-top: var(--space-2);
-}
-
-:root[data-theme="dark"] .card {
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.04),
-    0 0 0 1px rgba(255, 255, 255, 0.04);
-}
-
-:root[data-theme="dark"] .card:hover,
-:root[data-theme="dark"] .card:focus-within {
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow:
-    0 14px 32px -8px rgba(0, 0, 0, 0.65),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-:root[data-theme="dark"] .card a:hover picture img,
-:root[data-theme="dark"] .card a:focus-visible picture img {
-  transform: scale(1.03);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
-}
-
-:root[data-theme="dark"] :is(#oferta, .logos, #faq)::before {
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, #ffffff 14%, transparent),
-    transparent
-  );
 }
 
 @media (min-width: 640px) {
@@ -357,12 +313,6 @@
 @media (min-width: 992px) {
   .services-list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :is(#oferta, .logos, #faq)::before {
-    transition: none;
   }
 }
 
@@ -398,22 +348,15 @@
   padding: 0;
 }
 
+/* Sample logos are not links: they sit on open ground with no tile, lift or
+   pointer affordance. */
 .partners__item {
   min-width: var(--logo-min);
   height: var(--logo-slot-h);
   padding: var(--logo-pad);
   display: grid;
   place-items: center;
-  background: var(--c-surface);
-  border: 1px solid var(--c-border);
   border-radius: var(--logo-radius);
-  background-clip: padding-box;
-  box-shadow: var(--shadow-sm);
-  transition:
-    box-shadow 0.2s ease,
-    transform 0.2s ease,
-    border-color 0.2s ease;
-  cursor: pointer;
   text-align: center;
   letter-spacing: var(--ls-3);
   font-weight: 500;
@@ -428,13 +371,6 @@
   padding: var(--space-2) var(--space-3);
   border-radius: inherit;
   text-decoration: none;
-}
-
-.partners__item:hover,
-.partners__item:focus-within {
-  transform: translateY(-1px);
-  border-color: var(--c-border-strong);
-  box-shadow: var(--shadow-md);
 }
 
 .partners__item a:focus-visible {
@@ -460,31 +396,10 @@
   max-width: 90%;
   object-fit: contain;
   filter: none;
-  transition: filter 0.2s ease;
 }
 
 :root[data-theme="dark"] .partners__logo {
   filter: brightness(0) invert(1);
-}
-
-:root[data-theme="dark"] .partners__item:hover .partners__logo,
-:root[data-theme="dark"] .partners__item:focus-within .partners__logo,
-:root[data-theme="dark"] .partners__item a:focus-visible .partners__logo {
-  filter: brightness(1.15) invert(1);
-}
-
-:root[data-theme="dark"] .partners__item {
-  box-shadow:
-    0 2px 10px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-}
-
-:root[data-theme="dark"] .partners__item:hover,
-:root[data-theme="dark"] .partners__item:focus-within {
-  box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
-  border-color: rgba(255, 255, 255, 0.12);
 }
 
 @media (min-width: 480px) {
@@ -508,13 +423,6 @@
   }
   .partners {
     --logo-img-h: clamp(28px, 3vw, 40px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .partners__item {
-    transition: none;
-    transform: none;
   }
 }
 
@@ -547,10 +455,6 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius-pill);
-  background: var(--c-surface);
-  box-shadow: var(--shadow-sm);
   font-size: var(--fs-2);
   line-height: var(--lh-body);
   letter-spacing: var(--ls-1);
@@ -602,28 +506,15 @@
   display: flex;
 }
 
+/* Quotes are content, not controls: open ground with a hairline rule. */
 .testimonials__card {
   flex: 1;
   width: 100%;
   margin: 0;
-  padding: var(--space-5) var(--space-4);
+  padding: var(--space-2) var(--space-4);
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius-3);
-  background: var(--c-surface);
-  box-shadow: var(--shadow-sm);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.testimonials__card:hover,
-.testimonials__card:focus-within {
-  transform: translateY(-2px);
-  border-color: var(--c-border-strong);
-  box-shadow: var(--shadow-md);
+  border-inline-start: 1px solid var(--c-border);
 }
 
 .testimonials__quote {
@@ -639,8 +530,8 @@
   margin-bottom: 0;
   font-size: var(--fs-8);
   line-height: 0.7;
-  color: var(--c-accent);
-  opacity: 0.55;
+  color: var(--c-muted);
+  opacity: 0.5;
 }
 
 .testimonials__quote p {
@@ -663,24 +554,6 @@
   font-style: normal;
 }
 
-:root[data-theme="dark"] .testimonials__card {
-  box-shadow:
-    0 2px 10px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-}
-
-:root[data-theme="dark"] .testimonials__card:hover,
-:root[data-theme="dark"] .testimonials__card:focus-within {
-  box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
-  border-color: rgba(255, 255, 255, 0.12);
-}
-
-:root[data-theme="dark"] .testimonials__quote::before {
-  opacity: 0.7;
-}
-
 @media (min-width: 480px) {
   .testimonials__grid {
     grid-template-columns: repeat(2, 1fr);
@@ -693,32 +566,20 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .testimonials__card {
-    transition: none;
-  }
-
-  .testimonials__card:hover,
-  .testimonials__card:focus-within {
-    transform: none;
-  }
-}
-
 /* CTA */
 
+/* Closing band: a recessed open ground (--bg-2) with a hairline edge; the
+   form inside it is the worked surface and amber stays on the action. */
 .cta {
-  background: var(--brand-grad);
-  color: #fff;
-  border-top-left-radius: var(--radius-3);
-  border-top-right-radius: var(--radius-3);
+  background: var(--c-bg-2);
+  color: var(--c-ink);
+  border-top: 1px solid var(--c-border);
   overflow: clip;
   padding: var(--space-4);
   margin-inline: auto;
 }
 
 .cta--contact {
-  --cta-ink: #0b1220;
-
   padding-block: var(--section-py);
 }
 
@@ -739,14 +600,12 @@
 
 .cta__title {
   margin: 0;
-  color: var(--cta-ink);
   text-wrap: balance;
 }
 
 .cta__lead {
   margin: 0;
   max-width: 52ch;
-  color: var(--cta-ink);
   font-weight: 600;
 }
 
@@ -758,10 +617,6 @@
   list-style: none;
   display: grid;
   gap: 0;
-  background: var(--c-surface);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius-3);
-  box-shadow: var(--shadow-sm);
   color: var(--c-ink);
 }
 
@@ -783,10 +638,10 @@
 
 .contact-item:hover,
 .contact-item:active {
-  color: color-mix(in oklab, var(--c-ink) 55%, var(--c-accent));
   text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+  text-decoration-color: var(--c-mark);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .contact-item:focus-visible {
@@ -814,7 +669,7 @@
   background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-4);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-sm);
   color: var(--c-ink);
   text-align: start;
 }
@@ -896,7 +751,8 @@
 }
 
 .form .muted a:hover {
-  color: color-mix(in oklab, var(--c-ink) 45%, var(--c-accent));
+  text-decoration-color: var(--c-mark);
+  text-decoration-thickness: 2px;
 }
 
 .form
@@ -1031,22 +887,6 @@
   border: 0.18em solid currentColor;
   border-right-color: transparent;
   animation: spin 0.9s linear infinite;
-}
-
-:root[data-theme="dark"] .contact-list,
-:root[data-theme="dark"] .form {
-  box-shadow:
-    var(--shadow-lg),
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .contact-list,
-  :root:not([data-theme]) .form {
-    box-shadow:
-      var(--shadow-lg),
-      0 0 0 1px rgba(255, 255, 255, 0.06) inset;
-  }
 }
 
 @media (min-width: 760px) {
