@@ -2,10 +2,11 @@
 
 /* Functional browser gate.
 
-   Drives the project's four important interactive paths — the responsive
-   navigation drawer, the Oferta submenu, the service-gallery lightbox and the
-   contact form — in headless Chromium, against the maintained sources served
-   locally through the shared partial renderer.
+   Drives the project's five important interactive paths — the responsive
+   navigation drawer, the Oferta submenu, the service-gallery lightbox, the
+   contact form and the first-visit project modal — in headless Chromium,
+   against the maintained sources served locally through the shared partial
+   renderer.
 
    The harness deliberately mirrors scripts/qa-a11y.mjs rather than adding a
    test framework: the same already-declared `playwright` package, a plain Node
@@ -24,6 +25,7 @@ import { startStaticServer } from "./utils/static-server.mjs";
 import { navigationScenarios } from "./functional/navigation.mjs";
 import { lightboxScenarios } from "./functional/lightbox.mjs";
 import { contactFormScenarios } from "./functional/contact-form.mjs";
+import { projectBannerScenarios } from "./functional/project-banner.mjs";
 
 const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -34,6 +36,7 @@ const allScenarios = [
   ...navigationScenarios,
   ...lightboxScenarios,
   ...contactFormScenarios,
+  ...projectBannerScenarios,
 ];
 
 const only = readOnlyFilter(process.argv.slice(2));

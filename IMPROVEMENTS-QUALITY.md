@@ -31,13 +31,9 @@ The main opportunities lie in the conditions and scope of that verification rath
 
 ### IMP-QUALITY-03 — Add regression protection for the first-visit project modal
 
-- **Affected area:** Project information modal on `index.html` (focus trap, dismissal, persistence).
-- **Evidence:** `js/modules/project-banner.js:1-91`, `index.html:1250-1293`, `scripts/functional/harness.mjs:8-11`, `scripts/functional/harness.mjs:74-80`, `docs/CHANGELOG.md` (Fixed: first-visit modal keyboard operability; dismissal with unavailable `localStorage`).
-- **Current implementation:** On a first visit the modal opens and moves focus into the dialog. It traps Tab and Shift+Tab, dismisses on Escape or **Akceptuję**, locks page scroll through `has-project-modal`, and persists `project-banner-accepted`. Storage reads and writes are wrapped in `try/catch`. The functional harness pre-accepts the modal in every context, so no scenario renders it. `qa:a11y` scans it open, but without interaction.
-- **Proposed improvement:** Add a functional scenario that runs as a first-time visitor and verifies the modal's keyboard and persistence contract, including blocked storage.
-- **Expected quality value:** Protects a dialog shown to every new visitor, and two previously fixed defects, against regression. Today these behaviors are excluded from the suite by design.
-- **Implementation scope:** Add the scenario under `scripts/functional/` and register it in `scripts/qa-functional.mjs`. Add a per-scenario opt-out of the storage seed to `withPage()`, keeping the pre-accepted default for all other scenarios. `project-banner.js` and its markup stay unchanged.
-- **Acceptance criteria:** In a fresh context, the modal is visible, `body` has `has-project-modal`, and focus is inside `#projectBanner`. Repeated Tab and Shift+Tab keep focus inside the modal. Escape and the accept button each hide the modal (`hidden`, `aria-hidden="true"`), remove the body class, and store `project-banner-accepted`, and the modal stays hidden after a reload. When storage access throws, the modal still opens and dismisses with no uncaught page error. All existing scenarios still pass unchanged.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Three `qa:functional` scenarios run as first-time visitors through a new `withPage()` option, `preAcceptProjectBanner: false`, while all other scenarios keep the pre-accepted default. They verify initial focus, Tab and Shift+Tab wraparound under real keyboard input, Escape and accept-button dismissal with synchronized `hidden`, `aria-hidden`, body class, and scroll lock, and persistence across a reload. Dismissal by both methods is also verified with no uncaught error when `localStorage` access or its operations throw.
+- **Verification:** `node --check` and Prettier passed, each new scenario passed through `--only`, and `npm run qa:functional` passed three consecutive runs with 13 scenarios and 0 failures. Eleven temporary `project-banner.js` mutants, served through `context.route()` without editing the source, and a leaked acceptance seed each failed at least one targeted scenario. Verified locally in Chromium only; no GitHub Actions run was observed.
 - **Impact:** Medium
 - **Effort:** Small
 

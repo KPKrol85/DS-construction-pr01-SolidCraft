@@ -175,7 +175,7 @@ Kolejność jest deterministyczna: `dist/` jest tworzony od nowa, utrzymywane st
 
 - `scripts/check-links.mjs` i `scripts/check-html-assets.mjs` — statyczna walidacja linków i odwołań do zasobów; obie renderują strony przez `scripts/utils/partials.js`, więc sprawdzają dokument w takiej postaci, w jakiej trafia do `dist/`.
 - `scripts/qa-a11y.mjs` — axe-core uruchamiany przez Playwright na lokalnym serwerze statycznym; skanowane są `index.html`, `404.html`, wszystkie sześć podstron `oferta/`, wszystkie trzy strony dokumentów w katalogu głównym oraz `offline.html`, jeśli plik istnieje. Skrypt kończy się błędem przy naruszeniach o wadze `serious` lub `critical`.
-- `scripts/qa-functional.mjs` — dziewięć scenariuszy funkcjonalnych w headless Chromium: mobilna szuflada nawigacji i podmenu oferty, lightbox (pojedynczy tab stop, Enter/Escape z przywróceniem fokusa, Spacja i strzałki) oraz formularz kontaktowy (puste zgłoszenie, okno antyspamowe, poprawna wysyłka, nieudana wysyłka).
+- `scripts/qa-functional.mjs` — trzynaście scenariuszy funkcjonalnych w headless Chromium: mobilna szuflada nawigacji, podmenu oferty i link powrotu na górę strony, lightbox (pojedynczy tab stop, Enter/Escape z przywróceniem fokusa, Spacja i strzałki), formularz kontaktowy (puste zgłoszenie, okno antyspamowe, poprawna wysyłka, nieudana wysyłka) oraz modal informacyjny przy pierwszej wizycie (pułapka fokusa, zamknięcie klawiszem Escape i przyciskiem, zapamiętanie akceptacji, niedostępny `localStorage`).
 - `scripts/verify-css-build.js` i `scripts/verify-js-build.js` — weryfikacja artefaktów wbudowana w komendy build.
 - `lighthouse.config.json` — Lighthouse na katalogu `dist` dla `/`, `/oferta/remonty.html` i `/polityka-prywatnosci.html`, z progami: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
@@ -202,7 +202,7 @@ Zaimplementowane mechanizmy obejmują:
 - komunikaty błędów formularza powiązane z polami, ustawianie `aria-invalid` i obszar statusu `role="status"` z `aria-live="polite"`,
 - reakcję na `prefers-reduced-motion` w CSS oraz w skryptach animacji i przewijania,
 - ikony SVG wstawiane z `aria-hidden="true"` i `focusable="false"`,
-- bramki QA: `npm run qa:a11y` (axe-core, 12 tras) i `npm run qa:functional` (ścieżki klawiaturowe nawigacji i lightboxa).
+- bramki QA: `npm run qa:a11y` (axe-core, 12 tras) i `npm run qa:functional` (ścieżki klawiaturowe nawigacji, lightboxa i modala informacyjnego).
 
 Dokumentacja nie zawiera potwierdzenia zgodności z konkretnym poziomem WCAG — opisane są wyłącznie zaimplementowane mechanizmy.
 
@@ -437,7 +437,7 @@ The order is deterministic: `dist/` is recreated, the maintained pages are rende
 
 - `scripts/check-links.mjs` and `scripts/check-html-assets.mjs` — static validation of links and asset references; both render pages through `scripts/utils/partials.js`, so they inspect the document in the form that ships to `dist/`.
 - `scripts/qa-a11y.mjs` — axe-core executed through Playwright against a local static server; the scanned routes are `index.html`, `404.html`, all six `oferta/` subpages, all three root-level legal pages, and `offline.html` when the file exists. The script fails on `serious` or `critical` violations.
-- `scripts/qa-functional.mjs` — nine functional scenarios in headless Chromium: the mobile navigation drawer and offer submenu, the lightbox (single tab stop, Enter/Escape with focus restore, Space and arrow keys), and the contact form (empty submission, anti-spam window, successful submission, failed submission).
+- `scripts/qa-functional.mjs` — thirteen functional scenarios in headless Chromium: the mobile navigation drawer, offer submenu, and back-to-top link, the lightbox (single tab stop, Enter/Escape with focus restore, Space and arrow keys), the contact form (empty submission, anti-spam window, successful submission, failed submission), and the first-visit informational modal (focus trap, Escape and button dismissal, persisted acceptance, unavailable `localStorage`).
 - `scripts/verify-css-build.js` and `scripts/verify-js-build.js` — artifact verification embedded in the build commands.
 - `lighthouse.config.json` — Lighthouse over the `dist` directory for `/`, `/oferta/remonty.html`, and `/polityka-prywatnosci.html`, with thresholds: performance `0.6`, accessibility `0.85`, SEO `0.85`, best practices `0.75`.
 
@@ -464,7 +464,7 @@ Implemented mechanisms include:
 - form error messages linked to their fields, `aria-invalid` handling, and a `role="status"` region with `aria-live="polite"`,
 - `prefers-reduced-motion` handling in CSS and in the animation and scrolling scripts,
 - SVG icons injected with `aria-hidden="true"` and `focusable="false"`,
-- QA gates: `npm run qa:a11y` (axe-core, 12 routes) and `npm run qa:functional` (keyboard paths for navigation and the lightbox).
+- QA gates: `npm run qa:a11y` (axe-core, 12 routes) and `npm run qa:functional` (keyboard paths for navigation, the lightbox, and the informational modal).
 
 This documentation makes no claim of conformance with a specific WCAG level — only the implemented mechanisms are described.
 

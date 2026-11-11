@@ -8,7 +8,8 @@
    - the first-visit project modal is pre-accepted through its own
      localStorage key, because it is a focus-trapping dialog that would block
      every interaction below it; production behaviour is untouched, the test
-     simply starts as a returning visitor;
+     simply starts as a returning visitor. Only the scenarios that test the
+     modal itself opt out, with `preAcceptProjectBanner: false`;
    - service workers are blocked, so sw.js cannot serve a scenario from a
      previous run's cache and the production-only precache 404s reserved for
      O-03 stay out of the run.
@@ -63,7 +64,11 @@ function assertIncludes(haystack, needle, message) {
   }
 }
 
-async function withPage(browser, { baseURL, viewport }, run) {
+async function withPage(
+  browser,
+  { baseURL, viewport, preAcceptProjectBanner = true },
+  run,
+) {
   const context = await browser.newContext({
     baseURL,
     viewport,
@@ -71,13 +76,15 @@ async function withPage(browser, { baseURL, viewport }, run) {
     serviceWorkers: "block",
   });
 
-  await context.addInitScript((key) => {
-    try {
-      window.localStorage.setItem(key, "true");
-    } catch {
-      /* about:blank has no accessible storage; the real page seeds it. */
-    }
-  }, PROJECT_BANNER_STORAGE_KEY);
+  if (preAcceptProjectBanner) {
+    await context.addInitScript((key) => {
+      try {
+        window.localStorage.setItem(key, "true");
+      } catch {
+        /* about:blank has no accessible storage; the real page seeds it. */
+      }
+    }, PROJECT_BANNER_STORAGE_KEY);
+  }
 
   const page = await context.newPage();
   const pageErrors = [];
@@ -180,6 +187,7 @@ export {
   DESKTOP_VIEWPORT,
   MOBILE_VIEWPORT,
   NAVIGATION_BREAKPOINT,
+  PROJECT_BANNER_STORAGE_KEY,
   assert,
   assertDeepEqual,
   assertEqual,
