@@ -3,12 +3,15 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
+import htmlDiscovery from './utils/html-discovery.js';
 import partials from './utils/partials.js';
 
-const { PARTIALS_DIR_NAME, renderHtmlFile } = partials;
+const { listSourceHtmlFiles } = htmlDiscovery;
+const { renderHtmlFile } = partials;
 
 const projectRoot = process.cwd();
-const htmlFiles = await collectHtmlFiles(projectRoot);
+// Same maintained page set as build:dist; agent worktree copies are excluded.
+const htmlFiles = (await listSourceHtmlFiles(projectRoot)).map((file) => path.join(projectRoot, file));
 const failures = [];
 
 for (const file of htmlFiles) {
@@ -46,24 +49,6 @@ if (failures.length > 0) {
 }
 
 console.log(`PASS check:assets (${htmlFiles.length} HTML file${htmlFiles.length === 1 ? '' : 's'} scanned)`);
-
-async function collectHtmlFiles(dir) {
-  const entries = await fs.readdir(dir, { withFileTypes: true });
-  const files = [];
-
-  for (const entry of entries) {
-    if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'dist' || entry.name === '.lighthouse-reports' || entry.name === PARTIALS_DIR_NAME) continue;
-
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      files.push(...(await collectHtmlFiles(fullPath)));
-    } else if (entry.isFile() && entry.name.endsWith('.html')) {
-      files.push(fullPath);
-    }
-  }
-
-  return files;
-}
 
 function extractAssetReferences(html) {
   const refs = [];

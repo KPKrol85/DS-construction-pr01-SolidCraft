@@ -47,13 +47,9 @@ The main opportunities lie in the conditions and scope of that verification rath
 
 ### IMP-QUALITY-05 — Scope static HTML checks to the maintained page set
 
-- **Affected area:** `check:links` and `check:assets` (the `check:html` part of `check:predeploy`).
-- **Evidence:** `scripts/check-links.mjs:87-97`, `scripts/check-html-assets.mjs:50-66`, `scripts/utils/html-discovery.js:15-23`, `scripts/utils/partials.js:119-122`, `docs/settings.md` (Scripts: `check:links`, `check:assets`).
-- **Current implementation:** Each check has its own recursive traversal that skips only `node_modules`, `.git`, `dist`, `.lighthouse-reports`, and `partials`. The shared `listSourceHtmlFiles()` utility used by the build and sitemap also excludes `.claude` and `.codex`. The primary checkout currently holds five agent worktrees under `.claude/worktrees/`. A read-only count with the checks' exclusions finds 78 HTML files there, against 13 maintained pages. Worktree copies would be rendered against the primary checkout's `partials/`, because includes resolve from `rootDir`. CI runs on a clean checkout and is unaffected.
-- **Proposed improvement:** Make both checks discover pages through the shared source-HTML discovery, so they validate exactly the page set that `build:dist` ships.
-- **Expected quality value:** Local `check:predeploy` results match CI for the same commit. Failures and file counts are no longer influenced by other branches' worktree copies.
-- **Implementation scope:** Change only the page-discovery step of `scripts/check-links.mjs` and `scripts/check-html-assets.mjs`. Keep link classification, external-link handling, anchor indexing, asset patterns, and output format unchanged. Changes to other consumers or to the shared exclusion list are excluded. This proposal is limited to verification scope; it does not reopen the completed IMP-TECH-04 build and sitemap consolidation.
-- **Acceptance criteria:** In a checkout containing `.claude/worktrees/*` copies, both checks report 13 HTML files scanned and inspect no file under `.claude/` or `.codex/`. In a clean checkout, both checks scan the same 13 files and produce the same pass/fail result as before.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** `check:links` and `check:assets` now discover pages through the shared `listSourceHtmlFiles()` utility, mapped to absolute paths, so both validate exactly the page set `build:dist` ships and skip `.claude/` and `.codex/`. Their local traversals were removed; validation logic and PASS/FAIL output are unchanged.
+- **Verification:** `node --check` and `npm run check:html` passed in a clean worktree with 13 files per check, matching the baseline; both files already failed Prettier at `HEAD` and were left unformatted. In the primary checkout, which holds 130 worktree copies, the scanned set dropped from 143 files to 13 and matched the `build:dist` list file for file. A scratch copy skipped broken pages under `.claude/` and `.codex/` and still failed on a broken link, a missing anchor, and a missing asset in a maintained page.
 - **Impact:** Medium
 - **Effort:** Small
 

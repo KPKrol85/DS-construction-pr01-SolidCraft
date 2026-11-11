@@ -109,6 +109,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Extended `qa:sw` with regression tests for Service Worker fetch strategies, offline fallbacks under simulated network loss, runtime-cache filtering, and non-GET bypass.
 - Added functional regression scenarios for the first-visit project modal covering focus trapping, Escape and accept-button dismissal, persisted acceptance, and unavailable `localStorage`.
 - Added a functional regression scenario for the consent-gated map embed covering pre-consent request absence, iframe insertion, persisted consent, and unavailable `localStorage`, with Google requests aborted locally.
+- Scoped `check:links` and `check:assets` to the shared source-HTML discovery used by `build:dist`, excluding agent worktree copies from local validation.
 
 ### Documentation
 
