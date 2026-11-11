@@ -65,12 +65,10 @@
 }
 
 .hero__title {
-  font-weight: 600;
   text-align: center;
-  letter-spacing: var(--ls-tight-1);
-  line-height: var(--lh-title);
+  line-height: var(--lh-tight);
   text-wrap: balance;
-  font-size: var(--fs-8);
+  font-size: var(--fs-display);
   margin: var(--space-4) 0;
   text-shadow:
     0 3px 14px rgba(0, 0, 0, 0.35),
@@ -84,7 +82,6 @@
 }
 
 .hero__lead {
-  font-size: var(--fs-4);
   margin: var(--space-4) auto;
   text-wrap: balance;
   text-align: center;
@@ -149,12 +146,15 @@
 
 /* Services */
 
+/* Section heads read from the start edge above start-aligned content;
+   closing statements (.cta) and status pages keep a centered axis. */
 .block-head {
-  text-align: center;
+  text-align: start;
 }
 
 /* Measured Craft marker: a short amber dimension line (|—|) set above each
-   section title. Decorative only; it travels with the heading's reveal. */
+   section title. Decorative only; it travels with the heading's reveal and
+   follows the heading's alignment. */
 :is(
     .block-head > :is(h1, h2):first-child,
     .cta__title,
@@ -164,7 +164,8 @@
   display: block;
   width: var(--marker-w);
   height: var(--marker-h);
-  margin: 0 auto var(--space-4);
+  margin-block: 0 var(--space-4);
+  margin-inline: var(--marker-inline, 0);
   background:
     linear-gradient(var(--c-mark) 0 0) center / 100% var(--marker-t) no-repeat,
     linear-gradient(var(--c-mark) 0 0) left center / var(--marker-t) 100%
@@ -173,9 +174,14 @@
       no-repeat;
 }
 
+.cta,
+.page-status {
+  --marker-inline: auto;
+}
+
 .block-head__lead {
-  max-width: 32ch;
-  margin: var(--space-4) auto;
+  margin-block: var(--space-4);
+  color: var(--c-muted);
 }
 
 .services-list {
@@ -229,8 +235,6 @@
 
 .card__title {
   margin: var(--space-2) 0 var(--space-1);
-  text-align: center;
-  font-size: var(--fs-5);
 }
 
 .card__title a {
@@ -248,12 +252,11 @@
 .card__title a::after {
   content: "";
   position: absolute;
-  left: 50%;
+  inset-inline-start: 0;
   bottom: -2px;
   width: 0%;
   height: 2px;
   background: var(--c-mark);
-  transform: translateX(-50%);
   transition: width 0.3s ease;
 }
 
@@ -264,9 +267,8 @@
 
 .card__desc {
   color: var(--c-muted);
-  margin: var(--space-1);
+  margin: 0;
   font-weight: 500;
-  text-align: center;
 }
 
 .block-cta {
@@ -326,13 +328,6 @@
   --logo-min: 132px;
   padding-block: var(--section-py-lg);
   position: relative;
-}
-
-.partners__title {
-  text-align: center;
-  margin-bottom: var(--space-8);
-  max-width: 22ch;
-  margin-inline: auto;
 }
 
 .partners__grid {
@@ -406,9 +401,6 @@
   .partners__grid {
     grid-template-columns: repeat(3, minmax(var(--logo-min), 1fr));
   }
-  .partners__title {
-    max-width: 32ch;
-  }
 }
 
 @media (min-width: 760px) {
@@ -440,25 +432,23 @@
   margin-bottom: var(--space-3);
 }
 
+/* A disclaimer note reads at body size under its heading. */
 .block-head__lead--note {
-  max-width: 52ch;
   margin-block: 0 var(--space-5);
-  font-size: var(--fs-3);
+  font-size: var(--fs-body);
 }
 
 .testimonials__rating {
   width: fit-content;
   max-width: 100%;
-  margin: 0 auto;
-  padding: var(--space-2) var(--space-4);
+  margin: 0;
+  padding-block: var(--space-2);
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: var(--space-2);
   font-size: var(--fs-2);
   line-height: var(--lh-body);
   letter-spacing: var(--ls-1);
-  text-align: center;
 }
 
 .testimonials__rating-icon {
@@ -544,9 +534,6 @@
   padding-top: var(--space-3);
   border-top: 1px solid var(--c-border);
   color: var(--c-muted);
-  font-size: var(--fs-2);
-  font-weight: 600;
-  letter-spacing: var(--ls-1);
 }
 
 .testimonials__author cite {
@@ -605,8 +592,7 @@
 
 .cta__lead {
   margin: 0;
-  max-width: 52ch;
-  font-weight: 600;
+  text-wrap: balance;
 }
 
 .contact-list {
@@ -687,10 +673,6 @@
 
 .form label:not(.checkbox) {
   color: var(--c-ink);
-  font-size: var(--fs-2);
-  font-weight: 600;
-  letter-spacing: var(--ls-3);
-  text-transform: uppercase;
 }
 
 .form .form-note {

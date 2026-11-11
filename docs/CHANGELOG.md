@@ -49,6 +49,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Consolidated same-page scroll-to-top handling into a single owner, eliminating redundant history entries and preserving native modified clicks on home-page top links.
 - Centralized header-height publication to `--header-h` and its cache in the shared utility module.
 - Established the Measured Craft material and accent system, reserving amber for actions, states, focus, and section markers and aligning theme and PWA colors with the palette.
+- Established an editorial typography hierarchy with display, text, and utility voices from the existing font pair, start-aligned section heads, and a shared reading measure for leads.
 
 ### Fixed
 

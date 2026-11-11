@@ -4,10 +4,9 @@
   padding-block: var(--section-py-lg);
 }
 
+/* Head, scope rules and gallery share the container's start edge. */
 .subpage-header .block-head {
-  text-align: center;
   margin-bottom: var(--space-10);
-  padding-inline: var(--space-4);
 }
 
 .subpage-header .block-head h1 {
@@ -15,9 +14,8 @@
 }
 
 .subpage-header .block-head .lead {
-  max-width: 32ch;
-  margin-inline: auto;
   margin-bottom: 0;
+  color: var(--c-muted);
 }
 
 .subpage-header .cards {
@@ -25,24 +23,22 @@
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   margin-block: var(--space-4);
   gap: var(--space-6);
-  margin-inline: var(--space-2);
 }
 
 /* Scope items are content, not controls: open ground under a hairline rule,
    with no lift or hover affordance. */
 .subpage-header .card {
-  padding: var(--space-5) var(--space-4) var(--space-2);
+  padding: var(--space-5) 0 var(--space-2);
   border-top: 1px solid var(--c-border);
 }
 
+/* Scope labels use the utility voice (see base.css). */
 .subpage-header .card h2 {
-  margin: var(--space-1) 0;
-  font-size: var(--fs-4);
-  text-align: center;
+  margin: var(--space-1) 0 var(--space-2);
 }
 
 .subpage-header .card p {
-  margin: 0 auto;
+  margin: 0;
   color: var(--c-muted);
   font-size: var(--fs-3);
   max-width: 38ch;
@@ -60,18 +56,15 @@
 
 .gallery .block-head {
   margin-bottom: var(--space-8);
-  padding-inline: var(--space-4);
 }
 
 .gallery .block-head h2 {
   margin: var(--space-1) 0;
-  text-align: center;
 }
 
 .gallery .block-head .lead {
-  max-width: 32ch;
-  margin-inline: auto;
   margin-bottom: 0;
+  color: var(--c-muted);
 }
 
 .gallery .gallery-grid {
@@ -139,6 +132,7 @@
 .page-sub .cta .block-head {
   margin: var(--space-5) 0;
   padding: var(--space-2);
+  text-align: center;
 }
 
 .page-sub .cta h2 {
@@ -149,10 +143,9 @@
 }
 
 .page-sub .cta .lead {
-  max-width: 52ch;
   margin-inline: auto;
   color: var(--c-ink);
-  font-weight: 600;
+  text-wrap: balance;
 }
 
 .page-sub .cta .block-cta {
@@ -178,10 +171,6 @@
 .doc-page h1 {
   margin: var(--space-4) auto;
   padding-bottom: var(--space-2);
-}
-
-.doc-page .block-head > h1:first-child::before {
-  margin-inline: 0;
 }
 
 .doc-page .lead {
@@ -264,8 +253,10 @@
   padding-top: 0;
 }
 
+/* Document headings stay compact; they are not display titles. */
 .doc-content h2 {
   font-size: var(--fs-5);
+  line-height: var(--lh-title);
   font-weight: 700;
   margin: var(--space-8) var(--space-1) var(--space-4);
   scroll-margin-top: calc(var(--header-h, 72px) + 16px);
@@ -377,12 +368,12 @@
 }
 
 .page-status .page-status__text {
-  font-size: var(--space-3);
+  font-size: var(--fs-lead);
   color: var(--c-ink);
   margin: var(--space-4) 0;
-  font-weight: bold;
-  letter-spacing: var(--ls-3);
+  letter-spacing: var(--ls-0);
   line-height: var(--lh-body);
+  text-wrap: balance;
 }
 
 .page-status .page-status__cta {

@@ -515,9 +515,6 @@
   max-width: 28ch;
 }
 .ft-h {
-  font-size: var(--fs-3);
-  letter-spacing: var(--ls-4);
-  text-transform: uppercase;
   color: color-mix(in oklab, var(--ft-muted) 60%, var(--ft-fg));
   margin: var(--space-2) 0;
 }

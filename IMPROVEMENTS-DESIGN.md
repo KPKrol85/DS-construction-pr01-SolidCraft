@@ -141,17 +141,9 @@ Priorities express design value and dependency, not defect severity. P1 items es
 
 ### IMP-DESIGN-02 — Build an editorial typography hierarchy from the existing font pair
 
-- **Status:** Proposed
-- **Priority:** P1
-- **Affected area:** type-scale tokens in `tokens.css`, heading rules in `base.css`, `.block-head` and its variants, hero title, card titles, form labels, footer headings, and heading text case in `index.html`.
-- **Evidence:** Runtime: `h1` 40 px, `h2` 24 px, and body about 15.2 px at 1440 px; 29.6 px and 20.7 px headings at 390 px. Source: all `.block-head` centered; `.block-head__lead` capped at `32ch`; uppercase "REMONTY I WYKOŃCZENIA" in markup. Historical: Montserrat and Poppins are licensed (OFL 1.1) and cover Polish diacritics.
-- **Current state:** a compressed scale, centered narrow leads, and mixed heading case inside generous section padding.
-- **Design judgment:** hierarchy currently comes from boxes and spacing rather than from type.
-- **Proposed improvement:** define three typographic voices. Display uses Montserrat 700 at a markedly larger scale for the hero and section titles, with tight leading and balanced wrapping. Text uses Poppins 400/500 at a reading measure of roughly 55–65ch. Utility uses small, tracked uppercase Montserrat 600 for section indices, scope labels, captions, and service facts such as "24–48 h" or "24 mies. gwarancji". Use sentence case for all headings, and left-align heads above left-aligned content; reserve centering for short statement moments.
-- **Expected value:** hierarchy carried by typography; an editorial, recognizable voice; the utility voice provides the "measured" precision of the direction.
-- **Implementation scope:** no new font files and no font replacement. Heading levels, the outline, and DOM order stay unchanged, and `text-wrap` balance and pretty behavior is preserved. Verify Polish glyph rendering and long compounds such as "remontowo-budowlana" at every breakpoint.
-- **Dependencies:** none; coordinate edits to `tokens.css` with IMP-DESIGN-01.
-- **Acceptance criteria:** at 390, 768, and 1440 px, hero and section titles are the dominant element of their sections. Section leads use a reading measure instead of the 32ch cap, all headings are sentence case in source, and utility labels share one style. No additional font files are requested, and Montserrat and Poppins render Polish diacritics without fallback. The heading outline is unchanged, and text does not overlap or clip at 200% zoom.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Tokens now define a Montserrat 700 display voice (hero and page titles up to 48 px, section titles 40 px, card titles 22 px), Poppins 400 leads at 17–20 px on a shared 60ch measure, and one tracked uppercase Montserrat 600 utility style for form labels, footer headings, scope labels, and testimonial bylines; the undefined `--fs-h4` reference now resolves through `--fs-h3`. Section heads, the section marker, service cards, and service-page heads, scope items, and galleries share one start edge, while the hero, closing CTAs, and status pages stay centered. The two uppercase headings are sentence case in source, and heading levels, IDs, font files, preloads, and subsets are unchanged.
+- **Verification:** `format:check`, `build:dist`, `check:html`, `qa:a11y` (28 scans, 0 serious/critical), and `qa:functional` (14/14) passed. Representative home, service, legal, and 404 views were inspected from 360 to 1440 px in light, dark, and system-dark themes, including a 720 px viewport equivalent to 200% zoom, with no horizontal overflow or clipped text, "remontowo-budowlana" unbroken from 360 px, Polish diacritics rendered from the local `latin-ext` faces, and keyboard focus visible. Approximate pixel sampling shows hero contrast unchanged from baseline (light lead median 2.19 → 2.18:1, dark 3.96 → 3.91:1), so P-01 remains open.
 - **Impact:** High
 - **Effort:** Medium
 
