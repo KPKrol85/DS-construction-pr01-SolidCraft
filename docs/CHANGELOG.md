@@ -106,6 +106,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Made accessibility scans deterministic across 13 routes in both themes and both home-page modal states, failing on unsettled reveal content or unexpected theme and modal state.
 - Added nine functional browser scenarios using Playwright.
 - Added `qa:sw` verification for Service Worker lifecycle behavior.
+- Extended `qa:sw` with regression tests for Service Worker fetch strategies, offline fallbacks under simulated network loss, runtime-cache filtering, and non-GET bypass.
 
 ### Documentation
 

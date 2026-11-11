@@ -220,7 +220,7 @@ Dokumentacja nie zawiera potwierdzenia zgodności z konkretnym poziomem WCAG —
 - W drzewie źródłowym `CACHE_VERSION` ma wartość `"dev"`, a lista precache jest pusta — taki worker instaluje się czysto i działa w trybie network-only, więc lokalne zmiany nie są przesłaniane przez cache.
 - W buildzie produkcyjnym `dist/sw.js` otrzymuje wyliczoną listę precache i wersję cache, obsługuje dokumenty HTML strategią network-first z fallbackiem na `/offline.html`, a zasoby statyczne strategią cache-first z zapisem odpowiedzi sieciowych; przy aktywacji usuwa wyłącznie klucze z prefiksem `solidcraft-v`.
 
-Manifest i Service Worker są wskazywane ścieżkami bezwzględnymi, więc działają przy serwowaniu serwisu z katalogu głównego domeny. Repozytorium nie zawiera weryfikacji instalowalności ani testów działania offline.
+Manifest i Service Worker są wskazywane ścieżkami bezwzględnymi, więc działają przy serwowaniu serwisu z katalogu głównego domeny. `npm run qa:sw` uruchamia kanoniczną logikę `sw.js` z testowym manifestem na lokalnym serwerze testowym w headless Chromium i sprawdza cykl życia workera oraz strategie obsługi żądań, w tym fallbacki offline przy symulowanej utracie sieci. Repozytorium nie zawiera weryfikacji instalowalności PWA ani testów offline zbudowanego serwisu.
 
 ### Wydajność
 
@@ -482,7 +482,7 @@ This documentation makes no claim of conformance with a specific WCAG level — 
 - In the source tree `CACHE_VERSION` is `"dev"` and the precache list is empty — such a worker installs cleanly and runs network-only, so local edits are never shadowed by a cached copy.
 - In the production build `dist/sw.js` receives the derived precache list and cache version, serves HTML documents network-first with an `/offline.html` fallback and static assets cache-first while persisting network responses, and on activation deletes only keys prefixed `solidcraft-v`.
 
-The manifest and Service Worker are referenced by absolute paths, so they work when the site is served from the domain root. The repository contains no installability verification or offline behavior tests.
+The manifest and Service Worker are referenced by absolute paths, so they work when the site is served from the domain root. `npm run qa:sw` runs the canonical `sw.js` logic with a test manifest against a local fixture server in headless Chromium and checks the worker lifecycle and its fetch strategies, including the offline fallbacks under simulated network loss. The repository contains no PWA installability verification and no offline tests of the built site.
 
 ### Performance
 

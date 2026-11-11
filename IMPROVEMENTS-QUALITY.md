@@ -23,13 +23,9 @@ The main opportunities lie in the conditions and scope of that verification rath
 
 ### IMP-QUALITY-02 — Cover Service Worker fetch strategies and the offline fallback in `qa:sw`
 
-- **Affected area:** Production Service Worker runtime logic and its lifecycle gate.
-- **Evidence:** `sw.js:36-59`, `sw.js:94-160`, `scripts/qa-sw-lifecycle.mjs:399-470`, `scripts/qa-sw-lifecycle.mjs:519`, `README.md:485`, `package.json:22`, `package.json:28`.
-- **Current implementation:** The canonical `sw.js` serves navigations network-first, falling back to a cached copy (`ignoreSearch`) and then to `/offline.html`. It serves static assets cache-first, persists only successful network responses, and leaves non-GET and cross-origin requests alone. `qa:sw` verifies install/activate lifecycle promises, precache storage, cleanup of stale caches, foreign-cache preservation, and client takeover against an in-memory fixture origin. No scenario exercises the fetch handler. The README states that the repository contains no offline behavior tests.
-- **Proposed improvement:** Extend the existing effect stage with fetch-strategy scenarios that run against the same fixture origin and the canonical worker logic.
-- **Expected quality value:** Regression protection for the offline fallback and caching rules, which ship to production and are currently verified only by inspection. A change to `isHTML`, `isStaticAsset`, or `persistRuntimeResponse` would then fail a check instead of degrading offline behavior unnoticed.
-- **Implementation scope:** Change `scripts/qa-sw-lifecycle.mjs` only: add fixture entries and a fixture-server failure mode for simulated network loss. Keep `sw.js`, the generator, dependencies, and the no-network/no-disk-write contract unchanged. Wiring `qa:sw` into `check:predeploy` or CI is workflow scope and is excluded.
-- **Acceptance criteria:** With the worker active and the network failing, a navigation to a previously visited page returns the cached page, and a navigation to an unvisited page returns the `/offline.html` fixture. A precached static asset is served while the network fails. A non-OK fixture response (404) is not written to the cache. A POST to the fixture origin is not answered or cached by the worker. All existing `qa:sw` scenarios still pass.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Five new `qa:sw` effect-stage scenarios run canonical `sw.js` with an injected production manifest under an activated, controlling worker. They cover the offline `ignoreSearch` cache fallback, the `/offline.html` fallback, cache-first precached assets, the exclusion of 404 responses from runtime caching, and POST bypass, while the fixture server logs requests and simulates network loss by destroying connections, so `fetch()` rejects instead of resolving with an HTTP error.
+- **Verification:** `node --check` and Prettier passed, and the final revision passed all 9 `qa:sw` scenarios in 22 sequential and 9 parallel runs. Seven temporary mutants (six worker-logic regressions, one replacing connection loss with HTTP 503) each failed their targeted scenario. Verified locally in Chromium only; cross-origin exclusion is not covered, and `qa:sw` remains outside `check:predeploy` and CI.
 - **Impact:** High
 - **Effort:** Medium
 

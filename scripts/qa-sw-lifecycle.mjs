@@ -22,7 +22,14 @@
      and an update in headless Chromium, against a small in-memory fixture
      origin, and asserts what AUDIT asks for: precache stored, superseded
      caches gone, foreign caches untouched, and an already-open client taken
-     over — without a reload — by the activated worker.
+     over — without a reload — by the activated worker. Its fetch-strategy
+     scenarios (IMP-QUALITY-02) then put a production-mode worker in control
+     of the page and assert responses, request logs and Cache Storage for
+     network-first navigation with its ignoreSearch and /offline.html
+     fallbacks, cache-first precached assets, the refusal to runtime-cache
+     non-OK responses, and POST requests bypassing the worker. Network loss
+     is simulated by the fixture server dropping the connection, so fetch()
+     rejects exactly as it does offline.
 
    The harness deliberately mirrors scripts/qa-functional.mjs rather than
    adding a test framework: the already-declared `playwright` package, a plain
@@ -396,6 +403,18 @@ const contractScenarios = [
 
 /* ── effect stage ───────────────────────────────────────────────────────── */
 
+/* Fetch-strategy routes. None is in FIXTURE_ASSETS, so whatever the worker
+   stores for them is a runtime write rather than part of the precache. */
+const RUNTIME_PAGE = "/visited.html";
+const UNVISITED_PAGE = "/unvisited.html";
+const MISSING_PAGE = "/missing.html";
+const MISSING_ASSET = "/missing.css";
+const RUNTIME_ASSET = "/runtime.css";
+const ECHO_ENDPOINT = "/echo";
+
+const fixturePage = (title) =>
+  `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${title}</title></head><body><h1>${title}</h1></body></html>`;
+
 const FIXTURE_FILES = new Map([
   [
     "/index.html",
@@ -416,17 +435,67 @@ const FIXTURE_FILES = new Map([
     "/app.js",
     { type: "text/javascript; charset=utf-8", body: "/* fixture asset */" },
   ],
+  [
+    RUNTIME_PAGE,
+    { type: "text/html; charset=utf-8", body: fixturePage("Runtime page") },
+  ],
+  [
+    UNVISITED_PAGE,
+    { type: "text/html; charset=utf-8", body: fixturePage("Unvisited page") },
+  ],
+  [
+    MISSING_PAGE,
+    {
+      status: 404,
+      type: "text/html; charset=utf-8",
+      body: fixturePage("Missing page"),
+    },
+  ],
+  [RUNTIME_ASSET, { type: "text/css; charset=utf-8", body: "body{margin:0}" }],
 ]);
 
 /* A minimal origin the worker can own: the fixture files above plus /sw.js,
    whose body this script swaps to simulate a deployed update. The real project
    pages are deliberately not served — this gate is about the worker, and the
-   functional and a11y suites already drive the maintained markup. */
+   functional and a11y suites already drive the maintained markup.
+
+   Every request is logged, so a scenario can tell what reached the network.
+   setNetworkFailure(true) simulates network loss: the connection is destroyed
+   before a single response byte is written, the browser reports a transport
+   error and fetch() rejects. An HTTP error status would resolve fetch()
+   instead and never reach the worker's offline fallback. */
 async function startFixtureServer(initialWorkerSource) {
   let workerSource = initialWorkerSource;
+  let networkFailing = false;
+  const requests = [];
 
   const server = createServer((req, res) => {
     const url = (req.url || "/").split("?")[0];
+    const entry = {
+      method: req.method,
+      url: req.url || "/",
+      dropped: networkFailing,
+    };
+    requests.push(entry);
+
+    if (networkFailing) {
+      req.socket.destroy();
+      return;
+    }
+
+    if (url === ECHO_ENDPOINT) {
+      const chunks = [];
+      req.on("data", (chunk) => chunks.push(chunk));
+      req.on("end", () => {
+        entry.body = Buffer.concat(chunks).toString("utf8");
+        res.writeHead(200, {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-store",
+        });
+        res.end(`${req.method}:${entry.body}`);
+      });
+      return;
+    }
 
     if (url === "/sw.js") {
       res.writeHead(200, {
@@ -446,7 +515,7 @@ async function startFixtureServer(initialWorkerSource) {
       return;
     }
 
-    res.writeHead(200, {
+    res.writeHead(file.status ?? 200, {
       "Content-Type": file.type,
       "Cache-Control": "no-store",
     });
@@ -465,6 +534,10 @@ async function startFixtureServer(initialWorkerSource) {
     serveWorker: (source) => {
       workerSource = source;
     },
+    setNetworkFailure: (failing) => {
+      networkFailing = failing;
+    },
+    requests: () => requests.map((entry) => ({ ...entry })),
     close: () =>
       new Promise((resolve, reject) =>
         server.close((error) => (error ? reject(error) : resolve())),
@@ -508,12 +581,178 @@ async function readCacheState(page) {
     for (const key of keys) {
       const cache = await caches.open(key);
       entries[key] = (await cache.keys())
-        .map((request) => new URL(request.url).pathname)
+        .map((request) => {
+          const { pathname, search } = new URL(request.url);
+          return pathname + search;
+        })
         .sort();
     }
 
     return { keys: keys.slice().sort(), entries };
   });
+}
+
+/* ── fetch-strategy helpers ─────────────────────────────────────────────── */
+
+/* Every fetch-strategy scenario gets its own fixture origin, browser context
+   and cache version, and starts from a page an activated production-mode
+   worker already controls: requests issued from it, and navigations it makes
+   within scope, are dispatched to the canonical fetch handler. Readiness is
+   awaited only through the bounded waits below, never an open-ended
+   navigator.serviceWorker.ready, so a worker that fails to install fails the
+   scenario instead of stalling the run. */
+async function withControlledPage(browser, version, run) {
+  const server = await startFixtureServer(
+    withManifest(version, FIXTURE_ASSETS),
+  );
+  const context = await browser.newContext({
+    baseURL: server.origin,
+    serviceWorkers: "allow",
+  });
+
+  try {
+    const page = await context.newPage();
+    await page.goto("/index.html", { waitUntil: "load" });
+
+    await page.evaluate(async () => {
+      await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+    });
+
+    await page.waitForFunction(
+      () => Boolean(navigator.serviceWorker.controller),
+      null,
+      { timeout: 20000 },
+    );
+    await waitForActivated(page);
+
+    await run({ server, page, cacheName: `${APP_ID}-v${version}` });
+  } finally {
+    await context.close();
+    await server.close();
+  }
+}
+
+/* Navigates the controlled tab and reports what the browser ended up showing.
+   A navigation the worker fails to answer rejects page.goto(); that becomes
+   an assertion naming the strategy under test instead of a bare net:: error. */
+async function navigate(page, url, expectation) {
+  let response = null;
+
+  try {
+    response = await page.goto(url, { waitUntil: "load" });
+  } catch (error) {
+    assert(false, `${expectation} — navigation failed: ${firstLine(error)}`);
+  }
+
+  assert(response, `${expectation} — navigation produced no response`);
+
+  return {
+    status: response.status(),
+    fromServiceWorker: response.fromServiceWorker(),
+    ...(await page.evaluate(() => ({
+      path: location.pathname + location.search,
+      title: document.title,
+      controlled: Boolean(navigator.serviceWorker.controller),
+    }))),
+  };
+}
+
+/* fetch() from the controlled document. A rejection — including the bounded
+   timeout's abort — is returned rather than thrown, so the scenario states
+   which expectation it violated, and Playwright's record of the same request
+   tells whether the worker answered it through respondWith() or let it go to
+   the network untouched. */
+async function fetchFromPage(page, href, init = {}) {
+  const method = init.method ?? "GET";
+
+  const settled = new Promise((resolve) => {
+    const onSettled = (request) => {
+      if (request.url() !== href || request.method() !== method) return;
+      page.off("requestfinished", onSettled);
+      page.off("requestfailed", onSettled);
+      resolve(request);
+    };
+    page.on("requestfinished", onSettled);
+    page.on("requestfailed", onSettled);
+  });
+
+  const result = await page.evaluate(
+    async ([url, options]) => {
+      try {
+        const response = await fetch(url, {
+          ...options,
+          signal: AbortSignal.timeout(10000),
+        });
+        return { status: response.status, body: await response.text() };
+      } catch (error) {
+        return { error: String(error) };
+      }
+    },
+    [href, init],
+  );
+
+  let timer;
+  const request = await Promise.race([
+    settled,
+    new Promise((resolve) => {
+      timer = setTimeout(resolve, 10000, null);
+    }),
+  ]);
+  clearTimeout(timer);
+
+  assert(request, `Playwright should report how ${method} ${href} settled`);
+
+  const response = await request.response();
+
+  return {
+    ...result,
+    fromServiceWorker: response ? response.fromServiceWorker() : false,
+  };
+}
+
+/* Runtime writes run under the fetch event's waitUntil() and finish after the
+   page already has its response, so persistence is awaited on the Cache
+   Storage entry itself — bounded, and failing with the strategy's own message
+   — before anything is asserted about it or the network is cut. The exact
+   lookup ignores nothing, so it finds only the URL that was really stored. */
+async function waitForCachedEntry(page, cacheName, url, expectation) {
+  const stored = await page.evaluate(
+    async ([name, target, timeout]) => {
+      const deadline = performance.now() + timeout;
+
+      do {
+        const hit = await caches.match(target, { cacheName: name });
+        if (hit) return { status: hit.status, body: await hit.text() };
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      } while (performance.now() < deadline);
+
+      return null;
+    },
+    [cacheName, url, 10000],
+  );
+
+  assert(stored, `${expectation} — no entry appeared in ${cacheName}`);
+  return stored;
+}
+
+/* What the fixture server received for one exact URL (path and query) since
+   a scenario took `mark = server.requests().length`. */
+function requestsTo(server, mark, url) {
+  return server
+    .requests()
+    .slice(mark)
+    .filter((entry) => entry.url === url);
+}
+
+const cachedCopyExists = (page, url, options) =>
+  page.evaluate(
+    async ([target, matchOptions]) =>
+      Boolean(await caches.match(target, matchOptions)),
+    [url, options],
+  );
+
+function firstLine(error) {
+  return (error?.message || String(error)).split("\n")[0];
 }
 
 const effectScenarios = [
@@ -657,6 +896,348 @@ const effectScenarios = [
         await context.close();
         await server.close();
       }
+    },
+  },
+  {
+    name: "offline-navigation-serves-runtime-cached-page-ignoring-search",
+    async run({ browser }) {
+      await withControlledPage(
+        browser,
+        "fetch1",
+        async ({ server, page, cacheName }) => {
+          const onlineUrl = `${RUNTIME_PAGE}?visit=online`;
+          const offlineUrl = `${RUNTIME_PAGE}?visit=offline`;
+
+          const online = await navigate(
+            page,
+            onlineUrl,
+            "network-first should load a non-precached page while the network is available",
+          );
+
+          assertDeepEqual(
+            [online.status, online.fromServiceWorker, online.title],
+            [200, true, "Runtime page"],
+            "network-first should answer the online navigation through the worker with the network page",
+          );
+
+          const stored = await waitForCachedEntry(
+            page,
+            cacheName,
+            onlineUrl,
+            `network-first should persist the successful response for ${onlineUrl}`,
+          );
+
+          assertDeepEqual(
+            [stored.status, stored.body],
+            [200, FIXTURE_FILES.get(RUNTIME_PAGE).body],
+            "the runtime cache should hold an intact copy of the network page",
+          );
+
+          const cached = {
+            keys: [cacheName],
+            entries: { [cacheName]: [...FIXTURE_ASSETS, onlineUrl].sort() },
+          };
+
+          assertDeepEqual(
+            await readCacheState(page),
+            cached,
+            "the runtime write should land in the versioned cache beside the precache",
+          );
+
+          assertDeepEqual(
+            [
+              await cachedCopyExists(page, offlineUrl),
+              await cachedCopyExists(page, offlineUrl, { ignoreSearch: true }),
+            ],
+            [false, true],
+            "the offline URL should be reachable from the cache only by ignoring its query string",
+          );
+
+          const mark = server.requests().length;
+          server.setNetworkFailure(true);
+
+          const offline = await navigate(
+            page,
+            offlineUrl,
+            "network-first should fall back to the cached copy when the network fails",
+          );
+
+          const attempts = requestsTo(server, mark, offlineUrl);
+          assert(
+            attempts.length > 0 && attempts.every((entry) => entry.dropped),
+            `network-first should try the network before the cache — saw ${JSON.stringify(attempts)}`,
+          );
+
+          assertDeepEqual(
+            offline,
+            {
+              status: 200,
+              fromServiceWorker: true,
+              path: offlineUrl,
+              title: "Runtime page",
+              controlled: true,
+            },
+            "the worker should answer the failed navigation with the page cached under another query string",
+          );
+
+          assertDeepEqual(
+            await readCacheState(page),
+            cached,
+            "a failed network attempt should write nothing to the cache",
+          );
+        },
+      );
+    },
+  },
+  {
+    name: "offline-navigation-to-unvisited-page-serves-offline-fallback",
+    async run({ browser }) {
+      await withControlledPage(
+        browser,
+        "fetch2",
+        async ({ server, page, cacheName }) => {
+          assertEqual(
+            await cachedCopyExists(page, UNVISITED_PAGE, {
+              ignoreSearch: true,
+            }),
+            false,
+            `${UNVISITED_PAGE} should have no cached copy before the offline navigation`,
+          );
+
+          const before = await readCacheState(page);
+
+          assertDeepEqual(
+            before.entries[cacheName],
+            [...FIXTURE_ASSETS].sort(),
+            "the precache should hold /offline.html before the network fails",
+          );
+
+          const mark = server.requests().length;
+          server.setNetworkFailure(true);
+
+          const offline = await navigate(
+            page,
+            UNVISITED_PAGE,
+            "network-first should answer an uncached navigation with /offline.html when the network fails",
+          );
+
+          const attempts = requestsTo(server, mark, UNVISITED_PAGE);
+          assert(
+            attempts.length > 0 && attempts.every((entry) => entry.dropped),
+            `network-first should try the network before the offline fallback — saw ${JSON.stringify(attempts)}`,
+          );
+
+          assertDeepEqual(
+            offline,
+            {
+              status: 200,
+              fromServiceWorker: true,
+              path: UNVISITED_PAGE,
+              title: "Offline fixture",
+              controlled: true,
+            },
+            "the worker should answer the failed navigation with the precached /offline.html, not the unreachable page",
+          );
+
+          assertDeepEqual(
+            await readCacheState(page),
+            before,
+            "the offline fallback should write nothing to the cache",
+          );
+        },
+      );
+    },
+  },
+  {
+    name: "offline-static-asset-is-served-cache-first-from-precache",
+    async run({ browser }) {
+      await withControlledPage(
+        browser,
+        "fetch3",
+        async ({ server, page, cacheName }) => {
+          const asset = "/app.css";
+          const href = `${server.origin}${asset}`;
+          const { body } = FIXTURE_FILES.get(asset);
+
+          const precached = await waitForCachedEntry(
+            page,
+            cacheName,
+            asset,
+            `installation should precache ${asset}`,
+          );
+
+          assertEqual(
+            precached.body,
+            body,
+            `the precache should hold the fixture content of ${asset}`,
+          );
+
+          const mark = server.requests().length;
+          server.setNetworkFailure(true);
+
+          const result = await fetchFromPage(page, href);
+
+          assert(
+            !result.error,
+            `cache-first should serve the precached ${asset} while the network fails — fetch rejected with ${result.error}`,
+          );
+
+          assertDeepEqual(
+            [result.status, result.body, result.fromServiceWorker],
+            [200, body, true],
+            `the worker should answer ${asset} with its precached content`,
+          );
+
+          assertDeepEqual(
+            requestsTo(server, mark, asset),
+            [],
+            `cache-first should not touch the network for a precached ${asset}`,
+          );
+        },
+      );
+    },
+  },
+  {
+    name: "non-ok-network-responses-are-not-runtime-cached",
+    async run({ browser }) {
+      await withControlledPage(
+        browser,
+        "fetch4",
+        async ({ server, page, cacheName }) => {
+          const mark = server.requests().length;
+
+          const missingAsset = await fetchFromPage(
+            page,
+            `${server.origin}${MISSING_ASSET}`,
+          );
+
+          assert(
+            !missingAsset.error,
+            `cache-first should pass the network 404 for ${MISSING_ASSET} through — fetch rejected with ${missingAsset.error}`,
+          );
+
+          assertDeepEqual(
+            [missingAsset.status, missingAsset.fromServiceWorker],
+            [404, true],
+            `cache-first should answer ${MISSING_ASSET} through the worker with the network 404`,
+          );
+
+          const missingPage = await navigate(
+            page,
+            MISSING_PAGE,
+            "network-first should pass an HTTP error page through",
+          );
+
+          assertDeepEqual(
+            [
+              missingPage.status,
+              missingPage.fromServiceWorker,
+              missingPage.title,
+            ],
+            [404, true, "Missing page"],
+            "network-first should return the network 404 as-is — an HTTP error is not a network failure",
+          );
+
+          for (const url of [MISSING_ASSET, MISSING_PAGE]) {
+            const attempts = requestsTo(server, mark, url);
+            assert(
+              attempts.length > 0 && attempts.every((entry) => !entry.dropped),
+              `${url} should have been answered by the fixture server — saw ${JSON.stringify(attempts)}`,
+            );
+          }
+
+          /* Control: a successful runtime fetch issued after the 404s is
+             stored, so the cache is live and its write queue has drained
+             past anything the error responses could have queued. */
+          const runtimeAsset = await fetchFromPage(
+            page,
+            `${server.origin}${RUNTIME_ASSET}`,
+          );
+
+          assertDeepEqual(
+            [runtimeAsset.status, runtimeAsset.fromServiceWorker],
+            [200, true],
+            `cache-first should fetch the uncached ${RUNTIME_ASSET} from the network`,
+          );
+
+          await waitForCachedEntry(
+            page,
+            cacheName,
+            RUNTIME_ASSET,
+            `cache-first should persist the successful response for ${RUNTIME_ASSET}`,
+          );
+
+          assertDeepEqual(
+            await readCacheState(page),
+            {
+              keys: [cacheName],
+              entries: {
+                [cacheName]: [...FIXTURE_ASSETS, RUNTIME_ASSET].sort(),
+              },
+            },
+            `non-OK responses for ${MISSING_ASSET} and ${MISSING_PAGE} should not be runtime-cached`,
+          );
+        },
+      );
+    },
+  },
+  {
+    name: "non-get-requests-bypass-the-worker",
+    async run({ browser }) {
+      await withControlledPage(
+        browser,
+        "fetch5",
+        async ({ server, page, cacheName }) => {
+          const href = `${server.origin}${ECHO_ENDPOINT}`;
+          const payload = "fixture=post";
+
+          /* Control: a same-origin GET to the same endpoint is answered by
+             the worker, so fromServiceWorker is a live signal here. */
+          const get = await fetchFromPage(page, href);
+
+          assertDeepEqual(
+            [get.status, get.body, get.fromServiceWorker],
+            [200, "GET:", true],
+            "a same-origin GET should be answered by the worker",
+          );
+
+          const mark = server.requests().length;
+
+          const post = await fetchFromPage(page, href, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain" },
+            body: payload,
+          });
+
+          assert(
+            !post.error,
+            `the POST should reach the fixture server — fetch rejected with ${post.error}`,
+          );
+
+          assertDeepEqual(
+            [post.status, post.body, post.fromServiceWorker],
+            [200, `POST:${payload}`, false],
+            "the POST should be answered by the network, not through the worker's respondWith()",
+          );
+
+          assertDeepEqual(
+            requestsTo(server, mark, ECHO_ENDPOINT).map(
+              ({ method, body, dropped }) => ({ method, body, dropped }),
+            ),
+            [{ method: "POST", body: payload, dropped: false }],
+            "the fixture server should receive and handle exactly one POST",
+          );
+
+          assertDeepEqual(
+            await readCacheState(page),
+            {
+              keys: [cacheName],
+              entries: { [cacheName]: [...FIXTURE_ASSETS].sort() },
+            },
+            "the POST should leave the cache untouched",
+          );
+        },
+      );
     },
   },
 ];
