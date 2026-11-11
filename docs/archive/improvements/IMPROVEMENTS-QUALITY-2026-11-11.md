@@ -5,13 +5,21 @@
 **Analysis mode:** Evidence-based quality improvement review
 **Focus:** Project-wide quality
 
+## Implementation closure
+
+**Status:** COMPLETED — All five selected quality improvements were implemented and verified.
+**Completion date:** 2026-11-11
+**Archive note:** This quality improvement cycle is closed and the record is prepared for archival.
+
 ## Improvement overview
 
-SolidCraft already has project-specific verification: a partial renderer that fails on unresolved directives, link and asset checks over rendered pages, an axe-core gate over 12 routes, nine Playwright functional scenarios with an off-origin request guard, and a Service Worker lifecycle gate (`qa:sw`). Runtime modules guard storage access and use abortable listeners.
+The original review identified five opportunities to strengthen SolidCraft's existing quality verification. These concerned accessibility scan conditions, Service Worker fetch and offline behavior, regression coverage for the first-visit project modal and consent-gated map, and the scope of static HTML checks in checkouts containing agent worktrees.
 
-The main opportunities lie in the conditions and scope of that verification rather than in missing infrastructure. The accessibility gate scans pages before their reveal animations settle, with the first-visit modal open, and in the light theme only. Shipped offline behavior and two storage-backed user decisions (project notice dismissal, map consent) have no regression coverage. The static HTML checks also discover more than the maintained page set when local agent worktrees are present. Every proposal reuses existing tooling, conventions, and dependencies.
+All five selected improvements were implemented using the project's existing tooling and conventions without introducing new dependencies. The completed verification coverage includes 28 accessibility scans, nine Service Worker scenarios, 14 functional browser scenarios, and static HTML checks scoped to the 13 maintained pages.
 
-## Proposed improvements
+This document preserves the implemented results, recorded verification evidence, and relevant limitations of the completed quality-improvement cycle.
+
+## Completed improvements
 
 ### IMP-QUALITY-01 — Scan settled, unobstructed content in both themes in the accessibility gate
 
@@ -53,21 +61,20 @@ The main opportunities lie in the conditions and scope of that verification rath
 - **Impact:** Medium
 - **Effort:** Small
 
-## Selection summary
+## Completion summary
 
-The five proposals strengthen accessibility verification (01), PWA and offline resilience (02), regression protection for an accessibility-sensitive dialog (03), a privacy and consent contract (04), and verification precision (05). Each protects behavior that already exists and is documented, and each reuses the project's Playwright, axe-core, and plain-Node harness conventions without new dependencies.
+**5 of 5 improvements completed.** Accessibility verification, Service Worker regression coverage, first-visit modal testing, map-consent testing, and static HTML validation scope were strengthened within their approved boundaries. All selected improvement items have been implemented and verified; none remain open in this report.
 
-There are no hard dependencies. Proposals 03 and 04 both add a scoped option to `scripts/functional/harness.mjs`, so implement them one after the other. All other proposals are independent. Four are Small and one is Medium, which fits a focused development backlog.
+The implementation records above preserve the actual verification results and limitations. Verification was performed locally, primarily in Chromium, and no additional tests were executed solely for this archival closure. The `qa:sw` suite remains outside CI and `check:predeploy`.
 
-Candidates considered but not selected:
+## Original analysis limitations
 
-- Regression coverage for the `?usluga=` service prefill and the second-stage phone-format validation: lower priority.
-- Theme-toggle persistence: lower priority; dark-theme rendering is partly addressed by 01.
-- Running `qa:sw` in CI: workflow scope.
+The initial review on 2026-11-10 was based on source inspection and existing project evidence. Dependencies were unavailable in the analysis worktree, so npm checks, browser suites, production builds, and accessibility scans were not rerun during that review. Subsequent implementation verification is recorded separately under each completed improvement.
 
-## Analysis limitations
+The original accessibility findings were based on CSS and JavaScript behavior and a CI failure recorded in commit `55f2fd9`. The effect of reveal timing and the project-modal overlay on axe-core results was not directly measured during the initial analysis; the resulting regression coverage is documented under IMP-QUALITY-01.
 
-- This was a static review. Dependencies are not installed in this worktree, so no npm script, browser suite, build, or axe scan was executed. Current gate results were not reproduced.
-- The reveal-timing effect on axe results comes from the CSS and JavaScript sources and the CI failure recorded in commit `55f2fd9`. How axe treats the modal overlay was not measured.
-- The 78-file count for IMP-QUALITY-05 came from a read-only `find` with equivalent exclusions in the primary checkout. The checks themselves were not run there.
-- Outside this report's scope: `js/modules/home.js` creates the `usluga` hidden field at runtime, and the field is absent from the static form markup (`index.html:1107-1241`). Whether Netlify Forms stores this field was not verified. It needs a deployment check, not an improvement proposal.
+The initial HTML discovery assessment counted 78 files through a read-only filesystem inspection using equivalent exclusions. The static checks were not executed in the primary checkout during that analysis. Subsequent verification under IMP-QUALITY-05 established a baseline of 143 HTML files, including 130 worktree copies, and confirmed that the updated checks inspect only the 13 maintained pages.
+
+The original review also considered regression coverage for the `?usluga=` service prefill and second-stage phone validation, theme-toggle persistence, and inclusion of `qa:sw` in CI. These were not selected for this improvement cycle and remain outside its completed scope.
+
+The review did not verify whether Netlify Forms stores the runtime-generated `usluga` hidden field created by `js/modules/home.js`, which is absent from the static form markup in `index.html`. This requires deployment-level verification and was not included as an improvement item.
