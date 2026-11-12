@@ -17,6 +17,12 @@
   --overlay-a: 0.62;
 }
 
+/* Light theme: the photograph carries off-white hero ink, so the scrim is
+   deepened just enough for the title to match the dark theme's contrast. */
+:root[data-theme="light"] .hero {
+  --overlay-a: 0.46;
+}
+
 .hero__media {
   position: absolute;
   inset: 0;
@@ -75,6 +81,10 @@
     0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
+:root[data-theme="light"] .hero__title {
+  color: var(--bg);
+}
+
 /* The promise line takes the title ink: amber is reserved for the hero's
    primary action. */
 .hero__accent {
@@ -108,6 +118,16 @@
   min-width: 220px;
   text-transform: uppercase;
   text-align: center;
+}
+
+/* Light theme: the secondary action becomes a light chip with dark ink so it
+   stands off the scrimmed photograph; the amber primary is untouched. */
+:root[data-theme="light"] .hero__cta .btn--ghost {
+  background: var(--bg);
+}
+
+:root[data-theme="light"] .hero__cta .btn--ghost:is(:hover, :focus-visible) {
+  background: color-mix(in oklab, var(--bg), var(--fg) 12%);
 }
 
 @media (min-aspect-ratio: 21/9) {

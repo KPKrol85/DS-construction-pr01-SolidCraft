@@ -18,7 +18,7 @@ const HERO_SIZES = [
   { width: 3200, height: 1800 },
 ];
 
-const OFERTA_SIZES = [
+const SERVICE_SIZES = [
   { width: 400, height: 300 },
   { width: 800, height: 600 },
   { width: 1200, height: 900 },
@@ -48,10 +48,10 @@ const CONFIG = [
     formats: ["avif", "webp", "jpg"],
   },
   {
-    name: "oferta",
-    inputDir: "oferta",
-    outputDir: "oferta",
-    sizes: OFERTA_SIZES,
+    name: "services",
+    inputDir: "services",
+    outputDir: "services",
+    sizes: SERVICE_SIZES,
     nameFor: (baseName, size) => `${baseName}-${size.width}x${size.height}`,
     formats: ["avif", "webp", "jpg"],
   },

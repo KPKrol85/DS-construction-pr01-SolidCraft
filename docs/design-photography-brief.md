@@ -3,7 +3,7 @@
 **Date:** 2026-11-12
 **Improvement:** IMP-DESIGN-03 — Define and apply a coherent workmanship photography system (`IMPROVEMENTS-DESIGN.md`)
 **Stage:** A — art direction, asset audit, and generation plan. No image, HTML, or pipeline change is made in this stage.
-**Status:** Draft — awaiting owner approval (section 7). IMP-DESIGN-03 remains Proposed.
+**Status:** Stage C in progress — the hero and six home service images are integrated (section 5.4); the 36 gallery images are outstanding. IMP-DESIGN-03 is not complete.
 **Direction:** Measured Craft (`IMPROVEMENTS-DESIGN.md`, sections 5–6).
 
 Stages: **A** (this document) → **B** generation and review of new AI-generated demonstrational images → **C** integration into `assets/img-src/`, regeneration, and HTML content updates.
@@ -12,15 +12,15 @@ Stages: **A** (this document) → **B** generation and review of new AI-generate
 
 ### 1.1 Scope and evidence
 
-- **Canonical sources in scope:** 43 JPG files — `assets/img-src/hero/` (1), `assets/img-src/oferta/` (6), `assets/img-src/gallery/` (36, six per service). `og/` and `screenshots/` sources are out of scope.
-- **Dimensions:** hero 3200×1800 (16:9); oferta 1600×1200 (4:3); gallery 2048×1536 (4:3). Each source already matches its largest pipeline output.
+- **Canonical sources in scope:** 43 JPG files — `assets/img-src/hero/` (1), `assets/img-src/services/` (6; `oferta/` at the Stage A audit), `assets/img-src/gallery/` (36, six per service). `og/` and `screenshots/` sources are out of scope.
+- **Dimensions:** hero 3200×1800 (16:9); home services 1600×1200 (4:3); gallery 2048×1536 (4:3). Each source already matches its largest pipeline output.
 - **Origin:** all 43 sources carry XMP `xmp:CreatorTool` "Canva (Renderer)", with `Attrib:Created` dates from 2025-08-20 to 2025-10-18. No provenance, licence, or rights record exists in the repository.
 - **Consumers (all verified in source):**
 
 | Role         | Sources                        | Consumer                                                                      | Text contract                                                                                              |
 | ------------ | ------------------------------ | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | Hero         | `hero/hero.jpg`                | `index.html` `#strona-glowna` `.hero__bg`, plus the AVIF `<link rel=preload>` | `alt=""`, `aria-hidden="true"` (decorative)                                                                |
-| Home service | `oferta/*.jpg` (6)             | `index.html` `#oferta`, one per `#oferta-*` card, inside the `#kontakt` link  | `alt` per image; the link name comes from its `aria-label` ("Zamów wycenę — …")                            |
+| Home service | `services/*.jpg` (6)           | `index.html` `#oferta`, one per `#oferta-*` card, inside the `#kontakt` link  | `alt` per image; the link name comes from its `aria-label` ("Zamów wycenę — …")                            |
 | Gallery      | `gallery/<prefix>-0N.jpg` (36) | `oferta/*.html` `#galeria`, six `.gallery-item` links per page                | `alt` per image (also copied to the lightbox image); `data-lb-caption` per item; `href` to the 2048 px JPG |
 
 - **Gallery text shared by all six pages:** heading "Galeria realizacji" and lead "Kilka ujęć z ostatnich prac — więcej na życzenie."
@@ -32,6 +32,8 @@ Stages: **A** (this document) → **B** generation and review of new AI-generate
 **S** subject outside the page's service scope · **I** unrelated infrastructure or industrial work · **P** product or still life on a plain background · **T** stock or staged people (posed faces, DIY couples) · **F** fantasy, showroom, or CGI interior · **N** non-Polish (North-American) building context · **D** duplicate or near-duplicate · **M** decorative corner mark · **A** `alt` or caption does not match the image · **C** crop or focal-point problem · **R** presented as recent work on a demonstrational site (applies to all 36 gallery images).
 
 ### 1.3 Hero and home service images
+
+This table records the former sources audited in Stage A; their replacements are listed in section 5.4.
 
 | Source                   | Consumer               | Depicts                                                                 | Alignment  | Issues                                                     |
 | ------------------------ | ---------------------- | ----------------------------------------------------------------------- | ---------- | ---------------------------------------------------------- |
@@ -166,7 +168,7 @@ Target ranges for any later change: H 45–55%, D 15–25%, F 15–25%, W at mos
 
 ## 3. Future shot list
 
-**Conventions.** IDs are stable shot labels; each maps to its current source basename, which stays unchanged unless the owner decides otherwise (D5). Fields are role, target, scope anchor, subject and stage, shot and focal point, light, materials and tools, mood and exclusions, `alt`, and caption. Mood is the shared mood (section 2.2) unless an override is noted. Exclusions are X-G plus any item-specific exclusions. Crop: hero 16:9 at ≥3200×1800; home service images 4:3 at ≥1600×1200; gallery images 4:3 at ≥2048×1536. Gallery items run in work-stage order, and item 01 is the lead.
+**Conventions.** IDs are stable shot labels; home service images map to the approved English basenames in `services/` (D5); gallery images keep their current basenames. Fields are role, target, scope anchor, subject and stage, shot and focal point, light, materials and tools, mood and exclusions, `alt`, and caption. Mood is the shared mood (section 2.2) unless an override is noted. Exclusions are X-G plus any item-specific exclusions. Crop: hero 16:9 at ≥3200×1800; home service images 4:3 at ≥1600×1200; gallery images 4:3 at ≥2048×1536. Gallery items run in work-stage order, and item 01 is the lead.
 
 ### 3.1 Hero
 
@@ -183,16 +185,16 @@ Target ranges for any later change: H 45–55%, D 15–25%, F 15–25%, W at mos
 
 ### 3.2 Home service images (`index.html` `#oferta`)
 
-#### HOME-LAZ — `oferta/bathroom.jpg` · `#oferta-lazienki`
+#### HOME-LAZ — `services/bathrooms.jpg` · `#oferta-lazienki`
 
 - **Subject / stage:** finished walk-in shower corner — light stone-effect large-format porcelain, recessed niche with 45° mitred edges, stainless linear drain, matte black thermostatic mixer, clean silicone joint · stage: finished. Shot type F.
 - **Shot / focal:** medium-close, slightly high angle · focal (50%, 55%) on the niche corner and drain line.
 - **Light:** L1 from the right with subtle L2 to show flat tile planes.
 - **Materials / tools:** porcelain, stainless drain, matte black mixer, silicone.
 - **Mood / exclusions:** quiet and exact · no freestanding tub, plants, candles, styled towels, or hotel scale.
-- **`alt`:** "Prysznic bez brodzika z odpływem liniowym i wnęką wykończoną płytkami wielkoformatowymi"
+- **`alt`:** "Prysznic bez brodzika z odpływem liniowym i podświetlaną wnęką wykończoną płytkami wielkoformatowymi"
 
-#### HOME-MAL — `oferta/painting.jpg` · `#oferta-malowanie`
+#### HOME-MAL — `services/painting.jpg` · `#oferta-malowanie`
 
 - **Subject / stage:** a hand peeling masking tape from a freshly painted warm-grey wall, revealing a straight colour edge against the white ceiling · stage: finishing (cut lines). Shot type H.
 - **Shot / focal:** close, strong diagonal tape line · focal (50%, 50%) at the peel point.
@@ -201,7 +203,7 @@ Target ranges for any later change: H 45–55%, D 15–25%, F 15–25%, W at mos
 - **Mood / exclusions:** shared mood · no paint tins with labels, no drips or splatter.
 - **`alt`:** "Zdejmowanie taśmy malarskiej odsłania równą linię odcięcia koloru przy suficie"
 
-#### HOME-KAF — `oferta/kafelki.jpg` · `#oferta-kafelkowanie`
+#### HOME-KAF — `services/tiling.jpg` · `#oferta-kafelkowanie`
 
 - **Subject / stage:** a gloved hand combing cement adhesive with a notched trowel on a wall, a large tile resting ready beside it · stage: tile setting. Shot type H.
 - **Shot / focal:** close, adhesive ridges as a strong pattern · focal (50%, 50%) on the trowel edge.
@@ -210,7 +212,7 @@ Target ranges for any later change: H 45–55%, D 15–25%, F 15–25%, W at mos
 - **Mood / exclusions:** shared mood · no decorative mosaics, no showroom floors.
 - **`alt`:** "Glazurnik rozprowadza klej pacą zębatą przed osadzeniem płytki ściennej"
 
-#### HOME-ELE — `oferta/electrition.jpg` · `#oferta-elektryka`
+#### HOME-ELE — `services/electrical.jpg` · `#oferta-elektryka`
 
 - **Subject / stage:** hands with an insulated screwdriver tightening a terminal of a modular breaker on a DIN rail in a residential flush-mounted distribution board; wiring neatly combed; blank labels · stage: board assembly (de-energised). Shot type H.
 - **Shot / focal:** close · focal (52%, 50%) on the screwdriver tip.
@@ -219,7 +221,7 @@ Target ranges for any later change: H 45–55%, D 15–25%, F 15–25%, W at mos
 - **Mood / exclusions:** shared mood · no industrial cabinets, no sparks, no legible labels.
 - **`alt`:** "Elektryk dokręca zacisk wyłącznika w uporządkowanej rozdzielnicy mieszkaniowej"
 
-#### HOME-HYD — `oferta/plumbing.jpg` · `#oferta-hydraulika`
+#### HOME-HYD — `services/plumbing.jpg` · `#oferta-hydraulika`
 
 - **Subject / stage:** hands closing an unbranded press tool on a multilayer pipe fitting in a wall chase, with insulated supply pipes running neatly alongside · stage: first-fix installation. Shot type H.
 - **Shot / focal:** close · focal (50%, 52%) on the press jaw.
@@ -228,7 +230,7 @@ Target ranges for any later change: H 45–55%, D 15–25%, F 15–25%, W at mos
 - **Mood / exclusions:** shared mood · no loose fittings on a table, no industrial pipework.
 - **`alt`:** "Hydraulik zaciska złączkę na rurze wielowarstwowej podczas prowadzenia instalacji w ścianie"
 
-#### HOME-REM — `oferta/remonty.jpg` · `#oferta-kompleksowe`
+#### HOME-REM — `services/renovations.jpg` · `#oferta-kompleksowe`
 
 - **Subject / stage:** a room at the final finishing stage — hands in the foreground fitting a mitred oak skirting board at a corner, with smooth painted walls, an oak floor, and window daylight behind; a protective board on part of the floor · stage: final finishing. Shot type H (medium-wide).
 - **Shot / focal:** medium-wide, low camera · focal (40%, 65%) on the mitre; the room fills the rest.
@@ -602,13 +604,13 @@ Service exclusions: CGI split images, North-American kitchens, repeated scenes, 
 
 ### 5.1 Files and content
 
-- **Sources:** replace the 43 files in `assets/img-src/{hero,oferta,gallery}/` with the approved masters, keeping the basenames unless D5 decides otherwise.
-- **Outputs:** regenerate `assets/img/{hero,oferta,gallery}/` as described in section 5.3, never by hand.
+- **Sources:** replace the 43 files in `assets/img-src/{hero,services,gallery}/` with the approved masters; home service images use the approved English basenames, and gallery basenames are kept unless D5 decides otherwise.
+- **Outputs:** regenerate `assets/img/{hero,services,gallery}/` as described in section 5.3, never by hand.
 - **`alt`:** update 6 on `index.html` and 36 across `oferta/*.html` from section 3; the hero keeps `alt=""`.
 - **Captions:** update all 36 `data-lb-caption` values from section 3.
 - **Gallery heading and lead:** update on all six service pages if D3 is approved.
 - **Provenance:** add the record described in section 6.
-- **Unchanged:** `width` and `height` attributes, `srcset` and `sizes` contracts, `OFERTA_SIZES` and `GALLERY_SIZES`, the hero preload, and the lightbox contract (`.gallery-item`, `data-lb`, `data-lb-caption`, 2048 px `href`). Aspect ratios do not change.
+- **Unchanged:** `width` and `height` attributes, `srcset` and `sizes` contracts, `SERVICE_SIZES` and `GALLERY_SIZES`, the hero preload, and the lightbox contract (`.gallery-item`, `data-lb`, `data-lb-caption`, 2048 px `href`). Aspect ratios do not change.
 
 ### 5.2 Verification for Stage C
 
@@ -621,15 +623,26 @@ Service exclusions: CGI split images, North-American kitchens, repeated scenes, 
 ### 5.3 Image-pipeline implications (verified in `scripts/images.js` and `sw.js`)
 
 - **Existing outputs are never overwritten.** `buildForFile` skips any output path that already exists, and pruning removes only names that the current sources would not produce. Replacing a source under the same basename therefore leaves the old AVIF, WebP, and JPG outputs in place. This is evidenced by the Canva XMP still present in 206 of 210 committed JPG outputs, while a scratch run of the same sharp calls writes neither XMP nor EXIF. Stage C must run `npm run images:clean` and then `npm run images:build`.
-- **`images:clean` empties all five owned directories,** including `og/` and `screenshots/`, and `images:build` regenerates them from their sources. Review that binary diff (expect 630 regenerated hero, oferta, and gallery files plus the `og/` and `screenshots/` variants).
-- **Renaming sources** lets pruning remove the old outputs automatically, but requires updating every `srcset`, `src`, `href`, and the preload in the HTML, plus the `bathr-0N` selectors in `scripts/functional/lightbox.mjs`. Keeping the basenames, including the existing spellings `electrition` and `tilling`, keeps the Stage C diff to content only.
+- **`images:clean` empties all five owned directories,** including `og/` and `screenshots/`, and `images:build` regenerates them from their sources. Review that binary diff (expect 630 regenerated hero, services, and gallery files plus the `og/` and `screenshots/` variants).
+- **Renaming sources** lets pruning remove the old outputs automatically, but requires updating every `srcset`, `src`, `href`, and the preload in the HTML, plus the `bathr-0N` selectors in `scripts/functional/lightbox.mjs`. The home service sources were renamed in `services/` with these updates; gallery basenames, including `tilling`, are unchanged, which keeps the gallery stage to content only.
 - **Crop and scale:** the pipeline resizes with `fit: cover, position: center` and enlarges smaller inputs, so masters must already have the target aspect and at least the largest size (section 2.6). Accepted inputs are `.jpg`, `.jpeg`, and `.png`.
-- **No staging inside source directories.** Every image file in `hero/`, `oferta/`, or `gallery/` becomes an output set. A portrait hero master placed in `hero/` would be cropped to 16:9 and published, so a portrait master waits until IMP-DESIGN-04 adds a variant to `scripts/images.js`.
+- **No staging inside source directories.** Every image file in `hero/`, `services/`, or `gallery/` becomes an output set. A portrait hero master placed in `hero/` would be cropped to 16:9 and published, so a portrait master waits until IMP-DESIGN-04 adds a variant to `scripts/images.js`.
 - **Service worker:** images are runtime-cached cache-first by URL. Same-URL replacements reach returning visitors only when `CACHE_VERSION` changes, which happens because Stage C also changes the precached HTML. An image-only swap without HTML changes would keep the old cached images for returning visitors.
 - **Documentation gap:** `docs/settings.md` and `README.md` say to run `images:build` after changing source images, without noting the skip-existing behaviour. Correcting that, or adding a regeneration option to the pipeline, is a separate owner decision (D8).
 
+### 5.4 Home stage — hero and six home service images
+
+- **Status:** integrated and verified on 2026-11-12; the 36 gallery images are outstanding.
+- **Sources:** `hero/hero.jpg` (HERO-01) and `services/{bathrooms,painting,tiling,electrical,plumbing,renovations}.jpg` (HOME-LAZ, HOME-MAL, HOME-KAF, HOME-ELE, HOME-HYD, HOME-REM) at 3200×1800 and 1600×1200, so no output is upscaled.
+- **Outputs:** the `scripts/images.js` group is renamed to `services` with unchanged sizes. `assets/img/hero/` (18 files) and `assets/img/services/` (72 files) were regenerated through `images:clean` → `images:build`, and the re-encoded `gallery/`, `og/`, and `screenshots/` outputs were restored to their committed files.
+- **Markup:** the six `index.html` cards reference `assets/img/services/` and use the section 3.2 `alt` text; the hero markup, its preload, and the `oferta/*.html` routes are unchanged.
+- **Accepted deviations from the shot specs:** HERO-01 has a busy upper-left field (window, lit niche, bucket) instead of a calm text field; HOME-LAZ includes a trailing plant; HOME-ELE shows legible breaker ratings; the crew wears orange glove cuffs.
+- **Light-theme correction:** the hero title takes off-white ink, the light-theme scrim is raised to `--overlay-a: 0.46`, and "Sprawdź ofertę" becomes a light chip with dark ink, so the title matches the dark theme's sampled contrast.
+- **Open:** the hero lead and focus ring remain weak over the photograph in places; P-01 remains open for IMP-DESIGN-04.
+
 ## 6. Provenance record (proposed format)
 
+- **Status:** `assets/img-src/PROVENANCE.md` records the seven home-stage images; gallery rows are added with the gallery stage.
 - **Location:** `assets/img-src/PROVENANCE.md`, next to the canonical sources, following the `assets/fonts/README.md` precedent. `build:dist` excludes `assets/img-src/`, so the record is not published, and `scripts/images.js` does not scan the `assets/img-src/` root.
 - **Header statement:** all hero, home service, and gallery images are AI-generated demonstrational illustrations; they depict no real project, client, address, person, or brand. The record also notes that they replace Canva exports dated 2025-08-20 to 2025-10-18.
 - **Table, one row per image:**
