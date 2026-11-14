@@ -2,7 +2,7 @@
 
 The hero, home service, and gallery images listed below are AI-generated demonstrational illustrations. They depict no real project, client, address, person, or brand. They replace Canva exports dated 2025-08-20 to 2025-10-18.
 
-The record follows the format in `docs/design-photography-brief.md`, section 6. The source files carry no XMP or EXIF metadata, so this file is the provenance of record. Fields marked "Not recorded" were not supplied with the approved images and remain to be completed by the owner (decision D4).
+The record follows the format in `docs/archive/design/design-photography-brief.md`, section 6. The source files carry no XMP or EXIF metadata, so this file is the provenance of record. Fields marked "Not recorded" were not supplied with the approved images and remain to be completed by the owner (decision D4).
 
 ## Home stage — hero and home service images
 
