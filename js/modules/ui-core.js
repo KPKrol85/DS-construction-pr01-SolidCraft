@@ -347,101 +347,68 @@ function initRipple() {
   }
 }
 
-/* Hero blur */
-
-function initHeroBlurSync() {
-  if (initHeroBlurSync._abort) initHeroBlurSync._abort.abort();
+/* Hero light (Craft Spotlight)
+   Lets the hero's resting pool of light follow a hover-capable fine pointer
+   across the photograph. Pointer events only record a position; one animation
+   frame writes a transform on the light and its CSS transition supplies the
+   damping, so nothing runs while the pointer is still. Touch, coarse pointers
+   and reduced motion keep the static light defined in CSS. */
+function initHeroLight() {
+  if (initHeroLight._abort) initHeroLight._abort.abort();
   const ac = new AbortController();
   const { signal } = ac;
-  initHeroBlurSync._abort = ac;
-  const img = document.querySelector(".hero__bg img");
-  const blur = document.querySelector(".hero__bg-blur");
-  if (!img || !blur) return;
-  const pic = img.closest("picture") || null;
+  initHeroLight._abort = ac;
+
+  const hero = document.querySelector(".hero");
+  const light = hero?.querySelector(".hero__light-spot");
+  const frame = light?.offsetParent;
+  if (!hero || !light || !frame) return;
+
+  const finePointer = window.matchMedia?.("(hover: hover) and (pointer: fine)");
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+  let enabled = false;
   let rafId = 0;
-  let debTimer = 0;
-  let lastBg = "";
-  const setBg = (url) => {
-    const want = `url("${url}")`;
-    if (want !== lastBg) {
-      blur.style.backgroundImage = want;
-      lastBg = want;
-      window.dispatchEvent(
-        new CustomEvent("hero:blurSync", { detail: { url } }),
-      );
-    }
+  let pointerX = 0;
+  let pointerY = 0;
+
+  const rest = () => {
+    cancelAnimationFrame(rafId);
+    rafId = 0;
+    light.style.removeProperty("transform");
+    delete light.dataset.active;
   };
 
-  const pickCurrentUrl = () => img.currentSrc || img.src || "";
+  /* Reads before writing within one frame: the frame's box and the light's
+     resting centre (its left/top offsets; translate is not part of them). */
+  const render = () => {
+    rafId = 0;
+    const box = frame.getBoundingClientRect();
+    const dx = pointerX - box.left - light.offsetLeft;
+    const dy = pointerY - box.top - light.offsetTop;
+    light.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0)`;
+  };
+
+  const onPointer = (event) => {
+    if (!enabled || event.pointerType === "touch") return;
+    pointerX = event.clientX;
+    pointerY = event.clientY;
+    if (!light.dataset.active) light.dataset.active = "";
+    if (!rafId) rafId = requestAnimationFrame(render);
+  };
+
   const sync = () => {
-    if (!img.isConnected || !blur.isConnected) return;
-    const url = pickCurrentUrl();
-    if (url) setBg(url);
+    enabled = !!finePointer?.matches && !reducedMotion?.matches;
+    if (!enabled) rest();
   };
 
-  const syncNextFrame = () => {
-    if (rafId) cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(sync);
-  };
-
-  const syncDebounced = (ms = 150) => {
-    clearTimeout(debTimer);
-    debTimer = setTimeout(sync, ms);
-  };
-
-  img.addEventListener("load", syncNextFrame, { signal });
-
-  window.addEventListener("resize", () => syncDebounced(120), {
-    passive: true,
-    signal,
-  });
-
-  window.addEventListener("orientationchange", syncNextFrame, { signal });
-  document.addEventListener(
-    "visibilitychange",
-    () => {
-      if (document.visibilityState === "visible") syncNextFrame();
-    },
-    { signal },
-  );
-
-  const mqlColor = window.matchMedia?.("(prefers-color-scheme: dark)");
-  if (mqlColor?.addEventListener) {
-    mqlColor.addEventListener("change", syncNextFrame, { signal });
-  } else if (mqlColor?.addListener && !mqlColor.addEventListener) {
-    mqlColor.addListener(syncNextFrame);
-    signal.addEventListener("abort", () =>
-      mqlColor.removeListener(syncNextFrame),
-    );
-  }
-
-  const moAttrs = ["src", "srcset", "sizes", "media"];
-  const mo = new MutationObserver(syncNextFrame);
-  mo.observe(img, { attributes: true, attributeFilter: moAttrs });
-  if (pic) {
-    pic.querySelectorAll("source").forEach((s) => {
-      mo.observe(s, { attributes: true, attributeFilter: moAttrs });
-    });
-    const moChild = new MutationObserver(syncNextFrame);
-    moChild.observe(pic, { childList: true, subtree: true });
-    signal.addEventListener("abort", () => moChild.disconnect());
-  }
-
-  window.addEventListener(
-    "pagehide",
-    () => {
-      try {
-        mo.disconnect();
-      } catch {}
-      cancelAnimationFrame(rafId);
-      clearTimeout(debTimer);
-    },
-    { once: true, signal },
-  );
-
-  if (document.readyState === "complete") sync();
-  else window.addEventListener("load", sync, { once: true, signal });
-  syncNextFrame();
+  hero.addEventListener("pointerenter", onPointer, { passive: true, signal });
+  hero.addEventListener("pointermove", onPointer, { passive: true, signal });
+  hero.addEventListener("pointerleave", rest, { passive: true, signal });
+  finePointer?.addEventListener?.("change", sync, { signal });
+  reducedMotion?.addEventListener?.("change", sync, { signal });
+  window.addEventListener("pagehide", rest, { signal });
+  signal.addEventListener("abort", rest);
+  sync();
 }
 
 export {
@@ -450,5 +417,5 @@ export {
   initScrollReveal,
   initThemeToggle,
   initRipple,
-  initHeroBlurSync,
+  initHeroLight,
 };

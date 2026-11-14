@@ -32,12 +32,24 @@
     <meta name="color-scheme" content="light dark" />
     <!-- Theme preload -->
     <script src="js/theme-init.js"></script>
+    <!-- Hero preloads mirror the two AVIF <source> elements of the hero
+         <picture>: same media, srcset and sizes. -->
     <link
       rel="preload"
       as="image"
       type="image/avif"
+      media="(max-aspect-ratio: 4/5)"
+      imagesrcset="assets/img/hero/hero-portrait-480-600.avif 480w, assets/img/hero/hero-portrait-720-900.avif 720w, assets/img/hero/hero-portrait-1080-1350.avif 1080w, assets/img/hero/hero-portrait-1440-1800.avif 1440w"
+      imagesizes="max(100vw, 61vh, 416px)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      media="not all and (max-aspect-ratio: 4/5)"
       imagesrcset="assets/img/hero/hero-800-450.avif 800w, assets/img/hero/hero-1200-675.avif 1200w, assets/img/hero/hero-1600-900.avif 1600w, assets/img/hero/hero-2400-1350.avif 2400w, assets/img/hero/hero-3200-1800.avif 3200w"
-      imagesizes="100vw"
+      imagesizes="(orientation: landscape) and (max-height: 540px) 100vw, (min-width: 1024px) max(100vw, 146vh), max(100vw, 125vh, 924px)"
       fetchpriority="high"
     />
     <!-- Open Graph -->
@@ -209,6 +221,46 @@
       <div class="hero__media" aria-hidden="true">
         <div class="hero__bg-blur" aria-hidden="true"></div>
         <picture class="hero__bg">
+          <!-- Portrait viewports: 4:5 crop of the same master. The sizes
+               values follow the cover-fitted width of the hero frame. -->
+          <source
+            media="(max-aspect-ratio: 4/5)"
+            type="image/avif"
+            srcset="
+              assets/img/hero/hero-portrait-480-600.avif    480w,
+              assets/img/hero/hero-portrait-720-900.avif    720w,
+              assets/img/hero/hero-portrait-1080-1350.avif 1080w,
+              assets/img/hero/hero-portrait-1440-1800.avif 1440w
+            "
+            sizes="max(100vw, 61vh, 416px)"
+            width="1440"
+            height="1800"
+          />
+          <source
+            media="(max-aspect-ratio: 4/5)"
+            type="image/webp"
+            srcset="
+              assets/img/hero/hero-portrait-480-600.webp    480w,
+              assets/img/hero/hero-portrait-720-900.webp    720w,
+              assets/img/hero/hero-portrait-1080-1350.webp 1080w,
+              assets/img/hero/hero-portrait-1440-1800.webp 1440w
+            "
+            sizes="max(100vw, 61vh, 416px)"
+            width="1440"
+            height="1800"
+          />
+          <source
+            media="(max-aspect-ratio: 4/5)"
+            srcset="
+              assets/img/hero/hero-portrait-480-600.jpg    480w,
+              assets/img/hero/hero-portrait-720-900.jpg    720w,
+              assets/img/hero/hero-portrait-1080-1350.jpg 1080w,
+              assets/img/hero/hero-portrait-1440-1800.jpg 1440w
+            "
+            sizes="max(100vw, 61vh, 416px)"
+            width="1440"
+            height="1800"
+          />
           <source
             type="image/avif"
             srcset="
@@ -218,7 +270,7 @@
               assets/img/hero/hero-2400-1350.avif 2400w,
               assets/img/hero/hero-3200-1800.avif 3200w
             "
-            sizes="100vw"
+            sizes="(orientation: landscape) and (max-height: 540px) 100vw, (min-width: 1024px) max(100vw, 146vh), max(100vw, 125vh, 924px)"
           />
           <source
             type="image/webp"
@@ -229,7 +281,7 @@
               assets/img/hero/hero-2400-1350.webp 2400w,
               assets/img/hero/hero-3200-1800.webp 3200w
             "
-            sizes="100vw"
+            sizes="(orientation: landscape) and (max-height: 540px) 100vw, (min-width: 1024px) max(100vw, 146vh), max(100vw, 125vh, 924px)"
           />
           <img
             src="assets/img/hero/hero-1600-900.jpg"
@@ -240,7 +292,7 @@
               assets/img/hero/hero-2400-1350.jpg 2400w,
               assets/img/hero/hero-3200-1800.jpg 3200w
             "
-            sizes="100vw"
+            sizes="(orientation: landscape) and (max-height: 540px) 100vw, (min-width: 1024px) max(100vw, 146vh), max(100vw, 125vh, 924px)"
             alt=""
             aria-hidden="true"
             width="1600"
@@ -251,6 +303,7 @@
             draggable="false"
           />
         </picture>
+        <span class="hero__light"><span class="hero__light-spot"></span></span>
       </div>
       <div class="container hero__container">
         <h1 id="hero-heading" class="hero__title">

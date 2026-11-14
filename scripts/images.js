@@ -18,6 +18,23 @@ const HERO_SIZES = [
   { width: 3200, height: 1800 },
 ];
 
+/* Art-directed crop of each hero source for portrait viewports, where the
+   16:9 frame would otherwise be cut to a narrow slice and upscaled. The crop
+   is the largest region with the given aspect ratio, centered horizontally on
+   `focusX` (a fraction of the source width) and clamped to the frame, so it is
+   derived from the master on every run instead of being a second source. */
+const HERO_PORTRAIT_CROP = {
+  suffix: "portrait",
+  aspect: { width: 4, height: 5 },
+  focusX: 0.62,
+  sizes: [
+    { width: 480, height: 600 },
+    { width: 720, height: 900 },
+    { width: 1080, height: 1350 },
+    { width: 1440, height: 1800 },
+  ],
+};
+
 const SERVICE_SIZES = [
   { width: 400, height: 300 },
   { width: 800, height: 600 },
@@ -44,6 +61,7 @@ const CONFIG = [
     inputDir: "hero",
     outputDir: "hero",
     sizes: HERO_SIZES,
+    crops: [HERO_PORTRAIT_CROP],
     nameFor: (baseName, size) => `${baseName}-${size.width}-${size.height}`,
     formats: ["avif", "webp", "jpg"],
   },
@@ -159,24 +177,68 @@ function expectedOutputsForFile(filePath, config) {
     outputDir,
     path.relative(inputDir, path.dirname(filePath)),
   );
-  const sizes = config.sizes || [null];
+  /* The full frame first, then each art-directed crop under its own suffix
+     (hero.jpg → hero-<w>-<h> and hero-portrait-<w>-<h>). */
+  const variants = [
+    { name: baseName, sizes: config.sizes || [null], crop: null },
+    ...(config.crops || []).map((crop) => ({
+      name: `${baseName}-${crop.suffix}`,
+      sizes: crop.sizes,
+      crop,
+    })),
+  ];
   const outputs = [];
 
-  for (const size of sizes) {
-    const outputBase = config.nameFor(baseName, size);
-    for (const format of config.formats) {
-      const actualFormat = format === "source" ? ext.slice(1) : format;
-      const outputPath = path.join(targetDir, `${outputBase}.${actualFormat}`);
-      if (!isInside(outputDir, outputPath)) {
-        throw new Error(
-          `refusing to write outside ${relPath(outputDir)}: ${outputPath}`,
+  for (const variant of variants) {
+    for (const size of variant.sizes) {
+      const outputBase = config.nameFor(variant.name, size);
+      for (const format of config.formats) {
+        const actualFormat = format === "source" ? ext.slice(1) : format;
+        const outputPath = path.join(
+          targetDir,
+          `${outputBase}.${actualFormat}`,
         );
+        if (!isInside(outputDir, outputPath)) {
+          throw new Error(
+            `refusing to write outside ${relPath(outputDir)}: ${outputPath}`,
+          );
+        }
+        outputs.push({
+          path: outputPath,
+          format: actualFormat,
+          size,
+          crop: variant.crop,
+        });
       }
-      outputs.push({ path: outputPath, format: actualFormat, size });
     }
   }
 
   return outputs;
+}
+
+/* Region of an auto-oriented source covered by `crop`: the largest box with
+   the crop's aspect ratio, centered on its horizontal focus point and clamped
+   to the frame, vertically centered when the width is the limit. */
+async function cropRegion(buffer, crop) {
+  const meta = await sharp(buffer).metadata();
+  const swapped = (meta.orientation || 1) >= 5;
+  const sourceWidth = swapped ? meta.height : meta.width;
+  const sourceHeight = swapped ? meta.width : meta.height;
+  const ratio = crop.aspect.width / crop.aspect.height;
+
+  let width = Math.round(sourceHeight * ratio);
+  let height = sourceHeight;
+  if (width > sourceWidth) {
+    width = sourceWidth;
+    height = Math.round(sourceWidth / ratio);
+  }
+
+  const left = Math.min(
+    sourceWidth - width,
+    Math.max(0, Math.round(sourceWidth * crop.focusX - width / 2)),
+  );
+  const top = Math.round((sourceHeight - height) / 2);
+  return { left, top, width, height };
 }
 
 async function buildForFile(filePath, outputs, { force = false } = {}) {
@@ -194,11 +256,18 @@ async function buildForFile(filePath, outputs, { force = false } = {}) {
   }
 
   const buffer = await fs.readFile(filePath);
+  const regions = new Map();
 
   for (const output of pending) {
     await ensureDir(path.dirname(output.path));
 
     let pipeline = sharp(buffer).rotate();
+    if (output.crop) {
+      if (!regions.has(output.crop)) {
+        regions.set(output.crop, await cropRegion(buffer, output.crop));
+      }
+      pipeline = pipeline.extract(regions.get(output.crop));
+    }
     if (output.size) {
       pipeline = pipeline.resize(output.size.width, output.size.height, {
         fit: "cover",

@@ -6,7 +6,7 @@ import {
   initScrollReveal,
   initThemeToggle,
   initRipple,
-  initHeroBlurSync,
+  initHeroLight,
 } from "./modules/ui-core.js";
 import { createIcon, initIcons } from "./modules/icons.js";
 import { initContactForm } from "./modules/forms.js";
@@ -29,7 +29,7 @@ window.SC.ui = {
   initScrollReveal,
   initThemeToggle,
   initRipple,
-  initHeroBlurSync,
+  initHeroLight,
 };
 window.SC.icons = { init: initIcons, create: createIcon };
 window.SC.forms = { init: initContactForm };
@@ -57,7 +57,7 @@ const runInit = () => {
   if (has("[data-reveal]")) initScrollReveal?.();
   if (has(".theme-toggle")) initThemeToggle?.();
   if (has(".nav-menu li > a.btn.btn--sm")) initRipple?.();
-  if (has(".hero__bg img") && has(".hero__bg-blur")) initHeroBlurSync?.();
+  if (has(".hero__light-spot")) initHeroLight?.();
 
   if (has("#oferta .card picture img, .gallery .gallery-item picture img"))
     initOfertaLightbox?.();
