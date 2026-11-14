@@ -80,6 +80,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Preserved Service Worker `install` and `activate` event lifetimes throughout asynchronous lifecycle operations.
 - Eliminated invalid CSS module requests during development and accessibility QA.
 - Removed fictitious `GeneralContractor` structured data and identified sample business content as demonstrational.
+- Synchronized the structured-data service list on service, legal, and 404 pages with the six-service home index.
 - Corrected privacy and cookie disclosures to reflect actual form fields, storage keys, and consent-gated maps.
 
 ### Build and Tooling
