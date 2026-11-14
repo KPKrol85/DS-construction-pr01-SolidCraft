@@ -9,26 +9,16 @@ function initOfertaLightbox() {
   const { signal } = ac;
   initOfertaLightbox._abort = ac;
 
-  const offerImages = Array.from(
-    document.querySelectorAll("#oferta .card picture img"),
-  );
-  const galleryTriggers = Array.from(
+  /* Service-page galleries only. Home service-index images are plain links to
+     the quote form (#kontakt) and are deliberately not lightbox triggers. */
+  const thumbs = Array.from(
     document.querySelectorAll(".gallery a.gallery-item"),
-  );
-  const thumbs = [
-    ...offerImages.map((image) => ({
-      trigger: image,
-      image,
-      isGallery: false,
-    })),
-    ...galleryTriggers
-      .map((trigger) => ({
-        trigger,
-        image: trigger.querySelector("picture img"),
-        isGallery: true,
-      }))
-      .filter(({ image }) => image),
-  ];
+  )
+    .map((trigger) => ({
+      trigger,
+      image: trigger.querySelector("picture img"),
+    }))
+    .filter(({ image }) => image);
 
   if (!thumbs.length) return;
 
@@ -213,36 +203,21 @@ function initOfertaLightbox() {
     applyImage();
   };
 
-  thumbs.forEach(({ trigger, image, isGallery }, i) => {
+  /* Enter activates the anchor natively and reaches the click handler; Space
+     does not, so it is mapped explicitly. */
+  thumbs.forEach(({ trigger }, i) => {
     const openFromTrigger = (e) => {
       e.preventDefault();
       index = i;
       setOpen(true, trigger);
     };
 
-    if (!isGallery) {
-      trigger.setAttribute("tabindex", "0");
-      trigger.setAttribute("role", "button");
-
-      if ((image.getAttribute("alt") || "").trim()) {
-        trigger.removeAttribute("aria-label");
-      } else {
-        trigger.setAttribute("aria-label", "Powiększ zdjęcie");
-      }
-    }
-
     trigger.addEventListener("click", openFromTrigger, { signal });
 
     trigger.addEventListener(
       "keydown",
       (e) => {
-        if (
-          (!isGallery && e.key === "Enter") ||
-          e.key === " " ||
-          e.code === "Space"
-        ) {
-          openFromTrigger(e);
-        }
+        if (e.key === " " || e.code === "Space") openFromTrigger(e);
       },
       { signal },
     );

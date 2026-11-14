@@ -2,10 +2,10 @@
 
 /* Functional browser gate.
 
-   Drives the project's six important interactive paths — the responsive
+   Drives the project's important interactive paths — the responsive
    navigation drawer, the Oferta submenu, the service-gallery lightbox, the
-   contact form, the first-visit project modal and the consent-gated footer
-   map — in headless Chromium,
+   home service-index links, the contact form, the first-visit project modal
+   and the consent-gated footer map — in headless Chromium,
    against the maintained sources served locally through the shared partial
    renderer.
 
@@ -25,6 +25,7 @@ import { fileURLToPath } from "node:url";
 import { startStaticServer } from "./utils/static-server.mjs";
 import { navigationScenarios } from "./functional/navigation.mjs";
 import { lightboxScenarios } from "./functional/lightbox.mjs";
+import { serviceIndexScenarios } from "./functional/service-index.mjs";
 import { contactFormScenarios } from "./functional/contact-form.mjs";
 import { projectBannerScenarios } from "./functional/project-banner.mjs";
 import { mapConsentScenarios } from "./functional/map-consent.mjs";
@@ -37,6 +38,7 @@ const projectRoot = path.resolve(
 const allScenarios = [
   ...navigationScenarios,
   ...lightboxScenarios,
+  ...serviceIndexScenarios,
   ...contactFormScenarios,
   ...projectBannerScenarios,
   ...mapConsentScenarios,

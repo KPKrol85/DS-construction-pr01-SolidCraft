@@ -53,6 +53,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Replaced the home hero and service-card photography with approved workmanship images, moved service image variants to `assets/img/services/`, updated their descriptions, and gave the light-theme hero an off-white title and light secondary action over a deeper scrim.
 - Replaced the 36 service-gallery photographs with approved workmanship illustrations in per-service `assets/img/gallery/` directories, updated their descriptions and demonstrational gallery wording, and added scoped forced regeneration and output-collision checks to the image pipeline.
 - Refined the home hero with improved text and focus contrast, a motion-aware Craft Spotlight, and pipeline-generated portrait imagery with optimized preloads.
+- Recomposed the home service range as an editorial index led by turnkey renovations, with numbered specialty rows, structured data in display order, and service images that link to the quote form instead of opening the lightbox.
 
 ### Fixed
 
@@ -115,6 +116,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Added functional regression scenarios for the first-visit project modal covering focus trapping, Escape and accept-button dismissal, persisted acceptance, and unavailable `localStorage`.
 - Added a functional regression scenario for the consent-gated map embed covering pre-consent request absence, iframe insertion, persisted consent, and unavailable `localStorage`, with Google requests aborted locally.
 - Scoped `check:links` and `check:assets` to the shared source-HTML discovery used by `build:dist`, excluding agent worktree copies from local validation.
+- Added functional regression scenarios for the home service index covering entry order, quote and service-page link targets, keyboard order, and the absence of home lightbox triggers.
 
 ### Documentation
 

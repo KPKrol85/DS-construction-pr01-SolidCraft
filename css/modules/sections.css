@@ -347,15 +347,6 @@
   color: var(--c-muted);
 }
 
-.services-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-7) var(--space-5);
-  padding: 0;
-  margin-top: var(--space-6);
-  overflow: visible;
-}
-
 /* Service entries sit on open ground; only the image link is framed. */
 .card {
   position: relative;
@@ -434,6 +425,89 @@
   font-weight: 500;
 }
 
+/* Service index (#oferta): the turnkey entry leads as one large feature and
+   the five specialties follow as numbered rows on hairline rules. DOM order is
+   the reading order at every width; only the arrangement changes. */
+.svc-index {
+  --svc-thumb: 6.75rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7);
+  margin-top: var(--space-6);
+}
+
+.svc-index__feature .card__title {
+  margin: var(--space-3) 0 var(--space-1);
+  font-size: var(--fs-7);
+}
+
+.svc-index__feature .card__desc {
+  max-width: 48ch;
+  font-size: var(--fs-lead);
+  font-weight: 400;
+}
+
+.svc-index__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--c-border);
+}
+
+.svc-index__row {
+  border-bottom: 1px solid var(--c-border);
+}
+
+/* Row: thumbnail, then the number run in on the title's baseline, then the
+   description across the full text column. */
+.svc-index__item {
+  display: grid;
+  grid-template-columns:
+    calc(var(--svc-thumb) + var(--space-2))
+    auto
+    minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "media num title"
+    "media desc desc";
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  padding-block: var(--space-4);
+}
+
+.svc-index__item > a {
+  grid-area: media;
+  align-self: start;
+  margin-inline-end: var(--space-2);
+}
+
+.svc-index__item picture,
+.svc-index__item a:focus-visible picture {
+  border-radius: var(--radius-2);
+}
+
+.svc-index__num {
+  grid-area: num;
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.svc-index__item .card__title {
+  grid-area: title;
+  margin: 0;
+}
+
+/* Keeps the heading's first baseline on its first line, so the number stays
+   level with a title that wraps. */
+.svc-index__item .card__title a {
+  vertical-align: top;
+}
+
+.svc-index__item .card__desc {
+  grid-area: desc;
+  align-self: start;
+}
+
 .block-cta {
   position: relative;
   z-index: 0;
@@ -470,14 +544,56 @@
 }
 
 @media (min-width: 640px) {
-  .services-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .svc-index {
+    --svc-thumb: 8rem;
   }
 }
 
+/* Tablet: the feature splits into image and copy; the rows stay one column so
+   no grid row is ever left incomplete. */
+@media (min-width: 640px) and (max-width: 991.98px) {
+  .svc-index__feature {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    grid-template-rows: 1fr auto auto 1fr;
+    grid-template-areas:
+      "media ."
+      "media title"
+      "media desc"
+      "media .";
+    column-gap: var(--space-6);
+    row-gap: 0;
+  }
+
+  .svc-index__feature > a {
+    grid-area: media;
+  }
+
+  .svc-index__feature .card__title {
+    grid-area: title;
+    margin-top: 0;
+  }
+
+  .svc-index__feature .card__desc {
+    grid-area: desc;
+  }
+}
+
+/* Desktop: the feature leads on the left, the specialties run down the right. */
 @media (min-width: 992px) {
-  .services-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .svc-index {
+    --svc-thumb: 7rem;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: var(--space-9);
+    align-items: start;
+  }
+}
+
+/* Narrow desktops: smaller thumbnails keep the row copy to two lines, so the
+   specialty column stays close to the feature's height. */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .svc-index {
+    --svc-thumb: 6rem;
   }
 }
 

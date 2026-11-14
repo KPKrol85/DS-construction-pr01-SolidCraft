@@ -137,26 +137,38 @@
                 {
                   "@type": "ListItem",
                   "position": 1,
-                  "name": "Wykończenia i remonty łazienek",
-                  "url": "https://construction-pr01-solidcraft.netlify.app/#oferta-lazienki"
+                  "name": "Remonty kompleksowe",
+                  "url": "https://construction-pr01-solidcraft.netlify.app/#oferta-kompleksowe"
                 },
                 {
                   "@type": "ListItem",
                   "position": 2,
+                  "name": "Łazienki",
+                  "url": "https://construction-pr01-solidcraft.netlify.app/#oferta-lazienki"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
                   "name": "Malowanie i gładzie",
                   "url": "https://construction-pr01-solidcraft.netlify.app/#oferta-malowanie"
                 },
                 {
                   "@type": "ListItem",
-                  "position": 3,
+                  "position": 4,
                   "name": "Kafelkowanie",
                   "url": "https://construction-pr01-solidcraft.netlify.app/#oferta-kafelkowanie"
                 },
                 {
                   "@type": "ListItem",
-                  "position": 4,
-                  "name": "Elektryka i hydraulika",
+                  "position": 5,
+                  "name": "Elektryka",
                   "url": "https://construction-pr01-solidcraft.netlify.app/#oferta-elektryka"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 6,
+                  "name": "Hydraulika",
+                  "url": "https://construction-pr01-solidcraft.netlify.app/#oferta-hydraulika"
                 }
               ]
             }
@@ -367,375 +379,388 @@
               gwarancją.
             </p>
           </header>
-          <div class="services-grid" id="oferta-grid">
-            <div class="services-list" id="oferta-list">
-              <!-- Item 01-->
-              <article
-                id="oferta-lazienki"
-                class="card hover-card"
-                aria-labelledby="h-lazienki"
-                aria-describedby="d-lazienki"
-                data-reveal="up"
-                data-reveal-delay="80"
+          <div class="svc-index" id="oferta-grid">
+            <article
+              id="oferta-kompleksowe"
+              class="card hover-card svc-index__feature"
+              aria-labelledby="h-kompleksowe"
+              aria-describedby="d-kompleksowe"
+              data-reveal="up"
+              data-reveal-delay="80"
+            >
+              <a
+                href="#kontakt"
+                aria-label="Zamów wycenę — Remonty kompleksowe"
               >
-                <a href="#kontakt" aria-label="Zamów wycenę — Łazienki">
-                  <picture>
-                    <source
-                      type="image/avif"
-                      srcset="
-                        assets/img/services/bathrooms-400x300.avif    400w,
-                        assets/img/services/bathrooms-800x600.avif    800w,
-                        assets/img/services/bathrooms-1200x900.avif  1200w,
-                        assets/img/services/bathrooms-1600x1200.avif 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <source
-                      type="image/webp"
-                      srcset="
-                        assets/img/services/bathrooms-400x300.webp    400w,
-                        assets/img/services/bathrooms-800x600.webp    800w,
-                        assets/img/services/bathrooms-1200x900.webp  1200w,
-                        assets/img/services/bathrooms-1600x1200.webp 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <img
-                      src="assets/img/services/bathrooms-800x600.jpg"
-                      srcset="
-                        assets/img/services/bathrooms-400x300.jpg    400w,
-                        assets/img/services/bathrooms-800x600.jpg    800w,
-                        assets/img/services/bathrooms-1200x900.jpg  1200w,
-                        assets/img/services/bathrooms-1600x1200.jpg 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                      alt="Prysznic bez brodzika z odpływem liniowym i podświetlaną wnęką wykończoną płytkami wielkoformatowymi"
-                      width="400"
-                      height="300"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </picture>
-                </a>
-                <h3 class="card__title" id="h-lazienki">
-                  <a href="oferta/lazienki.html">Łazienki</a>
-                </h3>
-                <p class="card__desc" id="d-lazienki">
-                  Płytki wielkoformatowe, armatura, hydroizolacje, zabudowy i
-                  oświetlenie.
-                </p>
-              </article>
-
-              <article
-                id="oferta-malowanie"
-                class="card hover-card"
-                aria-labelledby="h-malowanie"
-                aria-describedby="d-malowanie"
-                data-reveal="up"
-                data-reveal-delay="160"
-              >
-                <a
-                  href="#kontakt"
-                  aria-label="Zamów wycenę — Malowanie i gładzie"
+                <picture>
+                  <source
+                    type="image/avif"
+                    srcset="
+                      assets/img/services/renovations-400x300.avif    400w,
+                      assets/img/services/renovations-800x600.avif    800w,
+                      assets/img/services/renovations-1200x900.avif  1200w,
+                      assets/img/services/renovations-1600x1200.avif 1600w
+                    "
+                    sizes="(min-width: 1140px) 620px, (min-width: 992px) calc(58vw - 52px), (min-width: 640px) 51vw, calc(100vw - 1.5rem)"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="
+                      assets/img/services/renovations-400x300.webp    400w,
+                      assets/img/services/renovations-800x600.webp    800w,
+                      assets/img/services/renovations-1200x900.webp  1200w,
+                      assets/img/services/renovations-1600x1200.webp 1600w
+                    "
+                    sizes="(min-width: 1140px) 620px, (min-width: 992px) calc(58vw - 52px), (min-width: 640px) 51vw, calc(100vw - 1.5rem)"
+                  />
+                  <img
+                    src="assets/img/services/renovations-800x600.jpg"
+                    srcset="
+                      assets/img/services/renovations-400x300.jpg    400w,
+                      assets/img/services/renovations-800x600.jpg    800w,
+                      assets/img/services/renovations-1200x900.jpg  1200w,
+                      assets/img/services/renovations-1600x1200.jpg 1600w
+                    "
+                    sizes="(min-width: 1140px) 620px, (min-width: 992px) calc(58vw - 52px), (min-width: 640px) 51vw, calc(100vw - 1.5rem)"
+                    alt="Montaż listwy przypodłogowej na etapie końcowych prac w wyremontowanym pokoju"
+                    width="400"
+                    height="300"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
+              </a>
+              <h3 class="card__title" id="h-kompleksowe">
+                <a href="oferta/remonty.html">Remonty kompleksowe</a>
+              </h3>
+              <p class="card__desc" id="d-kompleksowe">
+                Pełna koordynacja prac: projekt, demontaż, instalacje,
+                wykończenia i sprzątanie.
+              </p>
+            </article>
+            <ol class="svc-index__list" id="oferta-list" role="list">
+              <li class="svc-index__row">
+                <article
+                  id="oferta-lazienki"
+                  class="card hover-card svc-index__item"
+                  aria-labelledby="h-lazienki"
+                  aria-describedby="d-lazienki"
+                  data-reveal="up"
+                  data-reveal-delay="160"
                 >
-                  <picture>
-                    <source
-                      type="image/avif"
-                      srcset="
-                        assets/img/services/painting-400x300.avif    400w,
-                        assets/img/services/painting-800x600.avif    800w,
-                        assets/img/services/painting-1200x900.avif  1200w,
-                        assets/img/services/painting-1600x1200.avif 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <source
-                      type="image/webp"
-                      srcset="
-                        assets/img/services/painting-400x300.webp    400w,
-                        assets/img/services/painting-800x600.webp    800w,
-                        assets/img/services/painting-1200x900.webp  1200w,
-                        assets/img/services/painting-1600x1200.webp 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <img
-                      src="assets/img/services/painting-800x600.jpg"
-                      srcset="
-                        assets/img/services/painting-400x300.jpg    400w,
-                        assets/img/services/painting-800x600.jpg    800w,
-                        assets/img/services/painting-1200x900.jpg  1200w,
-                        assets/img/services/painting-1600x1200.jpg 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                      alt="Zdejmowanie taśmy malarskiej odsłania równą linię odcięcia koloru przy suficie"
-                      width="400"
-                      height="300"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </picture>
-                </a>
-                <h3 class="card__title" id="h-malowanie">
-                  <a href="oferta/malowanie.html">Malowanie &amp; gładzie</a>
-                </h3>
-                <p class="card__desc" id="d-malowanie">
-                  Gładkie ściany, farby premium, precyzyjne odcięcia i szybkie
-                  terminy.
-                </p>
-              </article>
-              <article
-                id="oferta-kafelkowanie"
-                class="card hover-card"
-                aria-labelledby="h-kafelkowanie"
-                aria-describedby="d-kafelkowanie"
-                data-reveal="up"
-                data-reveal-delay="240"
-              >
-                <a href="#kontakt" aria-label="Zamów wycenę — Kafelkowanie">
-                  <picture>
-                    <source
-                      type="image/avif"
-                      srcset="
-                        assets/img/services/tiling-400x300.avif    400w,
-                        assets/img/services/tiling-800x600.avif    800w,
-                        assets/img/services/tiling-1200x900.avif  1200w,
-                        assets/img/services/tiling-1600x1200.avif 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <source
-                      type="image/webp"
-                      srcset="
-                        assets/img/services/tiling-400x300.webp    400w,
-                        assets/img/services/tiling-800x600.webp    800w,
-                        assets/img/services/tiling-1200x900.webp  1200w,
-                        assets/img/services/tiling-1600x1200.webp 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <source
-                      type="image/jpeg"
-                      srcset="
-                        assets/img/services/tiling-400x300.jpg    400w,
-                        assets/img/services/tiling-800x600.jpg    800w,
-                        assets/img/services/tiling-1200x900.jpg  1200w,
-                        assets/img/services/tiling-1600x1200.jpg 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <img
-                      src="assets/img/services/tiling-800x600.jpg"
-                      srcset="
-                        assets/img/services/tiling-400x300.jpg    400w,
-                        assets/img/services/tiling-800x600.jpg    800w,
-                        assets/img/services/tiling-1200x900.jpg  1200w,
-                        assets/img/services/tiling-1600x1200.jpg 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                      alt="Glazurnik rozprowadza klej pacą zębatą przed osadzeniem płytki ściennej"
-                      width="400"
-                      height="300"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </picture>
-                </a>
-                <h3 class="card__title" id="h-kafelkowanie">
-                  <a href="oferta/kafelkowanie.html">Kafelkowanie</a>
-                </h3>
-                <p class="card__desc" id="d-kafelkowanie">
-                  Tarasy, kuchnie, łazienki — równe fugi, poziomice laserowe i
-                  detale.
-                </p>
-              </article>
-              <article
-                id="oferta-elektryka"
-                class="card hover-card"
-                aria-labelledby="h-elektryka"
-                aria-describedby="d-elektryka"
-                data-reveal="up"
-                data-reveal-delay="320"
-              >
-                <a href="#kontakt" aria-label="Zamów wycenę — Elektryka">
-                  <picture>
-                    <source
-                      type="image/avif"
-                      srcset="
-                        assets/img/services/electrical-400x300.avif    400w,
-                        assets/img/services/electrical-800x600.avif    800w,
-                        assets/img/services/electrical-1200x900.avif  1200w,
-                        assets/img/services/electrical-1600x1200.avif 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <source
-                      type="image/webp"
-                      srcset="
-                        assets/img/services/electrical-400x300.webp    400w,
-                        assets/img/services/electrical-800x600.webp    800w,
-                        assets/img/services/electrical-1200x900.webp  1200w,
-                        assets/img/services/electrical-1600x1200.webp 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <source
-                      type="image/jpeg"
-                      srcset="
-                        assets/img/services/electrical-400x300.jpg    400w,
-                        assets/img/services/electrical-800x600.jpg    800w,
-                        assets/img/services/electrical-1200x900.jpg  1200w,
-                        assets/img/services/electrical-1600x1200.jpg 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <img
-                      src="assets/img/services/electrical-800x600.jpg"
-                      srcset="
-                        assets/img/services/electrical-400x300.jpg    400w,
-                        assets/img/services/electrical-800x600.jpg    800w,
-                        assets/img/services/electrical-1200x900.jpg  1200w,
-                        assets/img/services/electrical-1600x1200.jpg 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                      alt="Elektryk dokręca zacisk wyłącznika w uporządkowanej rozdzielnicy mieszkaniowej"
-                      width="400"
-                      height="300"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </picture>
-                </a>
-                <h3 class="card__title" id="h-elektryka">
-                  <a href="oferta/elektryka.html">Elektryka</a>
-                </h3>
-                <p class="card__desc" id="d-elektryka">
-                  Przeróbki instalacji, białe montaże i próby szczelności.
-                </p>
-              </article>
-              <article
-                id="oferta-hydraulika"
-                class="card hover-card"
-                aria-labelledby="h-hydraulika"
-                aria-describedby="d-hydraulika"
-                data-reveal="up"
-                data-reveal-delay="400"
-              >
-                <a href="#kontakt" aria-label="Zamów wycenę — Hydraulika">
-                  <picture>
-                    <source
-                      type="image/avif"
-                      srcset="
-                        assets/img/services/plumbing-400x300.avif    400w,
-                        assets/img/services/plumbing-800x600.avif    800w,
-                        assets/img/services/plumbing-1200x900.avif  1200w,
-                        assets/img/services/plumbing-1600x1200.avif 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <source
-                      type="image/webp"
-                      srcset="
-                        assets/img/services/plumbing-400x300.webp    400w,
-                        assets/img/services/plumbing-800x600.webp    800w,
-                        assets/img/services/plumbing-1200x900.webp  1200w,
-                        assets/img/services/plumbing-1600x1200.webp 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <source
-                      type="image/jpeg"
-                      srcset="
-                        assets/img/services/plumbing-400x300.jpg    400w,
-                        assets/img/services/plumbing-800x600.jpg    800w,
-                        assets/img/services/plumbing-1200x900.jpg  1200w,
-                        assets/img/services/plumbing-1600x1200.jpg 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <img
-                      src="assets/img/services/plumbing-800x600.jpg"
-                      srcset="
-                        assets/img/services/plumbing-400x300.jpg    400w,
-                        assets/img/services/plumbing-800x600.jpg    800w,
-                        assets/img/services/plumbing-1200x900.jpg  1200w,
-                        assets/img/services/plumbing-1600x1200.jpg 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                      alt="Hydraulik zaciska złączkę na rurze wielowarstwowej podczas prowadzenia instalacji w ścianie"
-                      width="400"
-                      height="300"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </picture>
-                </a>
-                <h3 class="card__title" id="h-hydraulika">
-                  <a href="oferta/hydraulika.html">Hydraulika</a>
-                </h3>
-                <p class="card__desc" id="d-hydraulika">
-                  Wszystkie prace hydrauliczne.
-                </p>
-              </article>
-              <article
-                id="oferta-kompleksowe"
-                class="card hover-card"
-                aria-labelledby="h-kompleksowe"
-                aria-describedby="d-kompleksowe"
-                data-reveal="up"
-                data-reveal-delay="480"
-              >
-                <a
-                  href="#kontakt"
-                  aria-label="Zamów wycenę — Remonty kompleksowe"
+                  <a href="#kontakt" aria-label="Zamów wycenę — Łazienki">
+                    <picture>
+                      <source
+                        type="image/avif"
+                        srcset="
+                          assets/img/services/bathrooms-400x300.avif    400w,
+                          assets/img/services/bathrooms-800x600.avif    800w,
+                          assets/img/services/bathrooms-1200x900.avif  1200w,
+                          assets/img/services/bathrooms-1600x1200.avif 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <source
+                        type="image/webp"
+                        srcset="
+                          assets/img/services/bathrooms-400x300.webp    400w,
+                          assets/img/services/bathrooms-800x600.webp    800w,
+                          assets/img/services/bathrooms-1200x900.webp  1200w,
+                          assets/img/services/bathrooms-1600x1200.webp 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <img
+                        src="assets/img/services/bathrooms-800x600.jpg"
+                        srcset="
+                          assets/img/services/bathrooms-400x300.jpg    400w,
+                          assets/img/services/bathrooms-800x600.jpg    800w,
+                          assets/img/services/bathrooms-1200x900.jpg  1200w,
+                          assets/img/services/bathrooms-1600x1200.jpg 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                        alt="Prysznic bez brodzika z odpływem liniowym i podświetlaną wnęką wykończoną płytkami wielkoformatowymi"
+                        width="400"
+                        height="300"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </picture>
+                  </a>
+                  <span class="svc-index__num" aria-hidden="true">01</span>
+                  <h3 class="card__title" id="h-lazienki">
+                    <a href="oferta/lazienki.html">Łazienki</a>
+                  </h3>
+                  <p class="card__desc" id="d-lazienki">
+                    Płytki wielkoformatowe, armatura, hydroizolacje, zabudowy i
+                    oświetlenie.
+                  </p>
+                </article>
+              </li>
+              <li class="svc-index__row">
+                <article
+                  id="oferta-malowanie"
+                  class="card hover-card svc-index__item"
+                  aria-labelledby="h-malowanie"
+                  aria-describedby="d-malowanie"
+                  data-reveal="up"
+                  data-reveal-delay="240"
                 >
-                  <picture>
-                    <source
-                      type="image/avif"
-                      srcset="
-                        assets/img/services/renovations-400x300.avif    400w,
-                        assets/img/services/renovations-800x600.avif    800w,
-                        assets/img/services/renovations-1200x900.avif  1200w,
-                        assets/img/services/renovations-1600x1200.avif 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <source
-                      type="image/webp"
-                      srcset="
-                        assets/img/services/renovations-400x300.webp    400w,
-                        assets/img/services/renovations-800x600.webp    800w,
-                        assets/img/services/renovations-1200x900.webp  1200w,
-                        assets/img/services/renovations-1600x1200.webp 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    />
-                    <img
-                      src="assets/img/services/renovations-800x600.jpg"
-                      srcset="
-                        assets/img/services/renovations-400x300.jpg    400w,
-                        assets/img/services/renovations-800x600.jpg    800w,
-                        assets/img/services/renovations-1200x900.jpg  1200w,
-                        assets/img/services/renovations-1600x1200.jpg 1600w
-                      "
-                      sizes="(min-width: 992px) 25vw, (min-width: 640px) 50vw, 100vw"
-                      alt="Montaż listwy przypodłogowej na etapie końcowych prac w wyremontowanym pokoju"
-                      width="400"
-                      height="300"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </picture>
-                </a>
-                <h3 class="card__title" id="h-kompleksowe">
-                  <a href="oferta/remonty.html">Remonty kompleksowe</a>
-                </h3>
-                <p class="card__desc" id="d-kompleksowe">
-                  Pełna koordynacja prac: projekt, demontaż, instalacje,
-                  wykończenia i sprzątanie.
-                </p>
-              </article>
-            </div>
+                  <a
+                    href="#kontakt"
+                    aria-label="Zamów wycenę — Malowanie i gładzie"
+                  >
+                    <picture>
+                      <source
+                        type="image/avif"
+                        srcset="
+                          assets/img/services/painting-400x300.avif    400w,
+                          assets/img/services/painting-800x600.avif    800w,
+                          assets/img/services/painting-1200x900.avif  1200w,
+                          assets/img/services/painting-1600x1200.avif 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <source
+                        type="image/webp"
+                        srcset="
+                          assets/img/services/painting-400x300.webp    400w,
+                          assets/img/services/painting-800x600.webp    800w,
+                          assets/img/services/painting-1200x900.webp  1200w,
+                          assets/img/services/painting-1600x1200.webp 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <img
+                        src="assets/img/services/painting-800x600.jpg"
+                        srcset="
+                          assets/img/services/painting-400x300.jpg    400w,
+                          assets/img/services/painting-800x600.jpg    800w,
+                          assets/img/services/painting-1200x900.jpg  1200w,
+                          assets/img/services/painting-1600x1200.jpg 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                        alt="Zdejmowanie taśmy malarskiej odsłania równą linię odcięcia koloru przy suficie"
+                        width="400"
+                        height="300"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </picture>
+                  </a>
+                  <span class="svc-index__num" aria-hidden="true">02</span>
+                  <h3 class="card__title" id="h-malowanie">
+                    <a href="oferta/malowanie.html">Malowanie &amp; gładzie</a>
+                  </h3>
+                  <p class="card__desc" id="d-malowanie">
+                    Gładkie ściany, farby premium, precyzyjne odcięcia i szybkie
+                    terminy.
+                  </p>
+                </article>
+              </li>
+              <li class="svc-index__row">
+                <article
+                  id="oferta-kafelkowanie"
+                  class="card hover-card svc-index__item"
+                  aria-labelledby="h-kafelkowanie"
+                  aria-describedby="d-kafelkowanie"
+                  data-reveal="up"
+                  data-reveal-delay="320"
+                >
+                  <a href="#kontakt" aria-label="Zamów wycenę — Kafelkowanie">
+                    <picture>
+                      <source
+                        type="image/avif"
+                        srcset="
+                          assets/img/services/tiling-400x300.avif    400w,
+                          assets/img/services/tiling-800x600.avif    800w,
+                          assets/img/services/tiling-1200x900.avif  1200w,
+                          assets/img/services/tiling-1600x1200.avif 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <source
+                        type="image/webp"
+                        srcset="
+                          assets/img/services/tiling-400x300.webp    400w,
+                          assets/img/services/tiling-800x600.webp    800w,
+                          assets/img/services/tiling-1200x900.webp  1200w,
+                          assets/img/services/tiling-1600x1200.webp 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <source
+                        type="image/jpeg"
+                        srcset="
+                          assets/img/services/tiling-400x300.jpg    400w,
+                          assets/img/services/tiling-800x600.jpg    800w,
+                          assets/img/services/tiling-1200x900.jpg  1200w,
+                          assets/img/services/tiling-1600x1200.jpg 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <img
+                        src="assets/img/services/tiling-800x600.jpg"
+                        srcset="
+                          assets/img/services/tiling-400x300.jpg    400w,
+                          assets/img/services/tiling-800x600.jpg    800w,
+                          assets/img/services/tiling-1200x900.jpg  1200w,
+                          assets/img/services/tiling-1600x1200.jpg 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                        alt="Glazurnik rozprowadza klej pacą zębatą przed osadzeniem płytki ściennej"
+                        width="400"
+                        height="300"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </picture>
+                  </a>
+                  <span class="svc-index__num" aria-hidden="true">03</span>
+                  <h3 class="card__title" id="h-kafelkowanie">
+                    <a href="oferta/kafelkowanie.html">Kafelkowanie</a>
+                  </h3>
+                  <p class="card__desc" id="d-kafelkowanie">
+                    Tarasy, kuchnie, łazienki — równe fugi, poziomice laserowe i
+                    detale.
+                  </p>
+                </article>
+              </li>
+              <li class="svc-index__row">
+                <article
+                  id="oferta-elektryka"
+                  class="card hover-card svc-index__item"
+                  aria-labelledby="h-elektryka"
+                  aria-describedby="d-elektryka"
+                  data-reveal="up"
+                  data-reveal-delay="400"
+                >
+                  <a href="#kontakt" aria-label="Zamów wycenę — Elektryka">
+                    <picture>
+                      <source
+                        type="image/avif"
+                        srcset="
+                          assets/img/services/electrical-400x300.avif    400w,
+                          assets/img/services/electrical-800x600.avif    800w,
+                          assets/img/services/electrical-1200x900.avif  1200w,
+                          assets/img/services/electrical-1600x1200.avif 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <source
+                        type="image/webp"
+                        srcset="
+                          assets/img/services/electrical-400x300.webp    400w,
+                          assets/img/services/electrical-800x600.webp    800w,
+                          assets/img/services/electrical-1200x900.webp  1200w,
+                          assets/img/services/electrical-1600x1200.webp 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <source
+                        type="image/jpeg"
+                        srcset="
+                          assets/img/services/electrical-400x300.jpg    400w,
+                          assets/img/services/electrical-800x600.jpg    800w,
+                          assets/img/services/electrical-1200x900.jpg  1200w,
+                          assets/img/services/electrical-1600x1200.jpg 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <img
+                        src="assets/img/services/electrical-800x600.jpg"
+                        srcset="
+                          assets/img/services/electrical-400x300.jpg    400w,
+                          assets/img/services/electrical-800x600.jpg    800w,
+                          assets/img/services/electrical-1200x900.jpg  1200w,
+                          assets/img/services/electrical-1600x1200.jpg 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                        alt="Elektryk dokręca zacisk wyłącznika w uporządkowanej rozdzielnicy mieszkaniowej"
+                        width="400"
+                        height="300"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </picture>
+                  </a>
+                  <span class="svc-index__num" aria-hidden="true">04</span>
+                  <h3 class="card__title" id="h-elektryka">
+                    <a href="oferta/elektryka.html">Elektryka</a>
+                  </h3>
+                  <p class="card__desc" id="d-elektryka">
+                    Przeróbki instalacji, białe montaże i próby szczelności.
+                  </p>
+                </article>
+              </li>
+              <li class="svc-index__row">
+                <article
+                  id="oferta-hydraulika"
+                  class="card hover-card svc-index__item"
+                  aria-labelledby="h-hydraulika"
+                  aria-describedby="d-hydraulika"
+                  data-reveal="up"
+                  data-reveal-delay="480"
+                >
+                  <a href="#kontakt" aria-label="Zamów wycenę — Hydraulika">
+                    <picture>
+                      <source
+                        type="image/avif"
+                        srcset="
+                          assets/img/services/plumbing-400x300.avif    400w,
+                          assets/img/services/plumbing-800x600.avif    800w,
+                          assets/img/services/plumbing-1200x900.avif  1200w,
+                          assets/img/services/plumbing-1600x1200.avif 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <source
+                        type="image/webp"
+                        srcset="
+                          assets/img/services/plumbing-400x300.webp    400w,
+                          assets/img/services/plumbing-800x600.webp    800w,
+                          assets/img/services/plumbing-1200x900.webp  1200w,
+                          assets/img/services/plumbing-1600x1200.webp 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <source
+                        type="image/jpeg"
+                        srcset="
+                          assets/img/services/plumbing-400x300.jpg    400w,
+                          assets/img/services/plumbing-800x600.jpg    800w,
+                          assets/img/services/plumbing-1200x900.jpg  1200w,
+                          assets/img/services/plumbing-1600x1200.jpg 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                      />
+                      <img
+                        src="assets/img/services/plumbing-800x600.jpg"
+                        srcset="
+                          assets/img/services/plumbing-400x300.jpg    400w,
+                          assets/img/services/plumbing-800x600.jpg    800w,
+                          assets/img/services/plumbing-1200x900.jpg  1200w,
+                          assets/img/services/plumbing-1600x1200.jpg 1600w
+                        "
+                        sizes="(min-width: 1200px) 7rem, (min-width: 992px) 6rem, (min-width: 640px) 8rem, 6.75rem"
+                        alt="Hydraulik zaciska złączkę na rurze wielowarstwowej podczas prowadzenia instalacji w ścianie"
+                        width="400"
+                        height="300"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </picture>
+                  </a>
+                  <span class="svc-index__num" aria-hidden="true">05</span>
+                  <h3 class="card__title" id="h-hydraulika">
+                    <a href="oferta/hydraulika.html">Hydraulika</a>
+                  </h3>
+                  <p class="card__desc" id="d-hydraulika">
+                    Wszystkie prace hydrauliczne.
+                  </p>
+                </article>
+              </li>
+            </ol>
           </div>
           <div class="block-cta" data-reveal="up" data-reveal-delay="600">
             <a class="btn" href="#kontakt">Zamów wycenę</a>

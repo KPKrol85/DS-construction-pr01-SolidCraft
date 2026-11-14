@@ -59,8 +59,7 @@ const runInit = () => {
   if (has(".nav-menu li > a.btn.btn--sm")) initRipple?.();
   if (has(".hero__light-spot")) initHeroLight?.();
 
-  if (has("#oferta .card picture img, .gallery .gallery-item picture img"))
-    initOfertaLightbox?.();
+  if (has(".gallery .gallery-item picture img")) initOfertaLightbox?.();
   if (
     has(
       '.services-track h3 a[href^="oferta/"], #oferta .card h3 a[href^="oferta/"]',

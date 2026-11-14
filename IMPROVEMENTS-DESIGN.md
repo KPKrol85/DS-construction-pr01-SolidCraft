@@ -165,17 +165,9 @@ Priorities express design value and dependency, not defect severity. P1 items es
 
 ### IMP-DESIGN-05 — Present the service range as an editorial index instead of six equal cards
 
-- **Status:** Proposed
-- **Priority:** P1
-- **Affected area:** `#oferta` in `index.html`; `.services-list` and `.card*` rules in `sections.css`.
-- **Evidence:** Runtime: the services section measures 1,326 px at 1440, 1,600 px at 768, and 2,738 px at 390 (six 389 px cards). Source: identical card pattern; two links per card (image → `#kontakt` labeled "Zamów wycenę — …", title → service page); JSON-LD `ItemList` URLs reference `#oferta-lazienki`, `#oferta-malowanie`, `#oferta-kafelkowanie`, and `#oferta-elektryka`.
-- **Current state:** six visually equal image cards, stacked full-width on mobile.
-- **Design judgment:** equal weight hides the "Pod klucz" proposition and makes mobile browsing long and repetitive.
-- **Proposed improvement:** a composed index with one featured entry and five specialty entries as numbered rows in the utility voice, each with a smaller, consistent image. The candidate featured entry is "Remonty kompleksowe", which expresses the turnkey promise; the owner should confirm. On mobile the specialty entries become compact rows (thumbnail, name, one-line description) instead of full-width cards.
-- **Expected value:** clear offering hierarchy (turnkey first, specialties second), stronger editorial pacing, and a substantially shorter mobile sequence.
-- **Implementation scope:** preserve all six `oferta-*` IDs, the `aria-labelledby`/`aria-describedby` pairs, both link destinations and accessible names unless a separate UX decision changes them, service order in the DOM, `[data-reveal]` compatibility with the QA gate, and the `srcset` contracts, with `sizes` updated to the new rendered widths.
-- **Dependencies:** IMP-DESIGN-01 and IMP-DESIGN-02; final image balance after IMP-DESIGN-03; owner confirmation of the featured entry.
-- **Acceptance criteria:** at 1440 px one entry is clearly primary and the rest visibly secondary. At 390 px the section fits within about two viewport heights while every service keeps its name, description, service-page link, and quote link. No grid row is left with a single orphan item at 768, 1024, or 1440 px. All six anchors resolve, keyboard order follows DOM order, and both themes are verified.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** `#oferta` now opens with "Remonty kompleksowe" as a dominant feature, first in DOM order by owner decision, followed by the five specialties as a numbered list of compact rows with 4:3 thumbnails; the feature sits beside the rows from 992 px and above them below that. IDs, label and description pairs, link targets, accessible names, and `srcset` assets are unchanged, `sizes` follow the rendered widths, and the home JSON-LD `ItemList` lists all six services in DOM order. By owner decision, home service images now link only to `#kontakt` and no longer open the lightbox, and two `qa:functional` scenarios cover this contract.
+- **Verification:** `format:check`, `check:html`, `qa:a11y` (28 scans, 0 serious/critical), `qa:functional` (16/16; the new scenarios fail against the previous markup), and `build:dist` passed. Section height fell from 2,722 to 1,448 px (1.72 viewports) at 390×844 and from 1,323 to 1,152 px at 1440, with no overflow from 320 to 1440 px, at 200% zoom, or in light, dark, system-dark, and no-JS views, and prefetch with its Save-Data and 2G guards, reveal settling, and the gallery lightbox were rechecked. Only Chromium was tested, the specialty column runs up to 125 px longer than the feature at 992–1099 px, other pages keep the previous four-item JSON-LD copy, and final visual approval rests with the owner.
 - **Impact:** High
 - **Effort:** Medium
 
