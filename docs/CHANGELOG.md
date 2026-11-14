@@ -55,6 +55,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Refined the home hero with improved text and focus contrast, a motion-aware Craft Spotlight, and pipeline-generated portrait imagery with optimized preloads.
 - Recomposed the home service range as an editorial index led by turnkey renovations, with numbered specialty rows, structured data in display order, and service images that link to the quote form instead of opening the lightbox.
 - Recomposed the six service pages with an image-led opening, a numbered scope matrix, and a lead-image gallery whose responsive sources now request images sized to their rendered widths.
+- Recomposed the closing sequence with contact facts beside a dominant quote form, a quieter footer that replaces the separate contact bar with a compact reference, and matching service-page and status-page closings.
 
 ### Fixed
 

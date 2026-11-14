@@ -172,6 +172,11 @@
     content-visibility: auto;
     contain-intrinsic-size: 700px;
   }
+  /* The footer grid renders at about 360–460 px from 760 px; `auto` keeps
+     the last rendered height once it has been laid out. */
+  .site-footer .ft-grid {
+    contain-intrinsic-size: auto 420px;
+  }
   #oferta .cards {
     content-visibility: auto;
     contain-intrinsic-size: 900px;

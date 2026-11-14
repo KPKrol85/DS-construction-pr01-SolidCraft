@@ -181,17 +181,9 @@ Priorities express design value and dependency, not defect severity. P1 items es
 
 ### IMP-DESIGN-07 — Compose one calm, decisive closing sequence
 
-- **Status:** Proposed
-- **Priority:** P2
-- **Affected area:** `#kontakt` presentation (`.cta--contact`, `.cta-wrap`, `.contact-list`, `.form` surface); the service-page end CTA (`.page-sub .cta`); `partials/footer.html` presentation (`.ft-contact-bar`, `.ft-social-bar`); status pages (`.page-status`).
-- **Evidence:** Source: `.cta-wrap` is single-column at every width on a gradient background, and `.ft-contact-bar` repeats the phone and email. Runtime: contact 999 px and footer 1,078 px at 1440; footer 1,336 px at 390. Visual: the 404 card is amber on amber.
-- **Current state:** the page ends three times, the contact data is repeated, and the closing band is the loudest surface on the page.
-- **Design judgment:** the closing should concentrate attention on one action and then recede.
-- **Proposed improvement:** at desktop, use a two-column closing. Contact facts (phone, email, response time as utility facts) sit on one side and the form on a worked surface on the other, on the IMP-DESIGN-01 ground rather than the gradient. The footer becomes a quiet reference layer instead of a second call to action. The service-page end CTA and the status pages adopt the same closing language.
-- **Expected value:** one clear final action, less repetition, and a finished, confident end to every page.
-- **Implementation scope:** form markup, Netlify attributes, honeypot, validation, ARIA, status regions, `action`, and the `#kontakt` anchor stay unchanged, as do map consent behavior and form DOM order. The footer keeps its single partial source. Which repeated footer elements are removed is an owner decision.
-- **Dependencies:** IMP-DESIGN-01, IMP-DESIGN-02; owner decisions on footer contact repetition and social destinations.
-- **Acceptance criteria:** at 1024 and 1440 px, the contact facts and form sit side by side with the form dominant, and at 390 px the order is heading → facts → form. Contact data appears once as the action layer and at most once as a footer reference. The contact-form `qa:functional` scenarios and `qa:a11y` in both themes pass. Status pages show their primary action with verified contrast against its surface.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** From 1024 px, `#kontakt` sets the heading, the lead, and the labelled phone and e-mail facts beside a dominant form on the `--bg-2` ground; below 1024 px it stacks heading → facts → form, with form markup and DOM order unchanged. No response-time fact was added because project copy is inconsistent: 24–48 h in visible copy and up to 24 hours in the FAQ JSON-LD. By owner decision, the footer partial drops the "Kontakt i wycena" bar, keeps phone and e-mail as a compact reference under the address, and reduces the four social links to muted icons beside the copyright, while brand, navigation, documents, map consent, and accessible names are preserved; the six service-page end CTAs share one start-aligned band with the action beside the copy from 760 px, and the 404, offline, and thank-you pages adopt the same recessed ground and uppercase amber action with IDs, landmarks, and links unchanged.
+- **Verification:** `format:check`, `check:html`, `qa:functional` (16/16, including `contact-form` 4/4 and `map-consent` 1/1), `qa:a11y` (28 scans, 0 serious/critical), and `build:dist` passed. A scripted Chromium pass at 390, 768, 1024, and 1440 px in light, dark, and both system themes with reduced motion and without JavaScript found no overflow, focus rings of at least 3.22:1 along the closing keyboard order, text contrast of at least 4.91:1, and status actions at 8.72:1 at rest and 7.18:1 on hover. At 1440 px, `#kontakt` fell from 1,047 to 722 px and the footer from 754 to 586 px; at 390 px, the footer fell from 1,337 to 1,029 px while `#kontakt` grew from 986 to 1,078 px with the added labels; only Chromium was tested, and final visual approval rests with the owner.
 - **Impact:** Medium
 - **Effort:** Medium
 

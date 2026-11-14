@@ -3,7 +3,7 @@
     <h2 class="vh" id="footer-heading">Stopka serwisu</h2>
     <div class="ft-grid">
       <!-- Brand  -->
-      <div class="ft-col" data-reveal="up" data-reveal-delay="80">
+      <div class="ft-col ft-col--brand" data-reveal="up" data-reveal-delay="80">
         <a
           href="{{home}}#top"
           class="brand-footer"
@@ -67,7 +67,7 @@
           <li><a href="{{base}}cookies.html">Pliki cookies</a></li>
         </ul>
       </nav>
-      <div class="ft-col" data-reveal="up" data-reveal-delay="260">
+      <div class="ft-col ft-col--place" data-reveal="up" data-reveal-delay="260">
         <h3 class="ft-h">Znajdziesz nas tutaj:</h3>
         <div
           class="ft-map"
@@ -96,100 +96,39 @@
             <br />
             33-100 Tarnów
           </p>
+          <!-- Kontakt: a compact reference; the action layer is #kontakt -->
+          <ul class="ft-contact" aria-label="Dane kontaktowe">
+            <li>
+              <a
+                href="tel:+48533537091"
+                aria-label="Zadzwoń: +48 533 537 091"
+                class="ft-contact-link"
+              >
+                <span
+                  class="ft-contact-icon"
+                  data-icon="phone"
+                  aria-hidden="true"
+                ></span>
+                <span>+48 533 537 091</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="mailto:kontakt@kp-code.pl"
+                aria-label="Napisz e-mail na adres: kontakt@kp-code.pl"
+                class="ft-contact-link"
+              >
+                <span
+                  class="ft-contact-icon"
+                  data-icon="email"
+                  aria-hidden="true"
+                ></span>
+                <span>kontakt@kp-code.pl</span>
+              </a>
+            </li>
+          </ul>
         </address>
       </div>
-    </div>
-    <!-- Media społecznościowe -->
-    <div class="ft-social-bar">
-      <h3 class="ft-h">Media społecznościowe</h3>
-      <div class="ft-social" aria-label="Media społecznościowe">
-        <a
-          href="https://www.facebook.com/kpkrol85"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Facebook"
-        >
-          <span
-            class="ft-social__icon"
-            data-icon="facebook"
-            aria-hidden="true"
-          ></span>
-          <span class="ft-social__label">Facebook</span>
-        </a>
-        <a
-          href="https://www.instagram.com/kp_code_/"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Instagram"
-        >
-          <span
-            class="ft-social__icon"
-            data-icon="instagram"
-            aria-hidden="true"
-          ></span>
-          <span class="ft-social__label">Instagram</span>
-        </a>
-        <a
-          href="https://x.com/KP_Code_85"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="X (dawniej Twitter)"
-        >
-          <span
-            class="ft-social__icon"
-            data-icon="x"
-            aria-hidden="true"
-          ></span>
-          <span class="ft-social__label">X</span>
-        </a>
-        <a
-          href="https://github.com/KPKrol85"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="GitHub"
-        >
-          <span
-            class="ft-social__icon"
-            data-icon="github"
-            aria-hidden="true"
-          ></span>
-          <span class="ft-social__label">GitHub</span>
-        </a>
-      </div>
-    </div>
-    <!-- Kontakt i wycena -->
-    <div class="ft-contact-bar" aria-label="Kontakt">
-      <h3 class="ft-h" id="ft-contact-heading">Kontakt i wycena</h3>
-      <ul class="ft-contact" aria-label="Dane kontaktowe">
-        <li>
-          <a
-            href="tel:+48533537091"
-            aria-label="Zadzwoń: +48 533 537 091"
-            class="ft-contact-link"
-          >
-            <span
-              class="ft-contact-icon"
-              data-icon="phone"
-              aria-hidden="true"
-            ></span>
-            <span>+48 533 537 091</span>
-          </a>
-        </li>
-        <li>
-          <a
-            href="mailto:kontakt@kp-code.pl"
-            aria-label="Napisz e-mail na adres: kontakt@kp-code.pl"
-            class="ft-contact-link"
-          >
-            <span
-              class="ft-contact-icon"
-              data-icon="email"
-              aria-hidden="true"
-            ></span>
-            <span>kontakt@kp-code.pl</span>
-          </a>
-        </li>
-      </ul>
     </div>
     <div class="ft-bottom">
       <p>
@@ -197,6 +136,64 @@
         <span id="year"></span>
         KP_Code Digital Studio | Wszelkie prawa zastrzeżone.
       </p>
+      <!-- Media społecznościowe -->
+      <div class="ft-social-bar">
+        <h3 class="vh" id="ft-social-heading">Media społecznościowe</h3>
+        <div class="ft-social" aria-label="Media społecznościowe">
+          <a
+            href="https://www.facebook.com/kpkrol85"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Facebook"
+          >
+            <span
+              class="ft-social__icon"
+              data-icon="facebook"
+              aria-hidden="true"
+            ></span>
+            <span class="ft-social__label">Facebook</span>
+          </a>
+          <a
+            href="https://www.instagram.com/kp_code_/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+          >
+            <span
+              class="ft-social__icon"
+              data-icon="instagram"
+              aria-hidden="true"
+            ></span>
+            <span class="ft-social__label">Instagram</span>
+          </a>
+          <a
+            href="https://x.com/KP_Code_85"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="X (dawniej Twitter)"
+          >
+            <span
+              class="ft-social__icon"
+              data-icon="x"
+              aria-hidden="true"
+            ></span>
+            <span class="ft-social__label">X</span>
+          </a>
+          <a
+            href="https://github.com/KPKrol85"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+          >
+            <span
+              class="ft-social__icon"
+              data-icon="github"
+              aria-hidden="true"
+            ></span>
+            <span class="ft-social__label">GitHub</span>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </footer>

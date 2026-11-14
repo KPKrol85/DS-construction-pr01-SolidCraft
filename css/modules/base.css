@@ -147,6 +147,7 @@ small {
 /* Utility voice: one compact, tracked label style. Uppercase is presentation
    only; source text stays in sentence case. */
 .form label:not(.checkbox),
+.contact__label,
 .ft-h,
 .subpage-header .card h2,
 .subpage-header__num,

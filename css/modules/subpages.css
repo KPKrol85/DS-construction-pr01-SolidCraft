@@ -212,30 +212,42 @@
 
 /* CTA */
 
+/* Service closing: the home closing language on one line — the statement
+   reads from the start edge and its one action follows it, below on narrow
+   screens and at the end of the row from 760 px. */
+.page-sub .cta .container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+}
+
 .page-sub .cta .block-head {
-  margin: var(--space-5) 0;
-  padding: var(--space-2);
-  text-align: center;
+  margin: 0;
 }
 
 .page-sub .cta h2 {
-  margin: var(--space-6) auto;
-  padding: 0;
-  line-height: var(--lh-title);
+  margin: 0 0 var(--space-4);
+  text-wrap: balance;
   scroll-margin-top: calc(var(--header-h, 72px) + 16px);
 }
 
 .page-sub .cta .lead {
-  margin-inline: auto;
+  margin: 0;
   color: var(--c-ink);
-  text-wrap: balance;
+  text-wrap: pretty;
 }
 
 .page-sub .cta .block-cta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  margin: var(--space-4);
+  justify-content: flex-start;
+  margin: 0;
+}
+
+@media (min-width: 760px) {
+  .page-sub .cta .container {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    column-gap: var(--space-10);
+  }
 }
 
 /* Subpage doc */
@@ -423,7 +435,8 @@
   }
 }
 
-/* Status pages (404 / offline / thank-you) */
+/* Status pages (404 / offline / thank-you): the page is its own closing — one
+   centered message and one action on the recessed closing ground. */
 
 .page-status {
   min-height: 100vh;
@@ -433,27 +446,31 @@
   min-height: min(70vh, 520px);
   display: grid;
   place-items: center;
-  padding: 0;
+  padding: var(--section-py) 0;
+  background: var(--c-bg-2);
+  color: var(--c-ink);
 }
 
 .page-status .page-status__container {
   display: flex;
   flex-direction: column;
-  text-align: center;
+  align-items: center;
+  gap: var(--space-5);
+  max-width: 34rem;
+  margin-inline: auto;
   padding: var(--space-4);
-  max-width: clamp(320px, 90vw, 480px);
-  margin: var(--space-1) auto;
+  text-align: center;
 }
 
 .page-status .page-status__title {
-  margin: var(--space-3);
+  margin: 0;
   color: var(--c-ink);
 }
 
 .page-status .page-status__text {
+  margin: 0;
   font-size: var(--fs-lead);
   color: var(--c-ink);
-  margin: var(--space-4) 0;
   letter-spacing: var(--ls-0);
   line-height: var(--lh-body);
   text-wrap: balance;
@@ -464,8 +481,7 @@
   align-items: center;
   justify-content: center;
   width: min(280px, 100%);
-  margin: var(--space-4) auto 0;
-  text-transform: uppercase;
+  margin-top: var(--space-2);
   line-height: 1;
   font-size: var(--fs-3);
 }

@@ -309,8 +309,8 @@
 
 /* Services */
 
-/* Section heads read from the start edge above start-aligned content;
-   closing statements (.cta) and status pages keep a centered axis. */
+/* Section heads and closing bands (.cta) read from the start edge above
+   start-aligned content; status pages keep a centered axis. */
 .block-head {
   text-align: start;
 }
@@ -337,7 +337,6 @@
       no-repeat;
 }
 
-.cta,
 .page-status {
   --marker-inline: auto;
 }
@@ -834,34 +833,33 @@
 
 /* CTA */
 
-/* Closing band: a recessed open ground (--bg-2) with a hairline edge; the
-   form inside it is the worked surface and amber stays on the action. */
+/* Closing band: a recessed open ground (--bg-2) with a hairline edge that
+   ends every page once — the home contact, each service page and the status
+   pages. The form inside it is the worked surface and amber stays on the one
+   action. */
 .cta {
   background: var(--c-bg-2);
   color: var(--c-ink);
   border-top: 1px solid var(--c-border);
   overflow: clip;
-  padding: var(--space-4);
-  margin-inline: auto;
-}
-
-.cta--contact {
   padding-block: var(--section-py);
 }
 
+/* Home closing (#kontakt): heading, lead and contact facts come before the
+   form in DOM and reading order at every width. Stacked below 1024 px; from
+   there the facts sit beside the form, which takes the wider column. */
 .cta-wrap {
   display: grid;
-  gap: clamp(var(--space-6), 4vw, var(--space-8));
   grid-template-columns: minmax(0, 1fr);
-  justify-items: center;
-  text-align: center;
+  gap: var(--space-8);
+  align-items: start;
 }
 
 .cta-text {
   display: grid;
-  justify-items: center;
+  justify-items: start;
   gap: var(--space-4);
-  width: 100%;
+  min-width: 0;
 }
 
 .cta__title {
@@ -871,30 +869,37 @@
 
 .cta__lead {
   margin: 0;
-  text-wrap: balance;
+  text-wrap: pretty;
 }
 
+/* Contact facts: a utility label over each link on hairline rules, kept to
+   a short measure so the rules never run the width of the band. */
 .contact-list {
-  width: fit-content;
-  max-width: 100%;
-  margin: var(--space-1) auto 0;
-  padding: 0 var(--space-4);
+  width: 100%;
+  max-width: 28rem;
+  margin: var(--space-2) 0 0;
+  padding: 0;
   list-style: none;
-  display: grid;
-  gap: 0;
+  border-top: 1px solid var(--c-border);
   color: var(--c-ink);
 }
 
-.contact-list > li + li {
-  border-top: 1px solid var(--c-border);
+.contact-list > li {
+  display: grid;
+  justify-items: start;
+  padding-block: var(--space-3) var(--space-2);
+  border-bottom: 1px solid var(--c-border);
+}
+
+.contact__label {
+  color: var(--c-muted);
 }
 
 .contact-item {
-  display: grid;
+  display: inline-flex;
   align-items: center;
-  justify-items: center;
+  max-width: 100%;
   min-height: 2.75rem;
-  padding-block: var(--space-2);
   color: inherit;
   text-decoration: none;
   overflow-wrap: anywhere;
@@ -919,17 +924,22 @@
 }
 
 .contact__details {
+  font-size: var(--fs-5);
   font-weight: 600;
   letter-spacing: var(--ls-1);
+  font-variant-numeric: tabular-nums;
 }
 
+/* The form sizes itself from its column; it is a size container so the name
+   and phone rows pair up only when the form is wide enough to show the phone
+   example in full (see the @container rule below). */
 .form {
+  container-type: inline-size;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-4);
   width: 100%;
-  max-width: 640px;
-  margin-inline: auto;
+  min-width: 0;
   padding: clamp(var(--space-5), 4vw, var(--space-7));
   background: var(--c-surface);
   border: 1px solid var(--c-border);
@@ -1122,13 +1132,20 @@
   outline-offset: 2px;
 }
 
+/* Closing action: the one amber pill of each closing — the form submit, the
+   service-page request and the status-page return — in tracked uppercase. */
+.form .btn,
+.cta .block-cta .btn,
+.page-status__cta {
+  text-transform: uppercase;
+  letter-spacing: var(--ls-2);
+}
+
 .form .btn {
   width: 100%;
   max-width: 320px;
   margin-inline: auto;
   margin-block: 0;
-  text-transform: uppercase;
-  letter-spacing: var(--ls-2);
 }
 
 .form[aria-busy="true"] .btn {
@@ -1150,18 +1167,28 @@
   animation: spin 0.9s linear infinite;
 }
 
-@media (min-width: 760px) {
-  .form {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--space-4);
-  }
+.form > * {
+  grid-column: 1 / -1;
+}
 
-  .form > * {
-    grid-column: 1 / -1;
-  }
-
+@container (min-width: 35rem) {
   .form .form-row--half {
     grid-column: span 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cta-wrap {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    column-gap: var(--space-10);
+  }
+}
+
+/* Once the container reaches its full measure the form takes a fixed column
+   wide enough for the paired rows, and the facts take the rest. */
+@media (min-width: 1200px) {
+  .cta-wrap {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 41rem);
   }
 }
 

@@ -436,8 +436,11 @@
 
 /* Footer */
 
-/* The footer stands on the navy ink ground of each theme: the palette's ink
-   in light, a recessed navy below the page ground in dark. */
+/* The footer is the quiet reference layer after the closing band: no call to
+   action, one start edge shared with the page content, and contact details
+   only as a compact reference under the address. It stands on the navy ink
+   ground of each theme: the palette's ink in light, a recessed navy below the
+   page ground in dark. */
 .site-footer {
   --ft-bg: var(--bg-ink);
   --ft-fg: #eef2f8;
@@ -446,49 +449,40 @@
   background: var(--ft-bg);
   color: var(--ft-fg);
   border-top: 1px solid var(--ft-border);
-  padding-block-start: var(--section-py-lg);
-  padding-block-end: clamp(var(--space-4), 4vw, var(--space-3));
+  padding-block: var(--section-py) var(--space-4);
   font-size: var(--fs-2);
-  text-align: center;
 }
 .site-footer a {
   color: inherit;
   text-decoration: none;
 }
-.site-footer .container {
-  max-width: 1120px;
-  width: 100%;
-  margin-inline: auto;
-  padding-inline: 0;
-  box-sizing: border-box;
-}
+
+/* Narrow screens: brand, then navigation and documents side by side, then
+   the location; 760 px: brand beside the two lists, location below;
+   1024 px: four columns. */
 .ft-grid {
   display: grid;
-  row-gap: var(--space-6);
-  column-gap: var(--space-3);
-  grid-template-columns: 1fr;
-  justify-items: stretch;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-8) var(--space-5);
 }
 .ft-col {
   display: grid;
   align-content: start;
+  justify-items: start;
   gap: var(--space-3);
-  margin: var(--space-3) 0;
+  min-width: 0;
   font-size: var(--fs-3);
   line-height: var(--lh-body);
   color: var(--ft-muted);
-  min-width: 0;
-  width: 100%;
-  align-items: center;
-  padding: 0;
+}
+.ft-col--brand,
+.ft-col--place {
+  grid-column: 1 / -1;
 }
 .brand-footer {
-  display: flex;
-  justify-content: center;
+  display: inline-flex;
   align-items: center;
-  width: 100%;
   min-height: 56px;
-  text-align: center;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -500,30 +494,30 @@
 .ft-logo {
   display: block;
   width: auto;
-  height: 72px;
-  padding: var(--space-2);
+  height: 52px;
   -webkit-user-drag: none;
   user-select: none;
 }
 .ft-lead {
-  margin: var(--space-4) auto;
+  margin: 0;
+  max-width: 34ch;
   color: var(--ft-muted);
-  max-width: 100%;
   font-size: var(--fs-3);
   line-height: var(--lh-body);
-  text-align: center;
-  max-width: 28ch;
 }
 .ft-h {
+  margin: 0;
   color: color-mix(in oklab, var(--ft-muted) 60%, var(--ft-fg));
-  margin: var(--space-2) 0;
 }
-.ft-col:first-child {
-  padding-right: 0;
+.ft-links,
+.ft-contact {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 .ft-links {
-  display: inline-grid;
-  justify-items: center;
+  display: grid;
+  justify-items: start;
   gap: var(--space-2);
 }
 .ft-links a:focus-visible {
@@ -533,14 +527,14 @@
 }
 
 .ft-map {
+  width: 100%;
+  max-width: 28rem;
+  aspect-ratio: 16/9;
+  max-height: 300px;
   border-radius: var(--radius-3);
   overflow: hidden;
   box-shadow: 0 0 0 1px var(--ft-border) inset;
   background: rgba(255, 255, 255, 0.04);
-  aspect-ratio: 16/9;
-  max-height: 300px;
-  max-width: 60%;
-  margin-inline: auto;
 }
 
 .ft-map .map-placeholder {
@@ -559,12 +553,13 @@
 
 .ft-map .map-placeholder__text {
   margin: 0;
-  font-size: var(--fs-3);
+  font-size: var(--fs-2);
   line-height: var(--lh-body);
 }
 
 .ft-map .map-load-btn {
-  min-width: 140px;
+  min-width: 120px;
+  font-size: var(--fs-2);
   color: #d1d5db;
 }
 
@@ -582,11 +577,15 @@
 }
 
 .ft-address {
-  margin-top: var(--space-2);
+  display: grid;
+  gap: var(--space-1);
   font-style: normal;
   line-height: var(--lh-body);
   color: var(--ft-muted);
-  opacity: 0.95;
+}
+
+.ft-address p {
+  margin: 0;
 }
 
 .ft-address > p:first-child {
@@ -595,128 +594,20 @@
   color: var(--ft-fg);
 }
 
-/* The social block lives outside .ft-grid, so it spans the footer width
-   and stays centred at every breakpoint. */
-.ft-social-bar {
-  margin-top: var(--space-4);
-  text-align: center;
-}
-
-.ft-social {
-  display: flex;
-  gap: var(--space-3);
-  margin: var(--space-2);
-  justify-content: center;
-  margin-inline: auto;
-}
-
-.ft-social a {
-  position: relative;
-  display: inline-grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: var(--radius-pill);
-  background: transparent;
-}
-
-/* Icons are injected from the shared registry (js/modules/icons.js); the
-   placeholder owns the box and the SVG inherits the footer's currentColor. */
-.ft-social__icon {
-  display: block;
-  width: 30px;
-  height: 30px;
-  /* Pinned to the footer foreground so the marks stay at full strength. */
-  color: var(--ft-fg);
-  opacity: 0.9;
-  transition:
-    opacity 0.2s ease,
-    color 0.2s ease;
-}
-
-.ft-social__icon svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.ft-social a:hover .ft-social__icon,
-.ft-social a:focus-visible .ft-social__icon {
-  opacity: 1;
-  color: var(--brand);
-}
-
-/* Label text backs the icon-only social links; the link keeps its aria-label. */
-.ft-social__label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Without JS the [data-icon] placeholders stay empty, so the social links fall
-   back to their text label instead of collapsing to a blank hit area. */
-.no-js .ft-social a {
-  width: auto;
-  height: auto;
-  /* short labels such as "X" keep the 36px target the icon box provides */
-  min-width: 36px;
-  min-height: 36px;
-  padding-inline: var(--space-1);
-}
-
-.no-js .ft-social__icon {
-  display: none;
-}
-
-.no-js .ft-social__label {
-  position: static;
-  width: auto;
-  height: auto;
-  margin: 0;
-  overflow: visible;
-  clip-path: none;
-}
-
-.ft-links,
+/* Phone and e-mail as a compact secondary reference under the address. */
 .ft-contact {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.ft-contact-bar {
-  margin-top: var(--space-4);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--ft-border);
-  text-align: center;
-}
-
-.ft-contact {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  align-items: center;
-  justify-content: center;
-  margin: var(--space-3) 0;
-}
-
-.ft-contact li {
-  margin: 0;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
 }
 
 .ft-contact-link {
   display: inline-flex;
   align-items: center;
-  font-size: var(--fs-3);
   gap: var(--space-2);
-  padding: var(--space-1);
+  min-height: 1.75rem;
+  overflow-wrap: anywhere;
   transition:
     color 0.2s ease,
     text-decoration-color 0.2s ease;
@@ -739,10 +630,9 @@
 
 .ft-contact-icon {
   display: inline-flex;
-  width: 18px;
-  height: 18px;
-  flex: 0 0 18px;
-  opacity: 0.9;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
 }
 
 .ft-contact-icon svg {
@@ -755,26 +645,89 @@
   display: none;
 }
 
+/* Bottom bar: the copyright, then the social marks as a small, muted row. */
 .ft-bottom {
-  margin: 0 auto;
-  border-top: 1px solid var(--ft-border);
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--space-2);
   flex-wrap: wrap;
-  flex-direction: column;
-  width: 100%;
-  text-align: center;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-8);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--ft-border);
 }
 
 .ft-bottom p {
-  margin: var(--space-2) 0 0;
+  margin: 0;
   color: var(--ft-muted);
-  width: 100%;
-  margin-inline: auto;
-  text-align: center;
   font-size: var(--fs-2);
+}
+
+.ft-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.ft-social a {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  color: var(--ft-muted);
+}
+
+/* Icons are injected from the shared registry (js/modules/icons.js); the
+   placeholder owns the box and the SVG inherits the link's currentColor. */
+.ft-social__icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.ft-social__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Label text backs the icon-only social links; the link keeps its aria-label. */
+.ft-social__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Without JS the [data-icon] placeholders stay empty, so the social links fall
+   back to their text label instead of collapsing to a blank hit area. */
+.no-js .ft-social a {
+  width: auto;
+  height: auto;
+  /* short labels such as "X" keep the 40px target the icon box provides */
+  min-width: 40px;
+  min-height: 40px;
+  padding-inline: var(--space-1);
+}
+
+.no-js .ft-social__icon {
+  display: none;
+}
+
+.no-js .ft-social__label {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip-path: none;
 }
 
 :root[data-theme="dark"] .ft-map {
@@ -784,46 +737,34 @@
 
 @media (min-width: 760px) {
   .ft-grid {
+    grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr));
+  }
+  .ft-col--brand {
+    grid-column: auto;
+  }
+  /* The location spans the row with the map beside the address. */
+  .ft-col--place {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-inline: var(--space-6);
+    column-gap: var(--space-5);
+    align-items: start;
   }
-  .ft-col {
-    text-align: left;
-  }
-  .brand-footer {
-    justify-content: flex-start;
-  }
-  .ft-logo {
-    padding-inline-start: 0;
-  }
-  .ft-lead {
-    margin-inline: 0;
-    text-align: left;
-  }
-  .ft-links {
-    justify-items: start;
-  }
-  .ft-map {
-    max-width: 100%;
-    margin-inline: 0;
+  .ft-col--place > .ft-h {
+    grid-column: 1 / -1;
   }
 }
 
 @media (min-width: 1024px) {
   .ft-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns:
+      minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr)
+      minmax(0, 1.4fr);
+  }
+  .ft-col--place {
+    grid-column: auto;
+    grid-template-columns: minmax(0, 1fr);
   }
   .ft-lead {
-    max-width: 22ch;
-  }
-
-  .ft-map .map-placeholder__text {
-    margin: 0;
-    font-size: var(--fs-1);
-  }
-  .ft-map .map-load-btn {
-    min-width: 120px;
-    font-size: var(--fs-1);
+    max-width: 26ch;
   }
 }
 
