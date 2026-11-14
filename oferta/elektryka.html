@@ -190,20 +190,62 @@
         tabindex="-1"
       >
         <div class="container">
-          <header class="block-head">
-            <h1 id="elektryka-heading" data-reveal="up" data-reveal-delay="80">
-              Elektryka — instalacje i przeróbki
-            </h1>
-            <p
-              class="lead"
-              id="elektryka-desc"
-              data-reveal="up"
-              data-reveal-delay="160"
-            >
-              Nowe instalacje, modernizacje i serwis. Pracujemy zgodnie z
-              normami, dbając o bezpieczeństwo i estetykę wykończenia.
-            </p>
-          </header>
+          <div class="subpage-header__intro">
+            <header class="block-head">
+              <h1
+                id="elektryka-heading"
+                data-reveal="up"
+                data-reveal-delay="80"
+              >
+                Elektryka — instalacje i przeróbki
+              </h1>
+              <p
+                class="lead"
+                id="elektryka-desc"
+                data-reveal="up"
+                data-reveal-delay="160"
+              >
+                Nowe instalacje, modernizacje i serwis. Pracujemy zgodnie z
+                normami, dbając o bezpieczeństwo i estetykę wykończenia.
+              </p>
+            </header>
+            <picture class="subpage-header__media">
+              <source
+                type="image/avif"
+                srcset="
+                  ../assets/img/services/electrical-400x300.avif    400w,
+                  ../assets/img/services/electrical-800x600.avif    800w,
+                  ../assets/img/services/electrical-1200x900.avif  1200w,
+                  ../assets/img/services/electrical-1600x1200.avif 1600w
+                "
+                sizes="(min-width: 1140px) 575px, (min-width: 1024px) calc(54.5vw - 3rem), (min-width: 760px) calc(50vw - 2rem), calc(100vw - 1.5rem)"
+              />
+              <source
+                type="image/webp"
+                srcset="
+                  ../assets/img/services/electrical-400x300.webp    400w,
+                  ../assets/img/services/electrical-800x600.webp    800w,
+                  ../assets/img/services/electrical-1200x900.webp  1200w,
+                  ../assets/img/services/electrical-1600x1200.webp 1600w
+                "
+                sizes="(min-width: 1140px) 575px, (min-width: 1024px) calc(54.5vw - 3rem), (min-width: 760px) calc(50vw - 2rem), calc(100vw - 1.5rem)"
+              />
+              <img
+                src="../assets/img/services/electrical-800x600.jpg"
+                srcset="
+                  ../assets/img/services/electrical-400x300.jpg    400w,
+                  ../assets/img/services/electrical-800x600.jpg    800w,
+                  ../assets/img/services/electrical-1200x900.jpg  1200w,
+                  ../assets/img/services/electrical-1600x1200.jpg 1600w
+                "
+                sizes="(min-width: 1140px) 575px, (min-width: 1024px) calc(54.5vw - 3rem), (min-width: 760px) calc(50vw - 2rem), calc(100vw - 1.5rem)"
+                alt="Elektryk dokręca zacisk wyłącznika w uporządkowanej rozdzielnicy mieszkaniowej"
+                width="800"
+                height="600"
+                fetchpriority="high"
+              />
+            </picture>
+          </div>
           <!-- Cards -->
           <div class="cards">
             <article
@@ -212,6 +254,7 @@
               data-reveal="up"
               data-reveal-delay="160"
             >
+              <span class="subpage-header__num" aria-hidden="true">01</span>
               <h2>Instalacje od podstaw</h2>
               <p>
                 Okablowanie, rozdzielnie, zabezpieczenia, RCD/RCBO, uziemienie.
@@ -224,6 +267,7 @@
               data-reveal="up"
               data-reveal-delay="240"
             >
+              <span class="subpage-header__num" aria-hidden="true">02</span>
               <h2>Przeróbki i dołożenia obwodów</h2>
               <p>
                 Nowe gniazda i punkty świetlne, strefy w łazienkach/kuchniach,
@@ -236,6 +280,7 @@
               data-reveal="up"
               data-reveal-delay="320"
             >
+              <span class="subpage-header__num" aria-hidden="true">03</span>
               <h2>Oświetlenie</h2>
               <p>
                 LED, taśmy i profile, oprawy natynkowe/podtynkowe, ściemniacze,
@@ -248,6 +293,7 @@
               data-reveal="up"
               data-reveal-delay="400"
             >
+              <span class="subpage-header__num" aria-hidden="true">04</span>
               <h2>Pomiary i przeglądy</h2>
               <p>
                 Impedancja pętli zwarcia, rezystancja izolacji, ciągłość PE,
@@ -302,6 +348,7 @@
                       ../assets/img/gallery/electrical/elec-01-1536x1152.avif 1536w,
                       ../assets/img/gallery/electrical/elec-01-2048x1536.avif 2048w
                     "
+                    sizes="(min-width: 1140px) 734px, (min-width: 760px) calc(66.6vw - 1.5rem), calc(100vw - 1.5rem)"
                   />
                   <source
                     type="image/webp"
@@ -312,6 +359,7 @@
                       ../assets/img/gallery/electrical/elec-01-1536x1152.webp 1536w,
                       ../assets/img/gallery/electrical/elec-01-2048x1536.webp 2048w
                     "
+                    sizes="(min-width: 1140px) 734px, (min-width: 760px) calc(66.6vw - 1.5rem), calc(100vw - 1.5rem)"
                   />
                   <img
                     src="../assets/img/gallery/electrical/elec-01-768x576.jpg"
@@ -322,7 +370,7 @@
                       ../assets/img/gallery/electrical/elec-01-1536x1152.jpg 1536w,
                       ../assets/img/gallery/electrical/elec-01-2048x1536.jpg 2048w
                     "
-                    sizes="(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1140px) 734px, (min-width: 760px) calc(66.6vw - 1.5rem), calc(100vw - 1.5rem)"
                     width="768"
                     height="576"
                     loading="lazy"
@@ -350,6 +398,7 @@
                       ../assets/img/gallery/electrical/elec-02-1536x1152.avif 1536w,
                       ../assets/img/gallery/electrical/elec-02-2048x1536.avif 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(50vw - 1rem)"
                   />
                   <source
                     type="image/webp"
@@ -360,6 +409,7 @@
                       ../assets/img/gallery/electrical/elec-02-1536x1152.webp 1536w,
                       ../assets/img/gallery/electrical/elec-02-2048x1536.webp 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(50vw - 1rem)"
                   />
                   <img
                     src="../assets/img/gallery/electrical/elec-02-768x576.jpg"
@@ -370,7 +420,7 @@
                       ../assets/img/gallery/electrical/elec-02-1536x1152.jpg 1536w,
                       ../assets/img/gallery/electrical/elec-02-2048x1536.jpg 2048w
                     "
-                    sizes="(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(50vw - 1rem)"
                     width="768"
                     height="576"
                     loading="lazy"
@@ -398,6 +448,7 @@
                       ../assets/img/gallery/electrical/elec-03-1536x1152.avif 1536w,
                       ../assets/img/gallery/electrical/elec-03-2048x1536.avif 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(50vw - 1rem)"
                   />
                   <source
                     type="image/webp"
@@ -408,6 +459,7 @@
                       ../assets/img/gallery/electrical/elec-03-1536x1152.webp 1536w,
                       ../assets/img/gallery/electrical/elec-03-2048x1536.webp 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(50vw - 1rem)"
                   />
                   <img
                     src="../assets/img/gallery/electrical/elec-03-768x576.jpg"
@@ -418,7 +470,7 @@
                       ../assets/img/gallery/electrical/elec-03-1536x1152.jpg 1536w,
                       ../assets/img/gallery/electrical/elec-03-2048x1536.jpg 2048w
                     "
-                    sizes="(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(50vw - 1rem)"
                     width="768"
                     height="576"
                     loading="lazy"
@@ -446,6 +498,7 @@
                       ../assets/img/gallery/electrical/elec-04-1536x1152.avif 1536w,
                       ../assets/img/gallery/electrical/elec-04-2048x1536.avif 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                   />
                   <source
                     type="image/webp"
@@ -456,6 +509,7 @@
                       ../assets/img/gallery/electrical/elec-04-1536x1152.webp 1536w,
                       ../assets/img/gallery/electrical/elec-04-2048x1536.webp 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                   />
                   <img
                     src="../assets/img/gallery/electrical/elec-04-768x576.jpg"
@@ -466,7 +520,7 @@
                       ../assets/img/gallery/electrical/elec-04-1536x1152.jpg 1536w,
                       ../assets/img/gallery/electrical/elec-04-2048x1536.jpg 2048w
                     "
-                    sizes="(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                     width="768"
                     height="576"
                     loading="lazy"
@@ -494,6 +548,7 @@
                       ../assets/img/gallery/electrical/elec-05-1536x1152.avif 1536w,
                       ../assets/img/gallery/electrical/elec-05-2048x1536.avif 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                   />
                   <source
                     type="image/webp"
@@ -504,6 +559,7 @@
                       ../assets/img/gallery/electrical/elec-05-1536x1152.webp 1536w,
                       ../assets/img/gallery/electrical/elec-05-2048x1536.webp 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                   />
                   <img
                     src="../assets/img/gallery/electrical/elec-05-768x576.jpg"
@@ -514,7 +570,7 @@
                       ../assets/img/gallery/electrical/elec-05-1536x1152.jpg 1536w,
                       ../assets/img/gallery/electrical/elec-05-2048x1536.jpg 2048w
                     "
-                    sizes="(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                     width="768"
                     height="576"
                     loading="lazy"
@@ -542,6 +598,7 @@
                       ../assets/img/gallery/electrical/elec-06-1536x1152.avif 1536w,
                       ../assets/img/gallery/electrical/elec-06-2048x1536.avif 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                   />
                   <source
                     type="image/webp"
@@ -552,6 +609,7 @@
                       ../assets/img/gallery/electrical/elec-06-1536x1152.webp 1536w,
                       ../assets/img/gallery/electrical/elec-06-2048x1536.webp 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                   />
                   <img
                     src="../assets/img/gallery/electrical/elec-06-768x576.jpg"
@@ -562,7 +620,7 @@
                       ../assets/img/gallery/electrical/elec-06-1536x1152.jpg 1536w,
                       ../assets/img/gallery/electrical/elec-06-2048x1536.jpg 2048w
                     "
-                    sizes="(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                     width="768"
                     height="576"
                     loading="lazy"

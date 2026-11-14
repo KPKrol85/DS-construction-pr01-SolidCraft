@@ -149,6 +149,7 @@ small {
 .form label:not(.checkbox),
 .ft-h,
 .subpage-header .card h2,
+.subpage-header__num,
 .svc-index__num,
 .testimonials__author {
   font-family: var(--ff-display);

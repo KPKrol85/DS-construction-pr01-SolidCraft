@@ -5,7 +5,13 @@
 }
 
 /* Head, scope rules and gallery share the container's start edge. */
-.subpage-header .block-head {
+
+/* Opening: title and lead, then the service photograph (DOM and mobile order);
+   from 760 px the photograph sits beside the copy. */
+.subpage-header__intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7);
   margin-bottom: var(--space-10);
 }
 
@@ -18,30 +24,66 @@
   color: var(--c-muted);
 }
 
+/* The photograph is illustration, not a control: a media frame with no link,
+   hover or reveal, so it paints with the first frame. */
+.subpage-header__media {
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-3);
+  background: var(--c-surface);
+  box-shadow: 0 0 0 1px var(--c-border);
+}
+
+.subpage-header__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Scope: a numbered sequence on mobile, a 2×2 matrix from 760 px. */
 .subpage-header .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
   margin-block: var(--space-4);
-  gap: var(--space-6);
 }
 
 /* Scope items are content, not controls: open ground under a hairline rule,
-   with no lift or hover affordance. */
+   with no lift or hover affordance. The number runs in on the label's
+   baseline and the description hangs under the label. */
 .subpage-header .card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "num label"
+    ". desc";
+  align-items: baseline;
+  align-content: start;
+  gap: var(--space-2) var(--space-3);
   padding: var(--space-5) 0 var(--space-2);
   border-top: 1px solid var(--c-border);
 }
 
-/* Scope labels use the utility voice (see base.css). */
+/* Number and label use the utility voice (see base.css); the number is
+   visual only and hidden from assistive technology in the markup. */
+.subpage-header__num {
+  grid-area: num;
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}
+
 .subpage-header .card h2 {
-  margin: var(--space-1) 0 var(--space-2);
+  grid-area: label;
+  margin: 0;
 }
 
 .subpage-header .card p {
+  grid-area: desc;
   margin: 0;
   color: var(--c-muted);
   font-size: var(--fs-3);
-  max-width: 38ch;
+  max-width: 44ch;
 }
 
 .subpage-header .block-cta {
@@ -67,13 +109,30 @@
   color: var(--c-muted);
 }
 
+/* Editorial rhythm in DOM order. Mobile: the lead image across the width,
+   then two halves and three thirds. From 760 px: the lead spans two columns
+   and two rows, items 2–3 stack beside it and items 4–6 close the third row.
+   Every cell keeps the 4:3 crop; per-position `sizes` in the markup follow
+   these widths. */
 .gallery .gallery-grid {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--space-4);
-  grid-template-columns: 1fr;
+  gap: var(--space-3);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.gallery .gallery-grid > li {
+  grid-column: span 2;
+}
+
+.gallery .gallery-grid > li:nth-child(-n + 3) {
+  grid-column: span 3;
+}
+
+.gallery .gallery-grid > li:first-child {
+  grid-column: 1 / -1;
 }
 
 /* Gallery links are media frames: a hairline edge, no resting elevation. */
@@ -97,24 +156,48 @@
   transition: transform 0.35s ease;
 }
 
-@media (min-width: 480px) {
-  .gallery .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 @media (min-width: 760px) {
-  .gallery .cards {
-    gap: var(--space-5);
+  .subpage-header__intro {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+  }
+
+  .subpage-header .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6) var(--space-8);
+  }
+
+  .gallery .gallery-grid {
+    gap: var(--space-4);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .gallery .gallery-grid > li,
+  .gallery .gallery-grid > li:nth-child(-n + 3) {
+    grid-column: auto;
+  }
+
+  .gallery .gallery-grid > li:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  /* The lead fills the two rows its neighbours define; the cover crop
+     absorbs the gap (under 1% of its height). */
+  .gallery .gallery-grid > li:first-child .gallery-item {
+    height: 100%;
+  }
+
+  .gallery .gallery-grid > li:first-child img {
+    height: 100%;
+    aspect-ratio: auto;
   }
 }
 
 @media (min-width: 1024px) {
-  .gallery .gallery-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .gallery .cards {
-    grid-template-columns: 1fr 1fr;
+  .subpage-header__intro {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    column-gap: var(--space-9);
   }
 }
 

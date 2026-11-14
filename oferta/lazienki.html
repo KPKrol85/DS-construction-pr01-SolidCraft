@@ -190,20 +190,58 @@
         tabindex="-1"
       >
         <div class="container">
-          <header class="block-head">
-            <h1 id="lazienki-heading" data-reveal="up" data-reveal-delay="80">
-              Łazienki — remonty i wykończenia
-            </h1>
-            <p
-              id="lazienki-desc"
-              class="lead"
-              data-reveal="up"
-              data-reveal-delay="160"
-            >
-              Kompleksowe prace: projekt, instalacje, hydroizolacja, płytki i
-              biały montaż. Czysto, terminowo, z gwarancją.
-            </p>
-          </header>
+          <div class="subpage-header__intro">
+            <header class="block-head">
+              <h1 id="lazienki-heading" data-reveal="up" data-reveal-delay="80">
+                Łazienki — remonty i wykończenia
+              </h1>
+              <p
+                id="lazienki-desc"
+                class="lead"
+                data-reveal="up"
+                data-reveal-delay="160"
+              >
+                Kompleksowe prace: projekt, instalacje, hydroizolacja, płytki i
+                biały montaż. Czysto, terminowo, z gwarancją.
+              </p>
+            </header>
+            <picture class="subpage-header__media">
+              <source
+                type="image/avif"
+                srcset="
+                  ../assets/img/services/bathrooms-400x300.avif    400w,
+                  ../assets/img/services/bathrooms-800x600.avif    800w,
+                  ../assets/img/services/bathrooms-1200x900.avif  1200w,
+                  ../assets/img/services/bathrooms-1600x1200.avif 1600w
+                "
+                sizes="(min-width: 1140px) 575px, (min-width: 1024px) calc(54.5vw - 3rem), (min-width: 760px) calc(50vw - 2rem), calc(100vw - 1.5rem)"
+              />
+              <source
+                type="image/webp"
+                srcset="
+                  ../assets/img/services/bathrooms-400x300.webp    400w,
+                  ../assets/img/services/bathrooms-800x600.webp    800w,
+                  ../assets/img/services/bathrooms-1200x900.webp  1200w,
+                  ../assets/img/services/bathrooms-1600x1200.webp 1600w
+                "
+                sizes="(min-width: 1140px) 575px, (min-width: 1024px) calc(54.5vw - 3rem), (min-width: 760px) calc(50vw - 2rem), calc(100vw - 1.5rem)"
+              />
+              <img
+                src="../assets/img/services/bathrooms-800x600.jpg"
+                srcset="
+                  ../assets/img/services/bathrooms-400x300.jpg    400w,
+                  ../assets/img/services/bathrooms-800x600.jpg    800w,
+                  ../assets/img/services/bathrooms-1200x900.jpg  1200w,
+                  ../assets/img/services/bathrooms-1600x1200.jpg 1600w
+                "
+                sizes="(min-width: 1140px) 575px, (min-width: 1024px) calc(54.5vw - 3rem), (min-width: 760px) calc(50vw - 2rem), calc(100vw - 1.5rem)"
+                alt="Prysznic bez brodzika z odpływem liniowym i podświetlaną wnęką wykończoną płytkami wielkoformatowymi"
+                width="800"
+                height="600"
+                fetchpriority="high"
+              />
+            </picture>
+          </div>
           <!-- Cards -->
           <div class="cards">
             <article
@@ -212,6 +250,7 @@
               data-reveal="up"
               data-reveal-delay="160"
             >
+              <span class="subpage-header__num" aria-hidden="true">01</span>
               <h2>Hydroizolacja</h2>
               <p>
                 Folie w płynie, taśmy i narożniki — pełna szczelność stref
@@ -224,6 +263,7 @@
               data-reveal="up"
               data-reveal-delay="240"
             >
+              <span class="subpage-header__num" aria-hidden="true">02</span>
               <h2>Układanie płytek</h2>
               <p>
                 Gres, lastryko, mozaiki. Cięcia pod 45°, listwy dekoracyjne,
@@ -236,6 +276,7 @@
               data-reveal="up"
               data-reveal-delay="320"
             >
+              <span class="subpage-header__num" aria-hidden="true">03</span>
               <h2>Biały montaż</h2>
               <p>
                 WC podtynkowe, umywalki, baterie, odwodnienia liniowe, kabiny i
@@ -248,6 +289,7 @@
               data-reveal="up"
               data-reveal-delay="400"
             >
+              <span class="subpage-header__num" aria-hidden="true">04</span>
               <h2>Instalacje</h2>
               <p>
                 Przeróbki wod-kan i elektryczne zgodnie z projektem i normami.
@@ -301,6 +343,7 @@
                       ../assets/img/gallery/bathrooms/bathr-01-1536x1152.avif 1536w,
                       ../assets/img/gallery/bathrooms/bathr-01-2048x1536.avif 2048w
                     "
+                    sizes="(min-width: 1140px) 734px, (min-width: 760px) calc(66.6vw - 1.5rem), calc(100vw - 1.5rem)"
                   />
                   <source
                     type="image/webp"
@@ -311,6 +354,7 @@
                       ../assets/img/gallery/bathrooms/bathr-01-1536x1152.webp 1536w,
                       ../assets/img/gallery/bathrooms/bathr-01-2048x1536.webp 2048w
                     "
+                    sizes="(min-width: 1140px) 734px, (min-width: 760px) calc(66.6vw - 1.5rem), calc(100vw - 1.5rem)"
                   />
                   <img
                     src="../assets/img/gallery/bathrooms/bathr-01-768x576.jpg"
@@ -321,7 +365,7 @@
                       ../assets/img/gallery/bathrooms/bathr-01-1536x1152.jpg 1536w,
                       ../assets/img/gallery/bathrooms/bathr-01-2048x1536.jpg 2048w
                     "
-                    sizes="(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1140px) 734px, (min-width: 760px) calc(66.6vw - 1.5rem), calc(100vw - 1.5rem)"
                     width="768"
                     height="576"
                     loading="lazy"
@@ -349,6 +393,7 @@
                       ../assets/img/gallery/bathrooms/bathr-02-1536x1152.avif 1536w,
                       ../assets/img/gallery/bathrooms/bathr-02-2048x1536.avif 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(50vw - 1rem)"
                   />
                   <source
                     type="image/webp"
@@ -359,6 +404,7 @@
                       ../assets/img/gallery/bathrooms/bathr-02-1536x1152.webp 1536w,
                       ../assets/img/gallery/bathrooms/bathr-02-2048x1536.webp 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(50vw - 1rem)"
                   />
                   <img
                     src="../assets/img/gallery/bathrooms/bathr-02-768x576.jpg"
@@ -369,7 +415,7 @@
                       ../assets/img/gallery/bathrooms/bathr-02-1536x1152.jpg 1536w,
                       ../assets/img/gallery/bathrooms/bathr-02-2048x1536.jpg 2048w
                     "
-                    sizes="(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(50vw - 1rem)"
                     width="768"
                     height="576"
                     loading="lazy"
@@ -397,6 +443,7 @@
                       ../assets/img/gallery/bathrooms/bathr-03-1536x1152.avif 1536w,
                       ../assets/img/gallery/bathrooms/bathr-03-2048x1536.avif 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(50vw - 1rem)"
                   />
                   <source
                     type="image/webp"
@@ -407,6 +454,7 @@
                       ../assets/img/gallery/bathrooms/bathr-03-1536x1152.webp 1536w,
                       ../assets/img/gallery/bathrooms/bathr-03-2048x1536.webp 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(50vw - 1rem)"
                   />
                   <img
                     src="../assets/img/gallery/bathrooms/bathr-03-768x576.jpg"
@@ -417,7 +465,7 @@
                       ../assets/img/gallery/bathrooms/bathr-03-1536x1152.jpg 1536w,
                       ../assets/img/gallery/bathrooms/bathr-03-2048x1536.jpg 2048w
                     "
-                    sizes="(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(50vw - 1rem)"
                     width="768"
                     height="576"
                     loading="lazy"
@@ -445,6 +493,7 @@
                       ../assets/img/gallery/bathrooms/bathr-04-1536x1152.avif 1536w,
                       ../assets/img/gallery/bathrooms/bathr-04-2048x1536.avif 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                   />
                   <source
                     type="image/webp"
@@ -455,6 +504,7 @@
                       ../assets/img/gallery/bathrooms/bathr-04-1536x1152.webp 1536w,
                       ../assets/img/gallery/bathrooms/bathr-04-2048x1536.webp 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                   />
                   <img
                     src="../assets/img/gallery/bathrooms/bathr-04-768x576.jpg"
@@ -465,7 +515,7 @@
                       ../assets/img/gallery/bathrooms/bathr-04-1536x1152.jpg 1536w,
                       ../assets/img/gallery/bathrooms/bathr-04-2048x1536.jpg 2048w
                     "
-                    sizes="(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                     width="768"
                     height="576"
                     loading="lazy"
@@ -493,6 +543,7 @@
                       ../assets/img/gallery/bathrooms/bathr-05-1536x1152.avif 1536w,
                       ../assets/img/gallery/bathrooms/bathr-05-2048x1536.avif 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                   />
                   <source
                     type="image/webp"
@@ -503,6 +554,7 @@
                       ../assets/img/gallery/bathrooms/bathr-05-1536x1152.webp 1536w,
                       ../assets/img/gallery/bathrooms/bathr-05-2048x1536.webp 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                   />
                   <img
                     src="../assets/img/gallery/bathrooms/bathr-05-768x576.jpg"
@@ -513,7 +565,7 @@
                       ../assets/img/gallery/bathrooms/bathr-05-1536x1152.jpg 1536w,
                       ../assets/img/gallery/bathrooms/bathr-05-2048x1536.jpg 2048w
                     "
-                    sizes="(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                     width="768"
                     height="576"
                     loading="lazy"
@@ -541,6 +593,7 @@
                       ../assets/img/gallery/bathrooms/bathr-06-1536x1152.avif 1536w,
                       ../assets/img/gallery/bathrooms/bathr-06-2048x1536.avif 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                   />
                   <source
                     type="image/webp"
@@ -551,6 +604,7 @@
                       ../assets/img/gallery/bathrooms/bathr-06-1536x1152.webp 1536w,
                       ../assets/img/gallery/bathrooms/bathr-06-2048x1536.webp 2048w
                     "
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                   />
                   <img
                     src="../assets/img/gallery/bathrooms/bathr-06-768x576.jpg"
@@ -561,7 +615,7 @@
                       ../assets/img/gallery/bathrooms/bathr-06-1536x1152.jpg 1536w,
                       ../assets/img/gallery/bathrooms/bathr-06-2048x1536.jpg 2048w
                     "
-                    sizes="(min-width: 980px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1140px) 357px, (min-width: 760px) calc(33.3vw - 1.5rem), calc(33.3vw - 1rem)"
                     width="768"
                     height="576"
                     loading="lazy"

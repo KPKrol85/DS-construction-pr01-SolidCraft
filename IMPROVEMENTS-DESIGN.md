@@ -173,17 +173,9 @@ Priorities express design value and dependency, not defect severity. P1 items es
 
 ### IMP-DESIGN-06 — Give service pages an image-led opening and an editorial gallery rhythm
 
-- **Status:** Proposed
-- **Priority:** P2
-- **Affected area:** header and gallery sections of the six `oferta/*.html` pages; `css/modules/subpages.css`.
-- **Evidence:** Visual: text-only header and 3 + 1 scope cards at 1440 px on `oferta/lazienki.html`. Runtime: the first image starts at 1,325 px at 390 px. Source: all six pages share the same structure (four scope cards, six gallery items, four FAQ items, end CTA).
-- **Current state:** service pages open without imagery, and galleries use an equal three-column grid.
-- **Design judgment:** the pages that should show the work most clearly show it last.
-- **Proposed improvement:** open each page with its anchor image (from the same image family as its home index entry, for continuity) next to the `h1` and lead. Present the four scope items as a numbered 2×2 matrix or list in the utility voice, matching the four-item content. Structure the gallery as one lead image plus a supporting grid, following the IMP-DESIGN-03 crop rules.
-- **Expected value:** continuity from home page to service page, immediate visual proof of the service, and a gallery with editorial emphasis.
-- **Implementation scope:** one shared template applied to all six pages. Preserve section IDs and `tabindex="-1"` landing behavior, scope-item IDs (for example `#hydroizolacja`), the lightbox contract (`.gallery-item`, `data-lb`, `data-lb-caption`, the `href` to the 2048 px JPG, single tab stop), the FAQ `details` markup, and the `?usluga=` CTA links.
-- **Dependencies:** IMP-DESIGN-01, IMP-DESIGN-02, IMP-DESIGN-03 (per-service galleries), IMP-DESIGN-05.
-- **Acceptance criteria:** on all six pages at 390×844, the first image is visible in the first viewport. At 768, 1024, and 1440 px the scope items form a complete grid with no orphan, and each gallery opens with one lead image. Every image still opens the lightbox, the `npm run qa:functional` lightbox scenarios pass, and both themes are verified.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** All six service pages open with the `h1` and lead beside their home-index service photograph from 760 px and above it on narrower screens, in a non-interactive, high-priority 4:3 frame with the home `alt` text. The four scope items keep their IDs, labels, and order and form a numbered 2×2 matrix from 760 px and a single column below, with `aria-hidden` 01–04 numbers in the utility voice. Each gallery keeps its six lightbox anchors in DOM order, with the lead image spanning two columns and two rows beside items 2–3 above items 4–6 (full width, halves, and thirds on mobile), and per-position `sizes` now also cover the AVIF and WebP sources, which previously defaulted to `100vw`.
+- **Verification:** `format:check`, `check:html`, `qa:a11y` (28 scans, 0 serious/critical), `qa:functional` (16/16), and `build:dist` passed, and a scripted Chromium pass over all six pages at 16 widths from 320 to 1920 px, including 720 px for 200% zoom, found no overflow, complete grids, aligned galleries, a 1–6 gallery tab order, no tab stop or lightbox trigger on the photograph, unchanged anchor landing, and settled reveals with and without motion and without JavaScript. At 390×844 the first image now starts at 356–482 px instead of 1,315–1,545 px, the photograph is the LCP element with CLS unchanged from baseline, all 36 gallery items opened the correct image with working arrows, focus trap, and Escape focus restoration, and the AVIF candidates selected on `lazienki.html` at 1440@1x fell from 533 to 115 KB. Light, dark, and system-dark views were inspected; only Chromium was tested, supporting thirds narrow to about 90 px at 320 px, and final visual approval rests with the owner.
 - **Impact:** Medium
 - **Effort:** Medium
 

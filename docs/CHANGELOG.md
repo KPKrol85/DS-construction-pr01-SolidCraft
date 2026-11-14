@@ -54,6 +54,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Replaced the 36 service-gallery photographs with approved workmanship illustrations in per-service `assets/img/gallery/` directories, updated their descriptions and demonstrational gallery wording, and added scoped forced regeneration and output-collision checks to the image pipeline.
 - Refined the home hero with improved text and focus contrast, a motion-aware Craft Spotlight, and pipeline-generated portrait imagery with optimized preloads.
 - Recomposed the home service range as an editorial index led by turnkey renovations, with numbered specialty rows, structured data in display order, and service images that link to the quote form instead of opening the lightbox.
+- Recomposed the six service pages with an image-led opening, a numbered scope matrix, and a lead-image gallery whose responsive sources now request images sized to their rendered widths.
 
 ### Fixed
 
