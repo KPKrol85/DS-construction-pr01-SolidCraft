@@ -189,17 +189,9 @@ Priorities express design value and dependency, not defect severity. P1 items es
 
 ### IMP-DESIGN-08 — Recast the demonstration proof sections as one honest, quiet proof band
 
-- **Status:** Proposed
-- **Priority:** P2
-- **Affected area:** `#realizacje` (`.partners`) and `#opinie` (`.testimonials`) in `index.html` and `sections.css`.
-- **Evidence:** Source: six SVG logos in bordered, shadowed, lifting tiles with `cursor: pointer` and no links; a mid-page "Formularz" CTA; four equal testimonial cards with hover lift; demo disclaimers `#partners-desc` and `#opinie-note`. Runtime: 620 px plus 905 px at 1440. Visual: the logos sit small inside large tiles.
-- **Current state:** two separate, card-heavy sections of sample content carry as much visual weight as the services.
-- **Design judgment:** sample proof should be quiet and clearly labeled, and should not be visually inflated.
-- **Proposed improvement:** present the logos as an unboxed monochrome strip with consistent optical size, and the testimonials as one featured pull quote with supporting quotes in the editorial type voice. Keep the disclaimers adjacent and legible, and review the mid-page "Formularz" CTA within the overall CTA hierarchy. As an optional slice, if the owner approves and IMP-DESIGN-03 assets exist, add honestly labeled work imagery under the `#realizacje` anchor.
-- **Expected value:** calmer mid-page pacing, no false affordances, and proof content presented with integrity.
-- **Implementation scope:** preserve the `#realizacje` and `#opinie` IDs and navigation labels unless the owner changes them, the `role="status"` rating, list semantics, `figure`/`blockquote`/`cite`, and the disclaimer text. No new quotes, ratings, or logos.
-- **Dependencies:** IMP-DESIGN-01, IMP-DESIGN-02; the optional slice depends on P-02 and IMP-DESIGN-03.
-- **Acceptance criteria:** logos render without tiles or hover affordances at one shared optical height, and no non-interactive element exposes a pointer cursor. One quote is visually primary, and disclaimers stay visible next to their content in both themes. The combined band is shorter than the current 1,525 px at 1440, and `qa:a11y` passes in both themes.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** `#realizacje` presents the six sample logos as an unboxed monochrome strip, three per row below 760 px and six in one row from 760 px, with per-asset scale factors toward one optical area and an inverted light ink in dark themes, including the no-JS system-dark theme, which previously left the logos black on navy. By owner decision, the mid-page "Formularz" CTA and its obsolete partner rules are removed, and the optional photography slice was not added. `#opinie` features the first quotation as a 24–32 px pull quote above the other three, which stack on mobile and form one hairline-ruled row from 640 px, while both disclaimers share the body-size note voice under their headings, and DOM order, IDs, ARIA relationships, `figure`/`blockquote`/`cite` semantics, and the rating are unchanged.
+- **Verification:** `format:check`, `check:html`, `qa:a11y` (28 scans, 0 serious/critical), `qa:functional` (16/16 on a standalone rerun after one contact-form timing scenario exceeded its 2 s anti-spam window under load), and `build:dist` passed. Scripted Chromium checks from 320 to 1440 px across light, dark, system, and no-JS themes, with reduced and full motion, matched all text, IDs, ARIA references, the rating, and the navigation targets with `HEAD` and found no links, pointer cursors, or hover changes in the band, no overflow or clipping, settled reveals, unchanged scroll CLS (0.0155), and disclaimer contrast of at least 5.31:1. The audit's 1,525 px included the `content-visibility` placeholder for `#opinie`; the rendered band at 1440 px fell from 1,295 to 1,149 px and at 390 px from 1,602 to 1,247 px, with only Chromium tested and final visual approval resting with the owner.
 - **Impact:** Medium
 - **Effort:** Small
 

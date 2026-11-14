@@ -596,103 +596,92 @@
   }
 }
 
-/* Partners */
+/* Proof band
+
+   The sample logos (#realizacje) and the sample testimonials (#opinie) read
+   as one quiet sequence: both heads carry their disclaimer in the note voice,
+   the inner edges share a shorter --section-py around the hairline, and the
+   band holds no call to action. */
+
+/* A disclaimer note reads at body size directly under its heading. */
+.block-head__lead--note {
+  margin-block: 0 var(--space-3);
+  font-size: var(--fs-body);
+}
 
 .partners {
-  --logo-slot-h: clamp(70px, 8vw, 96px);
-  --logo-img-h: clamp(24px, 6vw, 48px);
-  --logo-pad: var(--space-2);
-  --logo-radius: var(--radius-3);
-  --logo-min: 132px;
-  padding-block: var(--section-py-lg);
+  --logo-h: clamp(3rem, 2.6rem + 0.9vw, 3.5rem);
   position: relative;
+  padding-block: var(--section-py-lg) var(--section-py);
 }
 
+/* Sample logos are not links: an unboxed monochrome strip on open ground,
+   three per row on narrow screens and six in one row from 760 px. */
 .partners__grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(var(--logo-min), 1fr));
-  gap: var(--space-4);
-  align-items: stretch;
-  justify-items: stretch;
-  max-width: 1100px;
-  margin: var(--space-8) var(--space-4);
-  overflow: visible;
-  list-style: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: var(--space-6) var(--space-4);
+  margin: var(--space-7) 0 0;
   padding: 0;
+  list-style: none;
 }
 
-/* Sample logos are not links: they sit on open ground with no tile, lift or
-   pointer affordance. */
 .partners__item {
-  min-width: var(--logo-min);
-  height: var(--logo-slot-h);
-  padding: var(--logo-pad);
-  display: grid;
-  place-items: center;
-  border-radius: var(--logo-radius);
-  text-align: center;
-  letter-spacing: var(--ls-3);
-  font-weight: 500;
-}
-
-.partners__item a {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-  min-height: 56px;
-  padding: var(--space-2) var(--space-3);
-  border-radius: inherit;
-  text-decoration: none;
-}
-
-.partners__item a:focus-visible {
-  outline: 3px solid var(--ring);
-  outline-offset: 2px;
-}
-
-.partners__cta {
   display: flex;
   justify-content: center;
-  margin-top: clamp(var(--space-8), 4vw, var(--space-10));
-  text-transform: uppercase;
+  align-items: center;
 }
 
-.partners__cta .btn {
-  min-width: 220px;
-}
-
+/* Every artwork shares one 4:3 frame but fills it differently, so each logo
+   is scaled toward one optical area: wide, sparse marks grow and tall, dense
+   marks shrink. */
 .partners__logo {
   display: block;
-  height: var(--logo-img-h);
+  height: calc(var(--logo-h) * var(--logo-scale, 1));
   width: auto;
-  max-width: 90%;
+  max-width: 100%;
   object-fit: contain;
-  filter: none;
+  opacity: 0.72;
+  filter: grayscale(1);
 }
 
+.partners__logo[src$="partner-01-80x60.svg"] {
+  --logo-scale: 1.13;
+}
+
+.partners__logo[src$="partner-02-80x60.svg"] {
+  --logo-scale: 1.03;
+}
+
+.partners__logo[src$="partner-03-80x60.svg"] {
+  --logo-scale: 0.92;
+}
+
+.partners__logo[src$="partner-04-80x60.svg"],
+.partners__logo[src$="partner-05-80x60.svg"] {
+  --logo-scale: 0.96;
+}
+
+.partners__logo[src$="partner-06-80x60.svg"] {
+  --logo-scale: 0.9;
+}
+
+/* Dark grounds invert the black artwork to light ink; interior knockouts
+   such as the hat band stay visible. */
 :root[data-theme="dark"] .partners__logo {
-  filter: brightness(0) invert(1);
+  filter: grayscale(1) invert(1);
 }
 
-@media (min-width: 480px) {
-  .partners__grid {
-    grid-template-columns: repeat(3, minmax(var(--logo-min), 1fr));
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .partners__logo {
+    filter: grayscale(1) invert(1);
   }
 }
 
 @media (min-width: 760px) {
   .partners__grid {
-    grid-template-columns: repeat(4, minmax(var(--logo-min), 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .partners__grid {
-    grid-template-columns: repeat(6, minmax(var(--logo-min), 1fr));
-  }
-  .partners {
-    --logo-img-h: clamp(28px, 3vw, 40px);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
 
@@ -702,18 +691,12 @@
   scroll-margin-top: calc(var(--header-h) + var(--space-2));
 }
 
+#opinie {
+  padding-block-start: var(--section-py);
+}
+
 .testimonials__head {
-  margin-bottom: clamp(var(--space-7), 4vw, var(--space-9));
-}
-
-.testimonials__head .block-head__title {
-  margin-bottom: var(--space-3);
-}
-
-/* A disclaimer note reads at body size under its heading. */
-.block-head__lead--note {
-  margin-block: 0 var(--space-5);
-  font-size: var(--fs-body);
+  margin-bottom: var(--space-7);
 }
 
 .testimonials__rating {
@@ -756,61 +739,45 @@
   font-weight: 600;
 }
 
+/* One featured pull quote leads three supporting quotes. Quotes are content,
+   not controls: open ground, type and hairline rules only. Mobile stacks all
+   four; from 640 px the supporting quotes run in one ruled row of three under
+   the feature. */
 .testimonials__grid {
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
   padding: 0;
   list-style: none;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-4);
-  align-items: stretch;
-  justify-items: stretch;
 }
 
 .testimonials__item {
-  width: 100%;
-  display: flex;
+  border-top: 1px solid var(--c-border);
 }
 
-/* Quotes are content, not controls: open ground with a hairline rule. */
 .testimonials__card {
-  flex: 1;
-  width: 100%;
   margin: 0;
-  padding: var(--space-2) var(--space-4);
-  display: flex;
-  flex-direction: column;
-  border-inline-start: 1px solid var(--c-border);
+  padding-block: var(--space-5);
+}
+
+.testimonials__item:last-child .testimonials__card {
+  padding-block-end: 0;
 }
 
 .testimonials__quote {
-  margin: 0 0 var(--space-4);
+  margin: 0;
   letter-spacing: var(--ls-1);
-  hyphens: auto;
-  overflow-wrap: anywhere;
-}
-
-.testimonials__quote::before {
-  content: "“";
-  display: block;
-  margin-bottom: 0;
-  font-size: var(--fs-8);
-  line-height: 0.7;
-  color: var(--c-muted);
-  opacity: 0.5;
+  overflow-wrap: break-word;
 }
 
 .testimonials__quote p {
   margin: 0;
+  max-width: var(--measure);
   line-height: var(--lh-body);
 }
 
 .testimonials__author {
-  margin-top: auto;
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--c-border);
+  margin: var(--space-3) 0 0;
   color: var(--c-muted);
 }
 
@@ -819,15 +786,58 @@
   font-style: normal;
 }
 
-@media (min-width: 480px) {
-  .testimonials__grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.testimonials__item--featured {
+  border-top: 0;
 }
 
-@media (min-width: 1024px) {
+.testimonials__item--featured .testimonials__card {
+  padding-block: 0 var(--space-6);
+}
+
+/* The opening mark is decorative: empty alternative text keeps it out of the
+   accessible name where supported. */
+.testimonials__item--featured .testimonials__quote::before {
+  content: "“";
+  content: "“" / "";
+  display: block;
+  height: 0.5em;
+  font-family: var(--ff-display);
+  font-size: var(--fs-9);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--c-muted);
+  opacity: 0.5;
+}
+
+.testimonials__item--featured .testimonials__quote p {
+  max-width: 24ch;
+  font-size: var(--fs-7);
+  line-height: 1.35;
+  letter-spacing: var(--ls-0);
+  color: var(--c-ink);
+  text-wrap: balance;
+}
+
+.testimonials__item--featured .testimonials__author {
+  margin-top: var(--space-4);
+}
+
+@media (min-width: 640px) {
   .testimonials__grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--space-6);
+  }
+
+  .testimonials__item--featured {
+    grid-column: 1 / -1;
+  }
+
+  .testimonials__card {
+    padding-block-end: 0;
+  }
+
+  .testimonials__item--featured .testimonials__card {
+    padding-block-end: var(--space-6);
   }
 }
 
