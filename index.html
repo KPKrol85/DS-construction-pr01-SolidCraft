@@ -32,11 +32,22 @@
     <meta name="color-scheme" content="light dark" />
     <!-- Theme preload -->
     <script src="js/theme-init.js"></script>
+    <!-- Hero preloads mirror the art direction of the hero <picture>. -->
     <link
       rel="preload"
       as="image"
       type="image/avif"
-      imagesrcset="assets/img/hero/hero-800-450.avif 800w, assets/img/hero/hero-1200-675.avif 1200w, assets/img/hero/hero-1600-900.avif 1600w, assets/img/hero/hero-2400-1350.avif 2400w, assets/img/hero/hero-3200-1800.avif 3200w"
+      media="(orientation: landscape) and (min-width: 40em)"
+      imagesrcset="assets/img/hero/hero-600-600.avif 600w, assets/img/hero/hero-900-900.avif 900w, assets/img/hero/hero-1200-1200.avif 1200w, assets/img/hero/hero-1500-1500.avif 1500w, assets/img/hero/hero-1800-1800.avif 1800w"
+      imagesizes="(min-width: 71.25em) calc(50vw + 3rem), (max-height: 32em) 75vw, 62vw"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      media="not all and (orientation: landscape) and (min-width: 40em)"
+      imagesrcset="assets/img/hero/hero-480-360.avif 480w, assets/img/hero/hero-800-600.avif 800w, assets/img/hero/hero-1200-900.avif 1200w, assets/img/hero/hero-1600-1200.avif 1600w, assets/img/hero/hero-2000-1500.avif 2000w"
       imagesizes="100vw"
       fetchpriority="high"
     />
@@ -206,44 +217,88 @@
       aria-labelledby="hero-heading"
       aria-describedby="hero-lead"
     >
+      <!-- Art direction: a 1:1 crop for the landscape split, a 4:3 crop
+           above the text in portrait viewports. The media condition matches
+           the split layout in sections.css and the preloads above. -->
       <div class="hero__media" aria-hidden="true">
-        <div class="hero__bg-blur" aria-hidden="true"></div>
-        <picture class="hero__bg">
+        <picture class="hero__picture">
+          <source
+            media="(orientation: landscape) and (min-width: 40em)"
+            type="image/avif"
+            srcset="
+              assets/img/hero/hero-600-600.avif    600w,
+              assets/img/hero/hero-900-900.avif    900w,
+              assets/img/hero/hero-1200-1200.avif 1200w,
+              assets/img/hero/hero-1500-1500.avif 1500w,
+              assets/img/hero/hero-1800-1800.avif 1800w
+            "
+            sizes="(min-width: 71.25em) calc(50vw + 3rem), (max-height: 32em) 75vw, 62vw"
+            width="1200"
+            height="1200"
+          />
+          <source
+            media="(orientation: landscape) and (min-width: 40em)"
+            type="image/webp"
+            srcset="
+              assets/img/hero/hero-600-600.webp    600w,
+              assets/img/hero/hero-900-900.webp    900w,
+              assets/img/hero/hero-1200-1200.webp 1200w,
+              assets/img/hero/hero-1500-1500.webp 1500w,
+              assets/img/hero/hero-1800-1800.webp 1800w
+            "
+            sizes="(min-width: 71.25em) calc(50vw + 3rem), (max-height: 32em) 75vw, 62vw"
+            width="1200"
+            height="1200"
+          />
+          <source
+            media="(orientation: landscape) and (min-width: 40em)"
+            srcset="
+              assets/img/hero/hero-600-600.jpg    600w,
+              assets/img/hero/hero-900-900.jpg    900w,
+              assets/img/hero/hero-1200-1200.jpg 1200w,
+              assets/img/hero/hero-1500-1500.jpg 1500w,
+              assets/img/hero/hero-1800-1800.jpg 1800w
+            "
+            sizes="(min-width: 71.25em) calc(50vw + 3rem), (max-height: 32em) 75vw, 62vw"
+            width="1200"
+            height="1200"
+          />
           <source
             type="image/avif"
             srcset="
-              assets/img/hero/hero-800-450.avif    800w,
-              assets/img/hero/hero-1200-675.avif  1200w,
-              assets/img/hero/hero-1600-900.avif  1600w,
-              assets/img/hero/hero-2400-1350.avif 2400w,
-              assets/img/hero/hero-3200-1800.avif 3200w
+              assets/img/hero/hero-480-360.avif    480w,
+              assets/img/hero/hero-800-600.avif    800w,
+              assets/img/hero/hero-1200-900.avif  1200w,
+              assets/img/hero/hero-1600-1200.avif 1600w,
+              assets/img/hero/hero-2000-1500.avif 2000w
             "
             sizes="100vw"
           />
           <source
             type="image/webp"
             srcset="
-              assets/img/hero/hero-800-450.webp    800w,
-              assets/img/hero/hero-1200-675.webp  1200w,
-              assets/img/hero/hero-1600-900.webp  1600w,
-              assets/img/hero/hero-2400-1350.webp 2400w,
-              assets/img/hero/hero-3200-1800.webp 3200w
+              assets/img/hero/hero-480-360.webp    480w,
+              assets/img/hero/hero-800-600.webp    800w,
+              assets/img/hero/hero-1200-900.webp  1200w,
+              assets/img/hero/hero-1600-1200.webp 1600w,
+              assets/img/hero/hero-2000-1500.webp 2000w
             "
             sizes="100vw"
           />
           <img
-            src="assets/img/hero/hero-1600-900.jpg"
+            class="hero__img"
+            src="assets/img/hero/hero-1200-900.jpg"
             srcset="
-              assets/img/hero/hero-800-450.jpg    800w,
-              assets/img/hero/hero-1200-675.jpg  1200w,
-              assets/img/hero/hero-1600-900.jpg  1600w,
-              assets/img/hero/hero-2400-1350.jpg 2400w,
-              assets/img/hero/hero-3200-1800.jpg 3200w
+              assets/img/hero/hero-480-360.jpg    480w,
+              assets/img/hero/hero-800-600.jpg    800w,
+              assets/img/hero/hero-1200-900.jpg  1200w,
+              assets/img/hero/hero-1600-1200.jpg 1600w,
+              assets/img/hero/hero-2000-1500.jpg 2000w
             "
             sizes="100vw"
             alt=""
             aria-hidden="true"
-            width="1600"
+            width="1200"
             height="900"
             loading="eager"
             fetchpriority="high"
@@ -252,13 +307,14 @@
           />
         </picture>
       </div>
-      <div class="container hero__container">
+      <div class="container hero__body">
         <h1 id="hero-heading" class="hero__title">
-          SolidCraft — firma remontowo-budowlana
-          <br />
-          <span class="hero__accent accent">
-            Solidnie. Terminowo.
-            <br />
+          <span class="hero__kicker"
+            >SolidCraft — firma remontowo-budowlana</span
+          >
+          <span class="hero__promise">
+            Solidnie.<br />
+            Terminowo.<br />
             Pod klucz.
           </span>
         </h1>
@@ -271,20 +327,20 @@
           Remonty mieszkań i domów, przebudowy oraz kompleksowe wykończenia
           wnętrz. Darmowa wycena w 24–48 godzin.
         </p>
-        <div class="hero__cta hero-cta">
-          <a
-            class="btn btn--ghost"
-            href="#oferta"
-            data-reveal="up"
-            data-reveal-delay="160"
-            >Sprawdź ofertę</a
-          >
+        <div class="hero__cta">
           <a
             class="btn"
             href="tel:+48533537091"
             data-reveal="up"
-            data-reveal-delay="240"
+            data-reveal-delay="160"
             >Wyceń inwestycję</a
+          >
+          <a
+            class="btn btn--ghost"
+            href="#oferta"
+            data-reveal="up"
+            data-reveal-delay="240"
+            >Sprawdź ofertę</a
           >
         </div>
       </div>

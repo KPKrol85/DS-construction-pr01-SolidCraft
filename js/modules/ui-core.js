@@ -347,108 +347,10 @@ function initRipple() {
   }
 }
 
-/* Hero blur */
-
-function initHeroBlurSync() {
-  if (initHeroBlurSync._abort) initHeroBlurSync._abort.abort();
-  const ac = new AbortController();
-  const { signal } = ac;
-  initHeroBlurSync._abort = ac;
-  const img = document.querySelector(".hero__bg img");
-  const blur = document.querySelector(".hero__bg-blur");
-  if (!img || !blur) return;
-  const pic = img.closest("picture") || null;
-  let rafId = 0;
-  let debTimer = 0;
-  let lastBg = "";
-  const setBg = (url) => {
-    const want = `url("${url}")`;
-    if (want !== lastBg) {
-      blur.style.backgroundImage = want;
-      lastBg = want;
-      window.dispatchEvent(
-        new CustomEvent("hero:blurSync", { detail: { url } }),
-      );
-    }
-  };
-
-  const pickCurrentUrl = () => img.currentSrc || img.src || "";
-  const sync = () => {
-    if (!img.isConnected || !blur.isConnected) return;
-    const url = pickCurrentUrl();
-    if (url) setBg(url);
-  };
-
-  const syncNextFrame = () => {
-    if (rafId) cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(sync);
-  };
-
-  const syncDebounced = (ms = 150) => {
-    clearTimeout(debTimer);
-    debTimer = setTimeout(sync, ms);
-  };
-
-  img.addEventListener("load", syncNextFrame, { signal });
-
-  window.addEventListener("resize", () => syncDebounced(120), {
-    passive: true,
-    signal,
-  });
-
-  window.addEventListener("orientationchange", syncNextFrame, { signal });
-  document.addEventListener(
-    "visibilitychange",
-    () => {
-      if (document.visibilityState === "visible") syncNextFrame();
-    },
-    { signal },
-  );
-
-  const mqlColor = window.matchMedia?.("(prefers-color-scheme: dark)");
-  if (mqlColor?.addEventListener) {
-    mqlColor.addEventListener("change", syncNextFrame, { signal });
-  } else if (mqlColor?.addListener && !mqlColor.addEventListener) {
-    mqlColor.addListener(syncNextFrame);
-    signal.addEventListener("abort", () =>
-      mqlColor.removeListener(syncNextFrame),
-    );
-  }
-
-  const moAttrs = ["src", "srcset", "sizes", "media"];
-  const mo = new MutationObserver(syncNextFrame);
-  mo.observe(img, { attributes: true, attributeFilter: moAttrs });
-  if (pic) {
-    pic.querySelectorAll("source").forEach((s) => {
-      mo.observe(s, { attributes: true, attributeFilter: moAttrs });
-    });
-    const moChild = new MutationObserver(syncNextFrame);
-    moChild.observe(pic, { childList: true, subtree: true });
-    signal.addEventListener("abort", () => moChild.disconnect());
-  }
-
-  window.addEventListener(
-    "pagehide",
-    () => {
-      try {
-        mo.disconnect();
-      } catch {}
-      cancelAnimationFrame(rafId);
-      clearTimeout(debTimer);
-    },
-    { once: true, signal },
-  );
-
-  if (document.readyState === "complete") sync();
-  else window.addEventListener("load", sync, { once: true, signal });
-  syncNextFrame();
-}
-
 export {
   initFooterYear,
   initSmoothTop,
   initScrollReveal,
   initThemeToggle,
   initRipple,
-  initHeroBlurSync,
 };

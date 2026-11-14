@@ -1,166 +1,179 @@
-/* Hero */
+/* Hero — craft anchor.
+   One workmanship photograph and a text field on open ground: the photograph
+   leads above the text in portrait viewports and takes the second column of a
+   text | photograph split in landscape ones. The copy never sits on the
+   photograph, so its contrast follows the theme tokens rather than the
+   image. The split condition is mirrored by the <picture> sources and the
+   preloads in index.html. */
 
 .hero {
-  position: relative;
-  z-index: 0;
-  display: flex;
-  align-items: center;
-  padding: var(--section-py-lg) 0;
-  min-height: clamp(520px, 70vh, 820px);
+  display: grid;
   background: var(--c-bg);
-  overflow: hidden;
-  isolation: isolate;
-  --overlay-a: 0.38;
-}
-
-:root[data-theme="dark"] .hero {
-  --overlay-a: 0.62;
-}
-
-/* Light theme: the photograph carries off-white hero ink, so the scrim is
-   deepened just enough for the title to match the dark theme's contrast. */
-:root[data-theme="light"] .hero {
-  --overlay-a: 0.46;
+  border-block-end: 1px solid var(--c-border);
 }
 
 .hero__media {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  z-index: -2;
-  pointer-events: none;
+  position: relative;
+  overflow: hidden;
+  background: var(--c-bg-2);
 }
 
-.hero__bg-blur {
-  grid-area: 1 / 1;
-  background: center / cover no-repeat;
-  filter: blur(28px) saturate(105%);
-  transform: scale(1.1);
-  opacity: 0.9;
-  pointer-events: none;
-  will-change: transform, filter, opacity;
-}
-
-.hero__bg {
-  grid-area: 1 / 1;
+.hero__picture {
   display: block;
 }
 
-.hero__bg img {
+/* Portrait: a 4:3 crop at full width. On short screens it gives up height
+   first, keeping about 31rem below it for the header, title, lead and
+   actions, so the primary action stays in the first screen. */
+.hero__img {
   width: 100%;
-  height: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  max-height: max(12rem, 100vh - 31rem);
+  max-height: max(12rem, 100svh - 31rem);
   object-fit: cover;
-  object-position: 50% 40%;
-  filter: brightness(var(--hero-img-brightness, 0.98)) saturate(1.02);
-  pointer-events: none;
+  object-position: 50% 58%;
+  filter: brightness(var(--hero-img-brightness, 1));
   user-select: none;
 }
 
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, calc(var(--overlay-a) * 0.85)) 0%,
-    rgba(0, 0, 0, var(--overlay-a)) 58%,
-    rgba(0, 0, 0, calc(var(--overlay-a) * 0.4)) 100%
-  );
-  pointer-events: none;
+/* As a grid item with auto margins the container would shrink to its
+   content; the full width keeps the text on the page's start edge. */
+.hero__body {
+  width: 100%;
+  padding-block: var(--space-6) var(--section-py);
 }
 
 .hero__title {
-  text-align: center;
+  margin: 0;
+  font-size: var(--fs-9);
   line-height: var(--lh-tight);
-  text-wrap: balance;
-  font-size: var(--fs-display);
-  margin: var(--space-4) 0;
-  text-shadow:
-    0 3px 14px rgba(0, 0, 0, 0.35),
-    0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
-:root[data-theme="light"] .hero__title {
-  color: var(--bg);
+.hero__kicker {
+  display: block;
+  margin-block-end: var(--space-3);
+  color: var(--c-muted);
 }
 
-/* The promise line takes the title ink: amber is reserved for the hero's
-   primary action. */
-.hero__accent {
-  color: inherit;
+/* The brand promise in the display voice and title ink; amber stays with the
+   primary action and the marker. */
+.hero__promise {
+  display: block;
+  color: var(--c-ink);
 }
 
 .hero__lead {
-  margin: var(--space-4) auto;
-  text-wrap: balance;
-  text-align: center;
-}
-
-:root[data-theme="light"] .hero__lead {
-  color: color-mix(in srgb, white 90%, var(--c-ink) 10%);
-  text-shadow:
-    0 2px 10px rgba(0, 0, 0, 0.25),
-    0 1px 1px rgba(0, 0, 0, 0.1);
+  margin-block: var(--space-5) 0;
+  color: var(--c-muted);
 }
 
 .hero__cta {
   display: flex;
-  justify-content: center;
-  gap: var(--space-3);
   flex-wrap: wrap;
-  margin: 0;
-  padding-block: var(--space-4);
-  align-items: center;
+  gap: var(--space-3);
+  margin-block-start: var(--space-6);
 }
 
+/* Phones: full-width actions, stacked when they do not share a row. */
 .hero__cta .btn {
-  min-width: 220px;
+  flex: 1 1 auto;
+  min-height: 3rem;
+  padding-inline: var(--space-6);
   text-transform: uppercase;
-  text-align: center;
 }
 
-/* Light theme: the secondary action becomes a light chip with dark ink so it
-   stands off the scrimmed photograph; the amber primary is untouched. */
-:root[data-theme="light"] .hero__cta .btn--ghost {
-  background: var(--bg);
-}
-
-:root[data-theme="light"] .hero__cta .btn--ghost:is(:hover, :focus-visible) {
-  background: color-mix(in oklab, var(--bg), var(--fg) 12%);
-}
-
-@media (min-aspect-ratio: 21/9) {
-  .hero__bg img {
-    object-fit: contain;
+@media (min-width: 30em) {
+  .hero__cta .btn {
+    flex: 0 0 auto;
   }
 }
 
-@media (min-width: 480px) and (max-width: 759px) {
-  .hero__lead {
-    max-width: 28rem;
-  }
+/* The secondary action stands on open ground: an ink outline instead of the
+   translucent fill used over imagery. */
+.hero__cta .btn--ghost {
+  background: transparent;
+  border: 1px solid var(--c-muted);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
-@media (min-width: 760px) {
+.hero__cta .btn--ghost:is(:hover, :focus-visible) {
+  background: var(--c-tint);
+  border-color: var(--c-ink);
+}
+
+/* Landscape: the text column aligns with the page container and the 1:1 crop
+   fills the rest of the row to the viewport edge. */
+@media (orientation: landscape) and (min-width: 40em) {
   .hero {
-    --overlay-a: 0.3;
+    --hero-frame: min(100%, 1140px);
+    --hero-text: 0.46;
+    grid-template-columns:
+      [full-start] 1fr
+      [text-start] calc(var(--hero-frame) * var(--hero-text))
+      [text-end media-start] calc(var(--hero-frame) * (1 - var(--hero-text)))
+      1fr [full-end];
+    min-height: min(82vh, 52rem);
+    min-height: min(82svh, 52rem);
   }
-  :root[data-theme="dark"] .hero {
-    --overlay-a: 0.5;
+
+  .hero__media {
+    grid-row: 1;
+    grid-column: media-start / full-end;
+  }
+
+  .hero__img {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    max-height: none;
+    aspect-ratio: auto;
+    object-position: 50% 60%;
+  }
+
+  .hero__body {
+    grid-row: 1;
+    grid-column: text;
+    align-self: center;
+    margin: 0;
+    padding-block: var(--space-8);
+    padding-inline-end: var(--space-8);
+  }
+
+  .hero__promise {
+    font-size: min(var(--fs-9), 5.4vw);
   }
 }
 
-@media (min-width: 760px) and (max-width: 1023px) {
-  .hero__title {
-    max-width: 22ch;
-    margin-inline: auto;
-  }
-}
-
-@media (min-width: 1024px) {
+/* Short landscape (phones turned sideways, desktops at 200% zoom): a wider
+   text column, a title bound to the viewport height and a tighter rhythm keep
+   the row close to one screen, so the photograph's subject stays in view.
+   The narrower photograph favours the leading hand on the tile edge. */
+@media (orientation: landscape) and (min-width: 40em) and (max-height: 32em) {
   .hero {
-    min-height: clamp(560px, 68vh, 880px);
+    --hero-text: 0.54;
+  }
+
+  .hero__img {
+    object-position: 80% 60%;
+  }
+
+  .hero__body {
+    padding-block: var(--space-6);
+  }
+
+  .hero__promise {
+    font-size: min(var(--fs-9), 9vh);
+    font-size: min(var(--fs-9), 9svh);
+  }
+
+  .hero__cta {
+    margin-block-start: var(--space-5);
+  }
+
+  .hero__cta .btn {
+    padding-inline: var(--space-4);
   }
 }
 
@@ -173,12 +186,13 @@
 }
 
 /* Measured Craft marker: a short amber dimension line (|—|) set above each
-   section title. Decorative only; it travels with the heading's reveal and
-   follows the heading's alignment. */
+   section title and the hero title. Decorative only; it travels with the
+   heading's reveal and follows the heading's alignment. */
 :is(
     .block-head > :is(h1, h2):first-child,
     .cta__title,
-    .page-status__title
+    .page-status__title,
+    .hero__title
   )::before {
   content: "";
   display: block;

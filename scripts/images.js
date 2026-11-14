@@ -9,13 +9,29 @@ const PROJECT_ROOT = path.resolve(__dirname, "..");
 const SRC_ROOT = path.join(PROJECT_ROOT, "assets", "img-src");
 const OUT_ROOT = path.join(PROJECT_ROOT, "assets", "img");
 
+/* Art-directed hero crops. Each region is given as fractions of the 16:9
+   master, so it follows the master rather than fixed pixels, and both keep
+   the HERO-01 focal point (58%, 65%) on the tiler's hands, the tile and the
+   levelling clips. On the 3200×1800 master, split is 1800×1800 and stack is
+   2000×1500; no output is larger than its region. */
+const HERO_CROPS = {
+  /* 1:1 photograph column of the landscape text | photograph split. */
+  split: { left: 0.3, top: 0, width: 0.5625, height: 1 },
+  /* 4:3 image-first crop above the text in portrait viewports. */
+  stack: { left: 0.26875, top: 1 / 6, width: 0.625, height: 5 / 6 },
+};
+
 const HERO_SIZES = [
-  { width: 400, height: 225 },
-  { width: 800, height: 450 },
-  { width: 1200, height: 675 },
-  { width: 1600, height: 900 },
-  { width: 2400, height: 1350 },
-  { width: 3200, height: 1800 },
+  ...[600, 900, 1200, 1500, 1800].map((width) => ({
+    width,
+    height: width,
+    crop: HERO_CROPS.split,
+  })),
+  ...[480, 800, 1200, 1600, 2000].map((width) => ({
+    width,
+    height: (width * 3) / 4,
+    crop: HERO_CROPS.stack,
+  })),
 ];
 
 const SERVICE_SIZES = [
@@ -179,6 +195,56 @@ function expectedOutputsForFile(filePath, config) {
   return outputs;
 }
 
+/* Resolves every cropped output of a source to a pixel region of the source
+   as .rotate() hands it to .extract(), that is after EXIF auto-orientation.
+   Runs while planning, so a crop that falls outside the source or would have
+   to be upscaled stops the run before anything is written. */
+async function resolveCrops(filePath, outputs) {
+  if (!outputs.some((output) => output.size?.crop)) {
+    return;
+  }
+
+  const metadata = await sharp(filePath).metadata();
+  const [width, height] =
+    (metadata.orientation ?? 1) >= 5
+      ? [metadata.height, metadata.width]
+      : [metadata.width, metadata.height];
+
+  for (const output of outputs) {
+    const crop = output.size?.crop;
+    if (!crop) {
+      continue;
+    }
+    const region = {
+      left: Math.round(crop.left * width),
+      top: Math.round(crop.top * height),
+      width: Math.round(crop.width * width),
+      height: Math.round(crop.height * height),
+    };
+    if (
+      region.left < 0 ||
+      region.top < 0 ||
+      region.width < 1 ||
+      region.height < 1 ||
+      region.left + region.width > width ||
+      region.top + region.height > height
+    ) {
+      throw new Error(
+        `${relPath(filePath)}: crop ${JSON.stringify(crop)} falls outside the ${width}x${height} source`,
+      );
+    }
+    if (
+      region.width < output.size.width ||
+      region.height < output.size.height
+    ) {
+      throw new Error(
+        `${relPath(filePath)}: crop region ${region.width}x${region.height} is smaller than ${relPath(output.path)}; refusing to upscale`,
+      );
+    }
+    output.region = region;
+  }
+}
+
 async function buildForFile(filePath, outputs, { force = false } = {}) {
   const pending = [];
   for (const output of outputs) {
@@ -199,6 +265,9 @@ async function buildForFile(filePath, outputs, { force = false } = {}) {
     await ensureDir(path.dirname(output.path));
 
     let pipeline = sharp(buffer).rotate();
+    if (output.region) {
+      pipeline = pipeline.extract(output.region);
+    }
     if (output.size) {
       pipeline = pipeline.resize(output.size.width, output.size.height, {
         fit: "cover",
@@ -281,8 +350,8 @@ async function pruneObsolete(ownedDirs, expected, { dryRun = false } = {}) {
 }
 
 /* Resolves every source of the selected groups to its outputs before anything
-   is written, so a run either has one source per output path or stops without
-   touching the disk. Paths are compared case-insensitively because bathr-01.jpg
+   is written, so a run either has one source per output path and crops that
+   fit their sources, or stops without touching the disk. Paths are compared case-insensitively because bathr-01.jpg
    and Bathr-01.png name the same output files on Windows and macOS. */
 async function plan(groups, mode) {
   const sources = [];
@@ -325,6 +394,7 @@ async function plan(groups, mode) {
         claims.set(key, filePath);
         expected.add(output.path);
       }
+      await resolveCrops(filePath, outputs);
       if (outputs.length > 0) {
         sources.push({ filePath, outputs });
       }
