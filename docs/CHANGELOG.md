@@ -51,6 +51,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Established the Measured Craft material and accent system, reserving amber for actions, states, focus, and section markers and aligning theme and PWA colors with the palette.
 - Established an editorial typography hierarchy with display, text, and utility voices from the existing font pair, start-aligned section heads, and a shared reading measure for leads.
 - Replaced the home hero and service-card photography with approved workmanship images, moved service image variants to `assets/img/services/`, updated their descriptions, and gave the light-theme hero an off-white title and light secondary action over a deeper scrim.
+- Replaced the 36 service-gallery photographs with approved workmanship illustrations in per-service `assets/img/gallery/` directories, updated their descriptions and demonstrational gallery wording, and added scoped forced regeneration and output-collision checks to the image pipeline.
 
 ### Fixed
 

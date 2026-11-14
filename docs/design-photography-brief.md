@@ -3,7 +3,7 @@
 **Date:** 2026-11-12
 **Improvement:** IMP-DESIGN-03 — Define and apply a coherent workmanship photography system (`IMPROVEMENTS-DESIGN.md`)
 **Stage:** A — art direction, asset audit, and generation plan. No image, HTML, or pipeline change is made in this stage.
-**Status:** Stage C in progress — the hero and six home service images are integrated (section 5.4); the 36 gallery images are outstanding. IMP-DESIGN-03 is not complete.
+**Status:** Stage C complete — the hero, six home service images, and 36 gallery images are integrated (sections 5.4 and 5.5), and IMP-DESIGN-03 is completed. Section 1 records the Stage A state.
 **Direction:** Measured Craft (`IMPROVEMENTS-DESIGN.md`, sections 5–6).
 
 Stages: **A** (this document) → **B** generation and review of new AI-generated demonstrational images → **C** integration into `assets/img-src/`, regeneration, and HTML content updates.
@@ -46,6 +46,8 @@ This table records the former sources audited in Stage A; their replacements are
 | `oferta/remonty.jpg`     | `#oferta-kompleksowe`  | Hand sketching a kitchen with a red line-drawing overlay composite      | Misaligned | F (composite), M                                           |
 
 ### 1.4 Service galleries
+
+This table records the former flat `gallery/` sources audited in Stage A; their replacements are listed in section 5.5.
 
 | Source       | Depicts                                                   | Alignment  | Issues        |
 | ------------ | --------------------------------------------------------- | ---------- | ------------- |
@@ -168,7 +170,7 @@ Target ranges for any later change: H 45–55%, D 15–25%, F 15–25%, W at mos
 
 ## 3. Future shot list
 
-**Conventions.** IDs are stable shot labels; home service images map to the approved English basenames in `services/` (D5); gallery images keep their current basenames. Fields are role, target, scope anchor, subject and stage, shot and focal point, light, materials and tools, mood and exclusions, `alt`, and caption. Mood is the shared mood (section 2.2) unless an override is noted. Exclusions are X-G plus any item-specific exclusions. Crop: hero 16:9 at ≥3200×1800; home service images 4:3 at ≥1600×1200; gallery images 4:3 at ≥2048×1536. Gallery items run in work-stage order, and item 01 is the lead.
+**Conventions.** IDs are stable shot labels; home service images map to the approved English basenames in `services/` (D5); gallery images keep their prefixes in per-service directories under `gallery/`, with `tilling-0N` corrected to `tiling-0N` (D5, section 5.5). Fields are role, target, scope anchor, subject and stage, shot and focal point, light, materials and tools, mood and exclusions, `alt`, and caption. Mood is the shared mood (section 2.2) unless an override is noted. Exclusions are X-G plus any item-specific exclusions. Crop: hero 16:9 at ≥3200×1800; home service images 4:3 at ≥1600×1200; gallery images 4:3 at ≥2048×1536. Gallery items run in work-stage order, and item 01 is the lead.
 
 ### 3.1 Hero
 
@@ -243,7 +245,7 @@ Target ranges for any later change: H 45–55%, D 15–25%, F 15–25%, W at mos
 
 Service exclusions: freestanding luxury tubs, waterfalls, plants as decor, attic CGI, North-American vanities.
 
-#### LAZ-01 — `gallery/bathr-01.jpg` · `#hydroizolacja` · lead
+#### LAZ-01 — `gallery/bathrooms/bathr-01.jpg` · `#hydroizolacja` · lead
 
 - **Subject / stage:** a gloved hand brushing sealing tape into the first coat of grey-blue liquid membrane at the inside wall-floor corner of a shower zone; a pre-formed inner corner piece visible · stage: waterproofing. Shot type H.
 - **Shot / focal:** medium-close · focal (50%, 55%).
@@ -252,7 +254,7 @@ Service exclusions: freestanding luxury tubs, waterfalls, plants as decor, attic
 - **`alt`:** "Wtapianie taśmy uszczelniającej w pierwszą warstwę hydroizolacji w narożniku strefy prysznica"
 - **Caption:** "Hydroizolacja strefy prysznica — taśma i narożnik wtopione w pierwszą warstwę folii w płynie przed układaniem płytek."
 
-#### LAZ-02 — `gallery/bathr-02.jpg` · `#instalacje`
+#### LAZ-02 — `gallery/bathrooms/bathr-02.jpg` · `#instalacje`
 
 - **Subject / stage:** a wall-hung WC frame fixed to the wall, with a capped supply connection, drain bend, and nearby flush boxes, before boarding · stage: first-fix installations. Shot type D.
 - **Shot / focal:** medium · focal (50%, 50%).
@@ -261,7 +263,7 @@ Service exclusions: freestanding luxury tubs, waterfalls, plants as decor, attic
 - **`alt`:** "Stelaż podtynkowy WC z podejściami wodnym i kanalizacyjnym przed zabudową ściany"
 - **Caption:** "Instalacje przed zabudową — stelaż podtynkowy WC z podejściami wod-kan przygotowany do obudowy płytą."
 
-#### LAZ-03 — `gallery/bathr-03.jpg` · `#ukladanie-plytek`
+#### LAZ-03 — `gallery/bathrooms/bathr-03.jpg` · `#ukladanie-plytek`
 
 - **Subject / stage:** a tiler's hands setting the second half of a 45° mitred external corner on a shower niche and checking the meeting edges · stage: tiling. Shot type H.
 - **Shot / focal:** close · focal (48%, 50%) on the mitre line.
@@ -270,7 +272,7 @@ Service exclusions: freestanding luxury tubs, waterfalls, plants as decor, attic
 - **`alt`:** "Dopasowanie docinków pod 45° na narożniku wnęki prysznicowej"
 - **Caption:** "Układanie płytek — docinki pod 45° na narożniku wnęki, bez listwy, z równą spoiną."
 
-#### LAZ-04 — `gallery/bathr-04.jpg` · `#bialy-montaz`
+#### LAZ-04 — `gallery/bathrooms/bathr-04.jpg` · `#bialy-montaz`
 
 - **Subject / stage:** hands fitting the cover plate of a wall-mounted thermostatic shower mixer on finished tiles, with protective film on the adjacent tiles · stage: fixture installation. Shot type H.
 - **Shot / focal:** medium-close · focal (52%, 48%).
@@ -279,7 +281,7 @@ Service exclusions: freestanding luxury tubs, waterfalls, plants as decor, attic
 - **`alt`:** "Montaż baterii termostatycznej na wykończonej ścianie z płytek"
 - **Caption:** "Biały montaż — osadzenie baterii termostatycznej na podejściach przygotowanych przed układaniem płytek."
 
-#### LAZ-05 — `gallery/bathr-05.jpg` · `#bialy-montaz`
+#### LAZ-05 — `gallery/bathrooms/bathr-05.jpg` · `#bialy-montaz`
 
 - **Subject / stage:** finished shower floor — stainless linear drain along the wall, tiles laid to an even fall, uniform joints, silicone joint at the wall, dry surface · stage: finished. Shot type F.
 - **Shot / focal:** close, slightly high angle · focal (50%, 55%).
@@ -288,7 +290,7 @@ Service exclusions: freestanding luxury tubs, waterfalls, plants as decor, attic
 - **`alt`:** "Odpływ liniowy przy ścianie w posadzce z płytek ze spadkiem i równymi spoinami"
 - **Caption:** "Detal wykończenia — odpływ liniowy przy ścianie, posadzka ze spadkiem i silikon w narożniku."
 
-#### LAZ-06 — `gallery/bathr-06.jpg` · scope overview
+#### LAZ-06 — `gallery/bathrooms/bathr-06.jpg` · scope overview
 
 - **Subject / stage:** a finished compact apartment bathroom (about 4–5 m²) with a walk-in shower behind a fixed glass panel, light large-format porcelain, wall-hung WC, compact vanity, and mirror · stage: finished. Shot type W.
 - **Shot / focal:** wide from the doorway, 24–28 mm equivalent, verticals straight · focal (50%, 55%).
@@ -302,7 +304,7 @@ Service exclusions: freestanding luxury tubs, waterfalls, plants as decor, attic
 
 Service exclusions: facades, styled lounges, DIY couples, paint brand labels, saturated feature colours.
 
-#### MAL-01 — `gallery/paint-01.jpg` · `#gladzie-gipsowe` · lead
+#### MAL-01 — `gallery/painting/paint-01.jpg` · `#gladzie-gipsowe` · lead
 
 - **Subject / stage:** hands skimming gypsum finish onto a wall with a wide stainless finishing trowel, under raking light · stage: skim coat. Shot type H.
 - **Shot / focal:** medium-close · focal (50%, 52%).
@@ -311,7 +313,7 @@ Service exclusions: facades, styled lounges, DIY couples, paint brand labels, sa
 - **`alt`:** "Nakładanie gładzi gipsowej szeroką pacą na ścianę w świetle bocznym"
 - **Caption:** "Gładź gipsowa — wyrównanie ściany szeroką pacą przed szlifowaniem i gruntowaniem."
 
-#### MAL-02 — `gallery/paint-02.jpg` · `#przygotowanie-podloza`
+#### MAL-02 — `gallery/painting/paint-02.jpg` · `#przygotowanie-podloza`
 
 - **Subject / stage:** a crack reinforced with mesh tape and filler, a primer tray, masking tape along a window frame, and film on the floor · stage: substrate preparation. Shot type D.
 - **Shot / focal:** close · focal (45%, 50%).
@@ -320,7 +322,7 @@ Service exclusions: facades, styled lounges, DIY couples, paint brand labels, sa
 - **`alt`:** "Rysa wzmocniona siatką i szpachlą obok zabezpieczonej taśmą ramy okiennej"
 - **Caption:** "Przygotowanie podłoża — naprawa rysy z siatką zbrojącą i zabezpieczenie stolarki przed malowaniem."
 
-#### MAL-03 — `gallery/paint-03.jpg` · `#gladzie-gipsowe`
+#### MAL-03 — `gallery/painting/paint-03.jpg` · `#gladzie-gipsowe`
 
 - **Subject / stage:** the head of a dust-extraction wall sander with its hose resting on a smooth, flat skim coat · stage: dust-free sanding. Shot type D.
 - **Shot / focal:** close · focal (50%, 50%).
@@ -329,7 +331,7 @@ Service exclusions: facades, styled lounges, DIY couples, paint brand labels, sa
 - **`alt`:** "Szlifierka z odciągiem pyłu na wyrównanej gładzi w świetle bocznym"
 - **Caption:** "Szlif bezpyłowy — szlifierka z odciągiem pyłu i kontrola płaszczyzny w świetle bocznym."
 
-#### MAL-04 — `gallery/paint-04.jpg` · `#malowanie-sciany-sufity`
+#### MAL-04 — `gallery/painting/paint-04.jpg` · `#malowanie-sciany-sufity`
 
 - **Subject / stage:** a painter seen from the side or behind (shoulder and arm) rolling a second coat of warm-neutral paint with an extension pole, the floor protected · stage: painting. Shot type H.
 - **Shot / focal:** medium · focal (55%, 45%) on the roller.
@@ -338,7 +340,7 @@ Service exclusions: facades, styled lounges, DIY couples, paint brand labels, sa
 - **`alt`:** "Malarz nakłada wałkiem drugą warstwę farby na ścianę w zabezpieczonym pomieszczeniu"
 - **Caption:** "Malowanie ścian — drugie krycie wałkiem po zagruntowaniu i szlifie gładzi."
 
-#### MAL-05 — `gallery/paint-05.jpg` · `#dodatki-detale`
+#### MAL-05 — `gallery/painting/paint-05.jpg` · `#dodatki-detale`
 
 - **Subject / stage:** a crisp boundary between a muted clay or green-grey accent wall and a white-painted door casing · stage: finished detail. Shot type F.
 - **Shot / focal:** close · focal (50%, 50%) on the edge line.
@@ -347,7 +349,7 @@ Service exclusions: facades, styled lounges, DIY couples, paint brand labels, sa
 - **`alt`:** "Równe odcięcie koloru ściany akcentowej przy pomalowanej ościeżnicy"
 - **Caption:** "Dodatki i detale — ściana akcentowa z równym odcięciem przy odnowionej ościeżnicy."
 
-#### MAL-06 — `gallery/paint-06.jpg` · scope overview
+#### MAL-06 — `gallery/painting/paint-06.jpg` · scope overview
 
 - **Subject / stage:** an empty, freshly painted apartment bedroom — warm off-white walls, white ceiling, raking daylight showing a uniform finish, protective film rolled up in a corner, folded stepladder · stage: finished. Shot type W.
 - **Shot / focal:** wide, verticals straight · focal (50%, 50%).
@@ -360,7 +362,7 @@ Service exclusions: facades, styled lounges, DIY couples, paint brand labels, sa
 
 Service exclusions: sample walls, glossy empty showrooms, furniture assembly, bathrooms duplicating the Łazienki subjects.
 
-#### KAF-01 — `gallery/tilling-01.jpg` · `#ukladanie` · lead
+#### KAF-01 — `gallery/tiling/tiling-01.jpg` · `#ukladanie` · lead
 
 - **Subject / stage:** a tiler setting a large wall tile along a reference batten and pencil line, holding a spirit level against the row, with spacers in the joints · stage: tiling. Shot type H.
 - **Shot / focal:** medium · focal (50%, 50%).
@@ -369,7 +371,7 @@ Service exclusions: sample walls, glossy empty showrooms, furniture assembly, ba
 - **`alt`:** "Glazurnik osadza płytkę ścienną wzdłuż linii odniesienia i sprawdza ją poziomicą"
 - **Caption:** "Układanie płytek — pierwszy rząd osadzony na łacie i linii odniesienia, z kontrolą poziomu."
 
-#### KAF-02 — `gallery/tilling-02.jpg` · `#docinki`
+#### KAF-02 — `gallery/tiling/tiling-02.jpg` · `#docinki`
 
 - **Subject / stage:** hands scoring a porcelain tile on a manual rail cutter · stage: cutting. Shot type H.
 - **Shot / focal:** close · focal (50%, 55%) on the scoring wheel.
@@ -378,7 +380,7 @@ Service exclusions: sample walls, glossy empty showrooms, furniture assembly, ba
 - **`alt`:** "Docinanie płytki gresowej na przecinarce ręcznej"
 - **Caption:** "Docinki — precyzyjne cięcie płytki na przecinarce ręcznej przed montażem przy narożniku."
 
-#### KAF-03 — `gallery/tilling-03.jpg` · `#docinki`
+#### KAF-03 — `gallery/tiling/tiling-03.jpg` · `#docinki`
 
 - **Subject / stage:** a finished external wall corner with a brushed aluminium trim and an even joint along its full height · stage: finished detail. Shot type F.
 - **Shot / focal:** close, along the corner · focal (50%, 50%).
@@ -387,7 +389,7 @@ Service exclusions: sample walls, glossy empty showrooms, furniture assembly, ba
 - **`alt`:** "Zewnętrzny narożnik ściany wykończony szczotkowaną listwą aluminiową"
 - **Caption:** "Docinki i detale — narożnik zewnętrzny z listwą aluminiową i równą spoiną na całej wysokości."
 
-#### KAF-04 — `gallery/tilling-04.jpg` · `#hydroizolacja`
+#### KAF-04 — `gallery/tiling/tiling-04.jpg` · `#hydroizolacja`
 
 - **Subject / stage:** a sealing collar set into liquid membrane around a floor drain on a sloped screed, with a brush aside · stage: waterproofing. Shot type D.
 - **Shot / focal:** close, top-down at a slight angle · focal (50%, 50%).
@@ -396,7 +398,7 @@ Service exclusions: sample walls, glossy empty showrooms, furniture assembly, ba
 - **`alt`:** "Mankiet uszczelniający wokół odpływu w warstwie hydroizolacji posadzki"
 - **Caption:** "Hydroizolacja — mankiet uszczelniający wokół odpływu wtopiony w folię w płynie."
 
-#### KAF-05 — `gallery/tilling-05.jpg` · `#fugi`
+#### KAF-05 — `gallery/tiling/tiling-05.jpg` · `#fugi`
 
 - **Subject / stage:** a rubber grout float pressing cement grout diagonally into the joints of floor tiles, with a sponge bucket edge in frame · stage: grouting. Shot type H.
 - **Shot / focal:** close · focal (50%, 52%).
@@ -405,7 +407,7 @@ Service exclusions: sample walls, glossy empty showrooms, furniture assembly, ba
 - **`alt`:** "Fugowanie posadzki z płytek gumową pacą prowadzoną po przekątnej"
 - **Caption:** "Fugi i uszczelnienia — wypełnianie spoin fugą cementową, paca prowadzona po przekątnej."
 
-#### KAF-06 — `gallery/tilling-06.jpg` · scope overview
+#### KAF-06 — `gallery/tiling/tiling-06.jpg` · scope overview
 
 - **Subject / stage:** a finished hallway floor in large-format porcelain, with joints aligned to the walls and skirting fitted · stage: finished. Shot type W.
 - **Shot / focal:** wide, low-medium camera, verticals straight · focal (50%, 60%).
@@ -418,7 +420,7 @@ Service exclusions: sample walls, glossy empty showrooms, furniture assembly, ba
 
 Service exclusions: overhead lines, photovoltaics, industrial cabinets, hard-hat portraits, live work, non-EU conductor colours or sockets.
 
-#### ELE-01 — `gallery/elec-01.jpg` · `#instalacje` · lead
+#### ELE-01 — `gallery/electrical/elec-01.jpg` · `#instalacje` · lead
 
 - **Subject / stage:** hands fixing cables with clips in a wall chase that leads to Ø60 flush boxes at switch height, on a ceramic-block or concrete wall · stage: first-fix wiring. Shot type H.
 - **Shot / focal:** medium-close · focal (50%, 50%).
@@ -427,7 +429,7 @@ Service exclusions: overhead lines, photovoltaics, industrial cabinets, hard-hat
 - **`alt`:** "Elektryk mocuje przewody w bruździe prowadzącej do puszek podtynkowych"
 - **Caption:** "Instalacje od podstaw — przewody w bruzdach i puszki podtynkowe przed tynkowaniem."
 
-#### ELE-02 — `gallery/elec-02.jpg` · `#instalacje`
+#### ELE-02 — `gallery/electrical/elec-02.jpg` · `#instalacje`
 
 - **Subject / stage:** an assembled residential distribution board with the cover off — DIN rails with RCDs and breakers, N and PE bars, neatly combed EU-coloured conductors, blank labels · stage: after assembly, before the cover is fitted. Shot type D.
 - **Shot / focal:** close, frontal · focal (50%, 48%).
@@ -436,7 +438,7 @@ Service exclusions: overhead lines, photovoltaics, industrial cabinets, hard-hat
 - **`alt`:** "Rozdzielnica mieszkaniowa z wyłącznikami różnicowoprądowymi i uporządkowanym okablowaniem"
 - **Caption:** "Rozdzielnia — zabezpieczenia nadprądowe i różnicowoprądowe na szynie, przewody ułożone przed założeniem osłony."
 
-#### ELE-03 — `gallery/elec-03.jpg` · `#przerobki`
+#### ELE-03 — `gallery/electrical/elec-03.jpg` · `#przerobki`
 
 - **Subject / stage:** hands joining stripped conductors with unbranded lever connectors inside a flush box before the socket insert is fitted · stage: new circuit point. Shot type H.
 - **Shot / focal:** close · focal (50%, 52%).
@@ -445,7 +447,7 @@ Service exclusions: overhead lines, photovoltaics, industrial cabinets, hard-hat
 - **`alt`:** "Łączenie przewodów w puszce podtynkowej przed montażem gniazda"
 - **Caption:** "Przeróbki i nowe obwody — połączenia w puszce przygotowane pod nowe gniazdo."
 
-#### ELE-04 — `gallery/elec-04.jpg` · `#pomiary`
+#### ELE-04 — `gallery/electrical/elec-04.jpg` · `#pomiary`
 
 - **Subject / stage:** hands holding installation-tester probes at a type E socket; the display shows plausible digits with no brand · stage: measurements before handover. Shot type H.
 - **Shot / focal:** close · focal (55%, 50%).
@@ -454,7 +456,7 @@ Service exclusions: overhead lines, photovoltaics, industrial cabinets, hard-hat
 - **`alt`:** "Pomiar instalacji miernikiem przy gniazdzie na etapie odbioru"
 - **Caption:** "Pomiary — kontrola obwodu miernikiem instalacji przed sporządzeniem protokołu."
 
-#### ELE-05 — `gallery/elec-05.jpg` · `#oswietlenie`
+#### ELE-05 — `gallery/electrical/elec-05.jpg` · `#oswietlenie`
 
 - **Subject / stage:** a lit LED strip in a recessed aluminium profile with diffuser in a plasterboard ceiling cove, giving an even line with no visible dots · stage: finished lighting. Shot type F.
 - **Shot / focal:** close-medium · focal (50%, 45%).
@@ -463,7 +465,7 @@ Service exclusions: overhead lines, photovoltaics, industrial cabinets, hard-hat
 - **`alt`:** "Taśma LED w aluminiowym profilu dająca równą linię światła"
 - **Caption:** "Oświetlenie — taśma LED w profilu aluminiowym z dyfuzorem, równa linia światła bez punktów."
 
-#### ELE-06 — `gallery/elec-06.jpg` · `#przerobki`
+#### ELE-06 — `gallery/electrical/elec-06.jpg` · `#przerobki`
 
 - **Subject / stage:** a double socket and a switch installed level and in one line on a smooth painted wall above a kitchen worktop · stage: finished. Shot type F.
 - **Shot / focal:** medium · focal (50%, 50%).
@@ -476,7 +478,7 @@ Service exclusions: overhead lines, photovoltaics, industrial cabinets, hard-hat
 
 Service exclusions: industrial hydraulics, fittings still lifes, posed clients, tablets, kitchen showrooms.
 
-#### HYD-01 — `gallery/plum-01.jpg` · `#instalacje` · lead
+#### HYD-01 — `gallery/plumbing/plum-01.jpg` · `#instalacje` · lead
 
 - **Subject / stage:** hands connecting PEX circuits to a manifold with valves inside an installation cabinet · stage: first-fix installation. Shot type H.
 - **Shot / focal:** medium-close · focal (50%, 50%).
@@ -485,7 +487,7 @@ Service exclusions: industrial hydraulics, fittings still lifes, posed clients, 
 - **`alt`:** "Podłączanie rur PEX do rozdzielacza z zaworami w szafce instalacyjnej"
 - **Caption:** "Instalacje od podstaw — rozdzielacz z zaworami i podłączone obwody rur PEX."
 
-#### HYD-02 — `gallery/plum-02.jpg` · `#instalacje`
+#### HYD-02 — `gallery/plumbing/plum-02.jpg` · `#instalacje`
 
 - **Subject / stage:** supply pipes in blue and red insulation sleeves, routed in parallel and clipped in wall chases before plastering · stage: pipe routing. Shot type D.
 - **Shot / focal:** medium · focal (50%, 50%).
@@ -494,7 +496,7 @@ Service exclusions: industrial hydraulics, fittings still lifes, posed clients, 
 - **`alt`:** "Rury w otulinach poprowadzone równolegle w bruzdach przed tynkowaniem"
 - **Caption:** "Trasy instalacji — rury w otulinach poprowadzone i zamocowane przed zakryciem."
 
-#### HYD-03 — `gallery/plum-03.jpg` · `#przerobki-naprawy`
+#### HYD-03 — `gallery/plumbing/plum-03.jpg` · `#przerobki-naprawy`
 
 - **Subject / stage:** two spanners tightening a compression fitting on a replaced pipe section under a kitchen sink · stage: repair. Shot type H.
 - **Shot / focal:** close · focal (50%, 55%).
@@ -503,7 +505,7 @@ Service exclusions: industrial hydraulics, fittings still lifes, posed clients, 
 - **`alt`:** "Dokręcanie złączki przy wymianie odcinka rury pod zlewem"
 - **Caption:** "Przeróbki i naprawy — wymiana odcinka rury i nowa złączka pod zlewem kuchennym."
 
-#### HYD-04 — `gallery/plum-04.jpg` · `#uszczelnienia-proby`
+#### HYD-04 — `gallery/plumbing/plum-04.jpg` · `#uszczelnienia-proby`
 
 - **Subject / stage:** a pressure gauge connected to the installation through a test pump, with a steady needle and capped outlets · stage: pressure test. Shot type D.
 - **Shot / focal:** close · focal (50%, 45%) on the gauge face.
@@ -512,7 +514,7 @@ Service exclusions: industrial hydraulics, fittings still lifes, posed clients, 
 - **`alt`:** "Manometr podłączony do instalacji podczas próby ciśnieniowej"
 - **Caption:** "Uszczelnienia i próby — próba ciśnieniowa instalacji przed zakryciem i sporządzeniem protokołu."
 
-#### HYD-05 — `gallery/plum-05.jpg` · `#bialy-montaz`
+#### HYD-05 — `gallery/plumbing/plum-05.jpg` · `#bialy-montaz`
 
 - **Subject / stage:** hands connecting a chrome bottle trap under a wall-hung basin to the drain outlet · stage: fixture installation. Shot type H.
 - **Shot / focal:** medium-close · focal (50%, 55%).
@@ -521,7 +523,7 @@ Service exclusions: industrial hydraulics, fittings still lifes, posed clients, 
 - **`alt`:** "Montaż syfonu pod umywalką podwieszaną"
 - **Caption:** "Biały montaż — podłączenie syfonu umywalkowego do podejścia kanalizacyjnego."
 
-#### HYD-06 — `gallery/plum-06.jpg` · `#bialy-montaz`
+#### HYD-06 — `gallery/plumbing/plum-06.jpg` · `#bialy-montaz`
 
 - **Subject / stage:** a finished wall-hung basin with tap and chrome trap, clean silicone at the tiled wall · stage: finished. Shot type F.
 - **Shot / focal:** medium · focal (50%, 50%).
@@ -534,7 +536,7 @@ Service exclusions: industrial hydraulics, fittings still lifes, posed clients, 
 
 Service exclusions: CGI split images, North-American kitchens, repeated scenes, showroom kitchens.
 
-#### REM-01 — `gallery/reno-01.jpg` · `#zakres` · lead
+#### REM-01 — `gallery/renovations/reno-01.jpg` · `#zakres` · lead
 
 - **Subject / stage:** an apartment mid-renovation — fresh plaster, flush boxes in place, the floor protected, materials stacked neatly, a stepladder · stage: after first-fix and plastering. Shot type W.
 - **Shot / focal:** wide, verticals straight · focal (50%, 55%); key elements within the central 60% width.
@@ -543,7 +545,7 @@ Service exclusions: CGI split images, North-American kitchens, repeated scenes, 
 - **`alt`:** "Mieszkanie w trakcie remontu z uporządkowanymi materiałami i zabezpieczoną podłogą"
 - **Caption:** "Pełny zakres prac — mieszkanie po pracach instalacyjnych i tynkarskich, przed wykończeniem."
 
-#### REM-02 — `gallery/reno-02.jpg` · `#projekty`
+#### REM-02 — `gallery/renovations/reno-02.jpg` · `#projekty`
 
 - **Subject / stage:** a site table with a tile sample, an oak board, an unbranded paint swatch fan, a printed floor plan with unreadable linework, and a tape measure · stage: design and material selection. Shot type D.
 - **Shot / focal:** close-medium, slightly high angle · focal (50%, 50%).
@@ -552,7 +554,7 @@ Service exclusions: CGI split images, North-American kitchens, repeated scenes, 
 - **`alt`:** "Próbki płytek, deski i kolorów farby obok rzutu mieszkania na stole roboczym"
 - **Caption:** "Projekty i wybór materiałów — zestawienie próbek do zatwierdzenia przed zamówieniem."
 
-#### REM-03 — `gallery/reno-03.jpg` · `#koordynacja`
+#### REM-03 — `gallery/renovations/reno-03.jpg` · `#koordynacja`
 
 - **Subject / stage:** a hand holding a laser distance meter against a door opening, next to a pencil mark on the reveal · stage: site measurement. Shot type H.
 - **Shot / focal:** close · focal (50%, 50%).
@@ -561,7 +563,7 @@ Service exclusions: CGI split images, North-American kitchens, repeated scenes, 
 - **`alt`:** "Pomiar otworu drzwiowego dalmierzem laserowym przed zamówieniem materiałów"
 - **Caption:** "Koordynacja i harmonogram — pomiary na miejscu przed zamówieniem drzwi i materiałów."
 
-#### REM-04 — `gallery/reno-04.jpg` · `#zakres`
+#### REM-04 — `gallery/renovations/reno-04.jpg` · `#zakres`
 
 - **Subject / stage:** hands setting an interior door frame plumb with a spirit level and wedges · stage: joinery fitting. Shot type H.
 - **Shot / focal:** medium · focal (48%, 45%).
@@ -570,7 +572,7 @@ Service exclusions: CGI split images, North-American kitchens, repeated scenes, 
 - **`alt`:** "Osadzanie ościeżnicy drzwi wewnętrznych z kontrolą pionu"
 - **Caption:** "Prace wykończeniowe — osadzenie ościeżnicy w pionie i poziomie przed montażem skrzydła."
 
-#### REM-05 — `gallery/reno-05.jpg` · `#zakres`
+#### REM-05 — `gallery/renovations/reno-05.jpg` · `#zakres`
 
 - **Subject / stage:** a kitchen fit-out detail — worktop joint, tiled splashback, and sockets above the worktop in one line, with matte fronts · stage: finished detail. Shot type F.
 - **Shot / focal:** medium · focal (50%, 50%).
@@ -579,7 +581,7 @@ Service exclusions: CGI split images, North-American kitchens, repeated scenes, 
 - **`alt`:** "Detal zabudowy kuchennej z blatem, okładziną ścienną i gniazdami nad blatem"
 - **Caption:** "Zabudowa i instalacje — blat, okładzina i osprzęt elektryczny zgrane w jednej linii."
 
-#### REM-06 — `gallery/reno-06.jpg` · `#gwarancja`
+#### REM-06 — `gallery/renovations/reno-06.jpg` · `#gwarancja`
 
 - **Subject / stage:** a living room after full renovation — smooth walls, oak floor, skirting, ceiling lights, window daylight, minimal or no furniture · stage: ready for handover. Shot type W.
 - **Shot / focal:** wide, verticals straight · focal (50%, 55%).
@@ -604,13 +606,13 @@ Service exclusions: CGI split images, North-American kitchens, repeated scenes, 
 
 ### 5.1 Files and content
 
-- **Sources:** replace the 43 files in `assets/img-src/{hero,services,gallery}/` with the approved masters; home service images use the approved English basenames, and gallery basenames are kept unless D5 decides otherwise.
+- **Sources:** replace the 43 files in `assets/img-src/{hero,services,gallery}/` with the approved masters; home service images use the approved English basenames, and gallery masters use six per-service directories (section 5.5).
 - **Outputs:** regenerate `assets/img/{hero,services,gallery}/` as described in section 5.3, never by hand.
 - **`alt`:** update 6 on `index.html` and 36 across `oferta/*.html` from section 3; the hero keeps `alt=""`.
 - **Captions:** update all 36 `data-lb-caption` values from section 3.
 - **Gallery heading and lead:** update on all six service pages if D3 is approved.
 - **Provenance:** add the record described in section 6.
-- **Unchanged:** `width` and `height` attributes, `srcset` and `sizes` contracts, `SERVICE_SIZES` and `GALLERY_SIZES`, the hero preload, and the lightbox contract (`.gallery-item`, `data-lb`, `data-lb-caption`, 2048 px `href`). Aspect ratios do not change.
+- **Unchanged:** `width` and `height` attributes, `srcset` and `sizes` contracts, `SERVICE_SIZES` and `GALLERY_SIZES`, the hero preload, and the lightbox contract (`.gallery-item`, `data-lb`, `data-lb-caption`, 2048 px `href`). Aspect ratios do not change; gallery URLs gain their category directory.
 
 ### 5.2 Verification for Stage C
 
@@ -622,17 +624,18 @@ Service exclusions: CGI split images, North-American kitchens, repeated scenes, 
 
 ### 5.3 Image-pipeline implications (verified in `scripts/images.js` and `sw.js`)
 
-- **Existing outputs are never overwritten.** `buildForFile` skips any output path that already exists, and pruning removes only names that the current sources would not produce. Replacing a source under the same basename therefore leaves the old AVIF, WebP, and JPG outputs in place. This is evidenced by the Canva XMP still present in 206 of 210 committed JPG outputs, while a scratch run of the same sharp calls writes neither XMP nor EXIF. Stage C must run `npm run images:clean` and then `npm run images:build`.
-- **`images:clean` empties all five owned directories,** including `og/` and `screenshots/`, and `images:build` regenerates them from their sources. Review that binary diff (expect 630 regenerated hero, services, and gallery files plus the `og/` and `screenshots/` variants).
-- **Renaming sources** lets pruning remove the old outputs automatically, but requires updating every `srcset`, `src`, `href`, and the preload in the HTML, plus the `bathr-0N` selectors in `scripts/functional/lightbox.mjs`. The home service sources were renamed in `services/` with these updates; gallery basenames, including `tilling`, are unchanged, which keeps the gallery stage to content only.
+- **Existing outputs are skipped unless forced.** A plain `images:build` skips output paths that already exist, so replacing a source under the same name keeps its stale variants; Stage A found Canva XMP in 206 of 210 committed JPG outputs for this reason. `--force` regenerates the selected outputs in place, and `--only=<group>` limits a build, clean, or dry run to named groups. A forced re-run of unchanged sources reproduces byte-identical files.
+- **Category subdirectories:** a source keeps its subdirectory below the group input, so `gallery/bathrooms/bathr-01.jpg` produces `assets/img/gallery/bathrooms/bathr-01-<w>x<h>.<ext>`. Outputs are planned for all sources before anything is written: two sources that would produce the same path (compared case-insensitively) stop the run, and no output may leave its group's directory.
+- **Cleanup:** pruning deletes every file in a selected owned directory that the current sources would not produce, then removes empty subdirectories. `images:clean` without `--only` still empties all five owned directories, including `og/` and `screenshots/`.
+- **Renaming sources** lets pruning remove the old outputs automatically, but requires updating every `srcset`, `src`, `href`, and the preload in the HTML. The home service sources were renamed in `services/`, and the gallery moved to category directories with the `tiling` prefix (section 5.5). The lightbox scenarios select items by `href` suffix (`bathr-0N-2048x1536.jpg`) and needed no change.
 - **Crop and scale:** the pipeline resizes with `fit: cover, position: center` and enlarges smaller inputs, so masters must already have the target aspect and at least the largest size (section 2.6). Accepted inputs are `.jpg`, `.jpeg`, and `.png`.
-- **No staging inside source directories.** Every image file in `hero/`, `services/`, or `gallery/` becomes an output set. A portrait hero master placed in `hero/` would be cropped to 16:9 and published, so a portrait master waits until IMP-DESIGN-04 adds a variant to `scripts/images.js`.
-- **Service worker:** images are runtime-cached cache-first by URL. Same-URL replacements reach returning visitors only when `CACHE_VERSION` changes, which happens because Stage C also changes the precached HTML. An image-only swap without HTML changes would keep the old cached images for returning visitors.
-- **Documentation gap:** `docs/settings.md` and `README.md` say to run `images:build` after changing source images, without noting the skip-existing behaviour. Correcting that, or adding a regeneration option to the pipeline, is a separate owner decision (D8).
+- **No staging inside source directories.** Every image file in `hero/`, `services/`, or `gallery/`, including its category subdirectories, becomes an output set. A portrait hero master placed in `hero/` would be cropped to 16:9 and published, so a portrait master waits until IMP-DESIGN-04 adds a variant to `scripts/images.js`.
+- **Service worker:** images are runtime-cached cache-first by URL. Same-URL replacements reach returning visitors only when `CACHE_VERSION` changes. The gallery's category URLs are new, so they are fetched on first use, and the changed precached HTML changes `CACHE_VERSION`, so activation deletes the old cache with its flat gallery entries. An image-only swap without HTML changes would keep the old cached images for returning visitors.
+- **Documentation:** `docs/settings.md` and `README.md` describe skip-existing builds, `--force`, `--only`, and the gallery category mapping (D8).
 
 ### 5.4 Home stage — hero and six home service images
 
-- **Status:** integrated and verified on 2026-11-12; the 36 gallery images are outstanding.
+- **Status:** integrated and verified on 2026-11-12; the gallery followed in section 5.5.
 - **Sources:** `hero/hero.jpg` (HERO-01) and `services/{bathrooms,painting,tiling,electrical,plumbing,renovations}.jpg` (HOME-LAZ, HOME-MAL, HOME-KAF, HOME-ELE, HOME-HYD, HOME-REM) at 3200×1800 and 1600×1200, so no output is upscaled.
 - **Outputs:** the `scripts/images.js` group is renamed to `services` with unchanged sizes. `assets/img/hero/` (18 files) and `assets/img/services/` (72 files) were regenerated through `images:clean` → `images:build`, and the re-encoded `gallery/`, `og/`, and `screenshots/` outputs were restored to their committed files.
 - **Markup:** the six `index.html` cards reference `assets/img/services/` and use the section 3.2 `alt` text; the hero markup, its preload, and the `oferta/*.html` routes are unchanged.
@@ -640,16 +643,25 @@ Service exclusions: CGI split images, North-American kitchens, repeated scenes, 
 - **Light-theme correction:** the hero title takes off-white ink, the light-theme scrim is raised to `--overlay-a: 0.46`, and "Sprawdź ofertę" becomes a light chip with dark ink, so the title matches the dark theme's sampled contrast.
 - **Open:** the hero lead and focus ring remain weak over the photograph in places; P-01 remains open for IMP-DESIGN-04.
 
+### 5.5 Gallery stage — 36 service gallery images
+
+- **Status:** integrated and verified on 2026-11-14.
+- **Sources:** `gallery/{bathrooms,electrical,painting,plumbing,renovations,tiling}/` hold six masters each (LAZ, ELE, MAL, HYD, REM, KAF) at 2048×1536 with no EXIF or XMP. The 36 flat Canva sources were removed, and `tilling-0N` became `tiling-0N`.
+- **Outputs:** `images:build --only=gallery` generated 540 files (36 masters × 5 sizes × AVIF, WebP, and JPG) in six category directories and pruned the 540 flat variants; no other group was regenerated.
+- **Markup:** the six `oferta/*.html` galleries reference the category paths and use the section 3 `alt` and caption text, with the D3 heading "Etapy i detale prac" and lead "Ilustracje demonstracyjne pokazujące kolejne etapy i standard wykonania." The third item's 2048 px WebP candidate, which pointed at item 01 on every page, now points at its own image.
+- **Deviations from the shot specs in the approved images:** partial faces in MAL-04 and REM-04; a legible meter reading and breaker ratings in ELE-04 and ELE-02; decorative plants in ELE-05, ELE-06, HYD-05, and REM-02; the crew's orange glove cuffs continue.
+- **Unchanged:** sizes, `sizes` attributes, intrinsic dimensions, lazy loading, and the lightbox behaviour; captions stay undisplayed (D9).
+
 ## 6. Provenance record (proposed format)
 
-- **Status:** `assets/img-src/PROVENANCE.md` records the seven home-stage images; gallery rows are added with the gallery stage.
+- **Status:** `assets/img-src/PROVENANCE.md` records all 43 images. Generation tool, dates, prompts, seeds, and terms were not supplied and remain "Not recorded" (D4).
 - **Location:** `assets/img-src/PROVENANCE.md`, next to the canonical sources, following the `assets/fonts/README.md` precedent. `build:dist` excludes `assets/img-src/`, so the record is not published, and `scripts/images.js` does not scan the `assets/img-src/` root.
 - **Header statement:** all hero, home service, and gallery images are AI-generated demonstrational illustrations; they depict no real project, client, address, person, or brand. The record also notes that they replace Canva exports dated 2025-08-20 to 2025-10-18.
 - **Table, one row per image:**
 
-| ID     | Source file            | Role / page                   | Tool and model (version) | Generated  | Prompt ref | Seed / job ID | Post-processing   | Approved   | Terms note                                |
-| ------ | ---------------------- | ----------------------------- | ------------------------ | ---------- | ---------- | ------------- | ----------------- | ---------- | ----------------------------------------- |
-| LAZ-01 | `gallery/bathr-01.jpg` | Gallery lead, `lazienki.html` | e.g. tool and model v1   | YYYY-MM-DD | P-LAZ-01   | …             | crop 4:3; grade G | YYYY-MM-DD | Commercial and demo use permitted (owner) |
+| ID     | Source file                      | Role / page                   | Tool and model (version) | Generated  | Prompt ref | Seed / job ID | Post-processing   | Approved   | Terms note                                |
+| ------ | -------------------------------- | ----------------------------- | ------------------------ | ---------- | ---------- | ------------- | ----------------- | ---------- | ----------------------------------------- |
+| LAZ-01 | `gallery/bathrooms/bathr-01.jpg` | Gallery lead, `lazienki.html` | e.g. tool and model v1   | YYYY-MM-DD | P-LAZ-01   | …             | crop 4:3; grade G | YYYY-MM-DD | Commercial and demo use permitted (owner) |
 
 - **Prompts:** the full prompt text for each `Prompt ref` is kept in the same file, under a per-batch heading with per-image differences.
 - **Metadata:** generated outputs are written without metadata, so this repository record is the provenance of record.
@@ -658,10 +670,10 @@ Service exclusions: CGI split images, North-American kitchens, repeated scenes, 
 
 1. **D1 — Shared visual direction (section 2):** subject strategy, crew look without faces, lighting profiles, one warm-neutral grade, crop rules, and type proportions.
 2. **D2 — Shot list (section 3):** the 43 specifications, service by service, including the subject choices for HERO-01 and the six home images.
-3. **D3 — Demonstrational wording:** the gallery heading and lead on all six pages. The current "Galeria realizacji" and "Kilka ujęć z ostatnich prac — więcej na życzenie." present the images as recent work. Proposed heading: "Etapy i detale prac". Proposed lead: "Ilustracje demonstracyjne pokazujące kolejne etapy i standard wykonania." Captions follow section 2.8.
+3. **D3 — Demonstrational wording:** the gallery heading and lead on all six pages. The current "Galeria realizacji" and "Kilka ujęć z ostatnich prac — więcej na życzenie." present the images as recent work. Proposed heading: "Etapy i detale prac". Proposed lead: "Ilustracje demonstracyjne pokazujące kolejne etapy i standard wykonania." Captions follow section 2.8. **Resolved:** approved and applied on all six pages (section 5.5).
 4. **D4 — Provenance:** the record format and location (section 6), the generation tool, and confirmation that its terms permit this use. The owner confirms the rights; this brief does not assess them.
-5. **D5 — Filenames:** keep the current basenames (recommended for Stage C), or rename them as a separate change with HTML and test updates.
+5. **D5 — Filenames:** keep the current basenames (recommended for Stage C), or rename them as a separate change with HTML and test updates. **Resolved:** home service images use English basenames, and gallery images use per-service directories with the `tiling` prefix (section 5.5).
 6. **D6 — Hero scope:** approve the 16:9 HERO-01 now, and defer the portrait master to IMP-DESIGN-04. Under the current centred hero layout, text legibility still depends on the overlay (P-01).
 7. **D7 — Copy outside this task:** the Elektryka home card description ("Przeróbki instalacji, białe montaże i próby szczelności.") uses plumbing wording, and the Hydraulika description is generic. Decide whether to correct them with Stage C or in a separate content task, so that the home image and its text describe the same scope.
-8. **D8 — Pipeline handling:** accept the `images:clean` → `images:build` procedure for Stage C, and decide whether to document the skip-existing behaviour in `docs/settings.md` or add a regeneration option as a separate task.
+8. **D8 — Pipeline handling:** accept the `images:clean` → `images:build` procedure for Stage C, and decide whether to document the skip-existing behaviour in `docs/settings.md` or add a regeneration option as a separate task. **Resolved:** `scripts/images.js` gained `--only` and `--force`, documented in `docs/settings.md` and `README.md` (section 5.3).
 9. **D9 — Caption visibility:** `data-lb-caption` is not displayed today. Showing captions in the lightbox would be a separate UX change and is not part of IMP-DESIGN-03.
