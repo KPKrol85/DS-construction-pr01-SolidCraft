@@ -850,6 +850,11 @@
   padding-inline: var(--space-2);
 }
 
+#strona-glowna {
+  --hero-overlay-a: 0.25;
+  --hero-img-brightness: 0.95;
+}
+
 .muted {
   color: var(--muted);
 }

@@ -52,7 +52,6 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Established an editorial typography hierarchy with display, text, and utility voices from the existing font pair, start-aligned section heads, and a shared reading measure for leads.
 - Replaced the home hero and service-card photography with approved workmanship images, moved service image variants to `assets/img/services/`, updated their descriptions, and gave the light-theme hero an off-white title and light secondary action over a deeper scrim.
 - Replaced the 36 service-gallery photographs with approved workmanship illustrations in per-service `assets/img/gallery/` directories, updated their descriptions and demonstrational gallery wording, and added scoped forced regeneration and output-collision checks to the image pipeline.
-- Recomposed the home hero as a copy and workmanship-photograph split with an image-first portrait layout, theme-legible copy on open ground instead of a scrim, art-directed 1:1 and 4:3 crops with matching preloads, and an image-pipeline check that refuses to upscale crops.
 
 ### Fixed
 

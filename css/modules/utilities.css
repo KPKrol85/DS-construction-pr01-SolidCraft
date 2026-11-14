@@ -197,6 +197,13 @@
 }
 
 @media (min-width: 1024px) {
+  .hero {
+    min-height: clamp(72vh, 82vh, 94vh);
+  }
+  .hero .hero__bg img,
+  .hero__bg img {
+    object-position: center center;
+  }
   #oferta > .container {
     padding-top: calc(var(--sep-buffer) - 6px);
   }

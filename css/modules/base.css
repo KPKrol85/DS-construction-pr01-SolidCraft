@@ -149,8 +149,7 @@ small {
 .form label:not(.checkbox),
 .ft-h,
 .subpage-header .card h2,
-.testimonials__author,
-.hero__kicker {
+.testimonials__author {
   font-family: var(--ff-display);
   font-size: var(--fs-utility);
   font-weight: 600;

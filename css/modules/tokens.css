@@ -121,8 +121,8 @@
   --ls-5: 0.08em;
   --ls-utility: var(--ls-5);
 
-  /* Hero photograph tone: untouched on light ground, eased on navy. */
-  --hero-img-brightness: 1;
+  --hero-img-brightness: 1.02;
+  --hero-overlay-a: 0.18;
 
   --sep-h: 1px;
   --sep-buffer: var(--section-py-sm);
@@ -148,7 +148,8 @@
   --shadow-lg: 0 14px 32px -8px rgba(0, 0, 0, 0.6);
   --shadow-xl: 0 24px 60px -12px rgba(0, 0, 0, 0.66);
   --ring: color-mix(in oklab, var(--brand) 55%, transparent);
-  --hero-img-brightness: 0.9;
+  --hero-img-brightness: 0.95;
+  --hero-overlay-a: 0.35;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -167,7 +168,8 @@
     --shadow-lg: 0 14px 32px -8px rgba(0, 0, 0, 0.6);
     --shadow-xl: 0 24px 60px -12px rgba(0, 0, 0, 0.66);
     --ring: color-mix(in oklab, var(--brand) 65%, transparent);
-    --hero-img-brightness: 0.9;
+    --hero-img-brightness: 0.92;
+    --hero-overlay-a: 0.42;
   }
 }
 
