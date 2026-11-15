@@ -239,7 +239,7 @@ Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 
 - Treści serwisu są zapisane bezpośrednio w plikach HTML i w `partials/`; nie ma zewnętrznego źródła danych ani API.
 - W `localStorage` przechowywane są wyłącznie preferencje interfejsu: `theme` (motyw), `consent.maps` (zgoda na osadzenie mapy) i `project-banner-accepted` (akceptacja informacji o projekcie). Dostęp do storage jest zabezpieczony — brak dostępu nie blokuje działania interfejsu.
-- Parametr adresu `?usluga=` jest przepisywany do ukrytego pola formularza kontaktowego, po czym usuwany z adresu przez `history.replaceState`.
+- Parametr adresu `?usluga=` wstępnie wybiera usługę w widocznym, opcjonalnym polu „Usługa” formularza kontaktowego (wartość można zmienić lub wyczyścić), po czym jest usuwany z adresu przez `history.replaceState`.
 - Dane formularza są wysyłane metodą POST na adres z atrybutu `action` (`/thank-you.html`) i obsługiwane przez Netlify Forms. Projekt nie posiada kont użytkowników, bazy danych ani synchronizacji między urządzeniami.
 
 ### Utrzymanie projektu
@@ -501,7 +501,7 @@ The repository contains no recorded performance measurement results.
 
 - Site content is stored directly in the HTML files and in `partials/`; there is no external data source or API.
 - `localStorage` holds interface preferences only: `theme` (theme), `consent.maps` (map embed consent), and `project-banner-accepted` (project notice acceptance). Storage access is guarded — an unavailable store does not block the interface.
-- The `?usluga=` URL parameter is copied into a hidden field of the contact form and then removed from the address via `history.replaceState`.
+- The `?usluga=` URL parameter preselects the service in the visible, optional "Usługa" field of the contact form (the value can be changed or cleared) and is then removed from the address via `history.replaceState`.
 - Form data is sent via POST to the address in the `action` attribute (`/thank-you.html`) and handled by Netlify Forms. The project has no user accounts, database, or cross-device synchronization.
 
 ### Project Maintenance

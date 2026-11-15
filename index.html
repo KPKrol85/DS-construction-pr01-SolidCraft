@@ -369,6 +369,7 @@
               <a
                 href="#kontakt"
                 aria-label="Zamów wycenę — Remonty kompleksowe"
+                data-usluga="Remonty kompleksowe"
               >
                 <picture>
                   <source
@@ -430,7 +431,11 @@
                   aria-labelledby="h-lazienki"
                   aria-describedby="d-lazienki"
                 >
-                  <a href="#kontakt" aria-label="Zamów wycenę — Łazienki">
+                  <a
+                    href="#kontakt"
+                    aria-label="Zamów wycenę — Łazienki"
+                    data-usluga="Łazienki"
+                  >
                     <picture>
                       <source
                         type="image/avif"
@@ -489,6 +494,7 @@
                   <a
                     href="#kontakt"
                     aria-label="Zamów wycenę — Malowanie i gładzie"
+                    data-usluga="Malowanie i gładzie"
                   >
                     <picture>
                       <source
@@ -545,7 +551,11 @@
                   aria-labelledby="h-kafelkowanie"
                   aria-describedby="d-kafelkowanie"
                 >
-                  <a href="#kontakt" aria-label="Zamów wycenę — Kafelkowanie">
+                  <a
+                    href="#kontakt"
+                    aria-label="Zamów wycenę — Kafelkowanie"
+                    data-usluga="Kafelkowanie"
+                  >
                     <picture>
                       <source
                         type="image/avif"
@@ -611,7 +621,11 @@
                   aria-labelledby="h-elektryka"
                   aria-describedby="d-elektryka"
                 >
-                  <a href="#kontakt" aria-label="Zamów wycenę — Elektryka">
+                  <a
+                    href="#kontakt"
+                    aria-label="Zamów wycenę — Elektryka"
+                    data-usluga="Elektryka"
+                  >
                     <picture>
                       <source
                         type="image/avif"
@@ -676,7 +690,11 @@
                   aria-labelledby="h-hydraulika"
                   aria-describedby="d-hydraulika"
                 >
-                  <a href="#kontakt" aria-label="Zamów wycenę — Hydraulika">
+                  <a
+                    href="#kontakt"
+                    aria-label="Zamów wycenę — Hydraulika"
+                    data-usluga="Hydraulika"
+                  >
                     <picture>
                       <source
                         type="image/avif"
@@ -1103,6 +1121,18 @@
                 tabindex="-1"
                 autocomplete="off"
               />
+            </div>
+            <div class="form-row">
+              <label for="f-service">Usługa (opcjonalnie)</label>
+              <select id="f-service" name="usluga">
+                <option value="">Nie wybrano</option>
+                <option value="Remonty kompleksowe">Remonty kompleksowe</option>
+                <option value="Łazienki">Łazienki</option>
+                <option value="Malowanie i gładzie">Malowanie i gładzie</option>
+                <option value="Kafelkowanie">Kafelkowanie</option>
+                <option value="Elektryka">Elektryka</option>
+                <option value="Hydraulika">Hydraulika</option>
+              </select>
             </div>
             <div class="form-row form-row--half">
               <label for="f-name">Imię i nazwisko</label>

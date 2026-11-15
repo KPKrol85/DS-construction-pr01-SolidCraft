@@ -1,7 +1,8 @@
-/* Contact-form scenarios — validation, anti-spam timing, and the two
-   submission outcomes.
+/* Contact-form scenarios — validation, anti-spam timing, the two submission
+   outcomes, and the optional service field (static markup, ?usluga= prefill,
+   manual change, serialization).
 
-   The four paths are kept apart on purpose: each one is a separate page in a
+   The paths are kept apart on purpose: each one is a separate page in a
    separate context, so a failure names the path that broke instead of a step
    inside one long chain.
 
@@ -15,7 +16,9 @@ import {
   ANTI_SPAM_WINDOW_MS,
   AssertionError,
   DESKTOP_VIEWPORT,
+  MOBILE_VIEWPORT,
   assert,
+  assertDeepEqual,
   assertEqual,
   assertFocusOn,
   assertIncludes,
@@ -42,6 +45,35 @@ const VALID_INPUT = {
   formattedPhone: "533 537 091",
   msg: "Proszę o wycenę remontu łazienki w bloku.",
 };
+
+/* The optional service field: an empty default plus the six services, in the
+   order of the home index. */
+const SERVICE_FIELD = `${FORM} select[name="usluga"]`;
+const SERVICE_LABEL = "Usługa (opcjonalnie)";
+const SERVICE_VALUES = [
+  "",
+  "Remonty kompleksowe",
+  "Łazienki",
+  "Malowanie i gładzie",
+  "Kafelkowanie",
+  "Elektryka",
+  "Hydraulika",
+];
+
+async function readServiceState(page) {
+  return page.evaluate((selector) => {
+    const field = document.querySelector(selector);
+    return {
+      fields: document.querySelectorAll('[name="usluga"]').length,
+      value: field?.value ?? null,
+      options: [...(field?.options || [])].map((option) => option.value),
+      label: field?.labels?.[0]?.textContent.trim() ?? null,
+      height: Math.round(field?.getBoundingClientRect().height ?? 0),
+      search: location.search,
+      hash: location.hash,
+    };
+  }, SERVICE_FIELD);
+}
 
 /* Answers the form's own POST locally and records what was sent. Non-POST
    traffic to the same URL is left alone, so the thank-you page keeps working
@@ -76,8 +108,11 @@ async function interceptSubmission(context, { status }) {
 /* initContactForm() upgrades the status paragraph to role="status"; waiting
    for that is how a scenario knows the module — and its anti-spam timer — has
    started. The returned timestamp is therefore at or after the timer's start. */
-async function openContactForm(page, { waitUntil = "load" } = {}) {
-  await openPage(page, "/index.html", { waitUntil });
+async function openContactForm(
+  page,
+  { route = "/index.html", waitUntil = "load" } = {},
+) {
+  await openPage(page, route, { waitUntil });
   await page.waitForFunction(
     () =>
       Boolean(
@@ -123,12 +158,14 @@ async function readFormState(page) {
         live: note.getAttribute("aria-live"),
       },
       values: {
+        service: field("f-service").value,
         name: field("f-name").value,
         phone: field("f-phone").value,
         msg: field("f-msg").value,
         consent: field("f-consent").checked,
       },
       invalid: {
+        service: field("f-service").getAttribute("aria-invalid"),
         name: field("f-name").getAttribute("aria-invalid"),
         phone: field("f-phone").getAttribute("aria-invalid"),
         msg: field("f-msg").getAttribute("aria-invalid"),
@@ -222,6 +259,11 @@ const contactFormScenarios = [
             state.invalid.consent,
             "true",
             "the unchecked consent box should be marked invalid",
+          );
+          assertEqual(
+            state.invalid.service,
+            null,
+            "the optional service field should never be marked invalid",
           );
 
           assertVisibleError(
@@ -402,6 +444,11 @@ const contactFormScenarios = [
             "yes",
             "the posted body should carry the consent value",
           );
+          assertDeepEqual(
+            body.getAll("usluga"),
+            [""],
+            "an unchosen service should post one empty usluga value",
+          );
 
           const state = await readFormState(page);
 
@@ -462,6 +509,7 @@ const contactFormScenarios = [
           const initialisedAt = await openContactForm(page);
 
           await fillValidForm(page);
+          await page.locator(SERVICE_FIELD).selectOption("Hydraulika");
           await waitOutAntiSpamWindow(page, initialisedAt);
           await page.locator(SUBMIT).click();
           await waitForNote(page, MESSAGES.failure, "a rejected submission");
@@ -471,12 +519,22 @@ const contactFormScenarios = [
             1,
             "a rejected submission should still have been attempted once",
           );
+          assertEqual(
+            new URLSearchParams(submissions[0].body).get("usluga"),
+            "Hydraulika",
+            "the attempted submission should carry the chosen service",
+          );
 
           const state = await readFormState(page);
 
           assert(
             state.note.err,
             "the failure message should be styled as an error",
+          );
+          assertEqual(
+            state.values.service,
+            "Hydraulika",
+            "a failed submission should keep the chosen service",
           );
           assertEqual(
             state.values.name,
@@ -502,6 +560,238 @@ const contactFormScenarios = [
             state.submitDisabled,
             false,
             "the submit button should be usable again after a failed submission",
+          );
+        },
+      );
+    },
+  },
+
+  {
+    name: "contact-form-service-field-is-in-the-static-markup",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: DESKTOP_VIEWPORT },
+        async ({ page }) => {
+          /* Netlify Forms registers fields from the deployed HTML, so the
+             field has to exist before any script runs: the served page is
+             parsed here without executing it. */
+          const response = await page.request.get(
+            new URL("/index.html", baseURL).href,
+          );
+          assertEqual(response.status(), 200, "/index.html should be served");
+
+          const markup = await page.evaluate(
+            (source) => {
+              const doc = new DOMParser().parseFromString(source, "text/html");
+              const form = doc.querySelector('form[name="contact"]');
+              const fields = doc.querySelectorAll('[name="usluga"]');
+              const field = fields[0];
+              const options = [...(field?.options || [])];
+              return {
+                netlifyForm: Boolean(form?.hasAttribute("netlify")),
+                fields: fields.length,
+                tag: field?.tagName.toLowerCase() ?? null,
+                insideForm: Boolean(form && field && form.contains(field)),
+                required: Boolean(field?.hasAttribute("required")),
+                label:
+                  doc
+                    .querySelector(`label[for="${field?.id}"]`)
+                    ?.textContent.trim() ?? null,
+                options: options.map((option) => option.value),
+                texts: options.slice(1).map((option) => option.textContent),
+                preselected: options.filter((option) =>
+                  option.hasAttribute("selected"),
+                ).length,
+              };
+            },
+            await response.text(),
+          );
+
+          assert(
+            markup.netlifyForm,
+            "the contact form should stay a Netlify form",
+          );
+          assertEqual(
+            markup.fields,
+            1,
+            "the static page should contain exactly one usluga field",
+          );
+          assertEqual(
+            markup.tag,
+            "select",
+            "the usluga field should be a select",
+          );
+          assert(
+            markup.insideForm,
+            "the usluga field should sit inside the contact form",
+          );
+          assert(!markup.required, "the service field should be optional");
+          assertEqual(markup.label, SERVICE_LABEL, "service field label");
+          assertDeepEqual(
+            markup.options,
+            SERVICE_VALUES,
+            "the service field should offer an empty default and the six services",
+          );
+          assertDeepEqual(
+            markup.texts,
+            SERVICE_VALUES.slice(1),
+            "each service option should read as its own value",
+          );
+          assertEqual(
+            markup.preselected,
+            0,
+            "no service should be preselected in the markup",
+          );
+        },
+      );
+    },
+  },
+
+  {
+    name: "contact-form-shows-the-service-from-the-url-and-lets-it-change",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: MOBILE_VIEWPORT },
+        async ({ page }) => {
+          await openContactForm(page, {
+            route: "/index.html?usluga=Łazienki#kontakt",
+          });
+
+          const state = await readServiceState(page);
+          assertEqual(state.value, "Łazienki", "the prefilled service");
+          assertEqual(state.label, SERVICE_LABEL, "service field label");
+          assert(
+            state.height > 1 && (await page.locator(SERVICE_FIELD).isVisible()),
+            "the prefilled service should be visible in the form",
+          );
+          assertEqual(state.fields, 1, "prefill should not add a usluga field");
+          assertDeepEqual(
+            state.options,
+            SERVICE_VALUES,
+            "prefill should not change the offered services",
+          );
+          assertEqual(state.search, "", "the query should leave the URL");
+          assertEqual(
+            state.hash,
+            "#kontakt",
+            "the #kontakt fragment should stay",
+          );
+
+          const field = page.locator(SERVICE_FIELD);
+          await field.selectOption("Kafelkowanie");
+          assertEqual(
+            (await readServiceState(page)).value,
+            "Kafelkowanie",
+            "choosing another service should replace the prefilled one",
+          );
+          await field.selectOption("");
+          assertEqual(
+            (await readServiceState(page)).value,
+            "",
+            "the empty option should clear the service",
+          );
+
+          /* Keyboard: Tab reaches the field right after the contact facts,
+             shows the focus ring, and arrows and Home change and clear it. */
+          await page.locator("#kontakt .contact-list a").last().focus();
+          await page.keyboard.press("Tab");
+          await assertFocusOn(
+            page,
+            SERVICE_FIELD,
+            "Tab should move from the contact facts to the service field",
+          );
+          const ring = await field.evaluate((el) => {
+            const style = getComputedStyle(el);
+            return `${style.outlineStyle} ${style.outlineWidth}`;
+          });
+          assertEqual(ring, "solid 3px", "keyboard focus ring on the field");
+
+          await page.keyboard.press("ArrowDown");
+          await page.keyboard.press("ArrowDown");
+          assertEqual(
+            (await readServiceState(page)).value,
+            "Łazienki",
+            "ArrowDown should step through the services",
+          );
+          await page.keyboard.press("Home");
+          assertEqual(
+            (await readServiceState(page)).value,
+            "",
+            "Home should return the field to no service",
+          );
+        },
+      );
+    },
+  },
+
+  {
+    name: "contact-form-ignores-an-unsupported-service-value",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: DESKTOP_VIEWPORT },
+        async ({ page }) => {
+          for (const value of ["Ogrody", "łazienki", '"><img src=x>']) {
+            await openContactForm(page, {
+              route: `/index.html?usluga=${encodeURIComponent(value)}#kontakt`,
+            });
+
+            const state = await readServiceState(page);
+            const context = `?usluga=${JSON.stringify(value)}`;
+            assertEqual(state.value, "", `${context} — nothing selected`);
+            assertDeepEqual(
+              state.options,
+              SERVICE_VALUES,
+              `${context} — no option should be added`,
+            );
+            assertEqual(state.fields, 1, `${context} — one usluga field`);
+            assertEqual(state.search, "", `${context} — query removed`);
+            assertEqual(state.hash, "#kontakt", `${context} — fragment kept`);
+          }
+        },
+      );
+    },
+  },
+
+  {
+    name: "contact-form-posts-the-prefilled-service",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: DESKTOP_VIEWPORT },
+        async ({ context, page }) => {
+          const submissions = await interceptSubmission(context, {
+            status: 200,
+          });
+          const initialisedAt = await openContactForm(page, {
+            route: "/index.html?usluga=Łazienki#kontakt",
+          });
+
+          await fillValidForm(page);
+          await waitOutAntiSpamWindow(page, initialisedAt);
+          await page.locator(SUBMIT).click();
+          await waitForNote(
+            page,
+            MESSAGES.success,
+            "a submission with a prefilled service",
+          );
+
+          assertEqual(
+            submissions.length,
+            1,
+            "the submission should send exactly one request",
+          );
+          assertDeepEqual(
+            new URLSearchParams(submissions[0].body).getAll("usluga"),
+            ["Łazienki"],
+            "the posted body should carry the prefilled service once",
+          );
+          assertEqual(
+            (await readFormState(page)).values.service,
+            "",
+            "a successful submission should reset the service field",
           );
         },
       );

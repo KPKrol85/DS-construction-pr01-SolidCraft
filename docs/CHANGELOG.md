@@ -58,6 +58,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Recomposed the closing sequence with contact facts beside a dominant quote form, a quieter footer that replaces the separate contact bar with a compact reference, and matching service-page and status-page closings.
 - Recast the home sample logos and testimonials as one quiet proof band with an optically balanced monochrome logo strip legible in every theme, a featured pull quote above three supporting quotes, and no mid-page form link.
 - Reserved entrance motion for section heads and single content groups with one short upward fade, keeping the hero, service-page openings, primary actions, contact form, and footer static and revealing a group as soon as it receives keyboard focus.
+- Replaced the runtime-created hidden service field with a visible, optional service select in the static quote-form markup, prefilled from both quote CTAs on every service page and from the home service-index image links.
 
 ### Fixed
 

@@ -1,12 +1,17 @@
-/* Home service-index scenarios.
+/* Home service-index and service-quote entry scenarios.
 
    The #oferta index leads with the turnkey entry and lists the five
    specialties after it. Every entry carries two links: the image asks for a
    quote (#kontakt) and the title opens the service page. Home images are plain
    links, not lightbox triggers; the gallery lightbox is covered by
-   lightbox.mjs on a service page. */
+   lightbox.mjs on a service page.
+
+   Every service-specific quote entry point — each home image link and both
+   quote CTAs of each service page — lands on #kontakt with that service
+   selected in the form's static select[name="usluga"]. */
 
 import {
+  AssertionError,
   DESKTOP_VIEWPORT,
   MOBILE_VIEWPORT,
   assert,
@@ -31,8 +36,50 @@ const ENTRIES = [
   ["oferta-hydraulika", "Hydraulika", "oferta/hydraulika.html"],
 ];
 
+/* Service page, its service value, and its two quote CTAs: the upper one in
+   the content and the closing one in the end band. */
+const SERVICE_PAGES = [
+  ["/oferta/remonty.html", "Remonty kompleksowe"],
+  ["/oferta/lazienki.html", "Łazienki"],
+  ["/oferta/malowanie.html", "Malowanie i gładzie"],
+  ["/oferta/kafelkowanie.html", "Kafelkowanie"],
+  ["/oferta/elektryka.html", "Elektryka"],
+  ["/oferta/hydraulika.html", "Hydraulika"],
+];
+const UPPER_QUOTE_CTA = "main section:not(.cta) .block-cta a";
+const CLOSING_QUOTE_CTA = "main section.cta .block-cta a";
+
+const SERVICE_FIELD = '#kontakt form select[name="usluga"]';
+
 const quoteLink = (id) => `#${id} > a[href="#kontakt"]`;
 const titleLink = (id) => `#${id} h3 a`;
+
+async function readServiceField(page) {
+  return page.evaluate(
+    (selector) => document.querySelector(selector)?.value ?? null,
+    SERVICE_FIELD,
+  );
+}
+
+/* Waits for a quote landing to settle: the home page has loaded and
+   prefillService() has dropped the query while keeping #kontakt. */
+async function waitForQuoteLanding(page, context) {
+  await page.waitForURL(
+    (url) => url.pathname.endsWith("/index.html"),
+    NAVIGATION_WAIT,
+  );
+  try {
+    await page.waitForFunction(
+      () => location.search === "" && location.hash === "#kontakt",
+      null,
+      NAVIGATION_WAIT,
+    );
+  } catch {
+    throw new AssertionError(
+      `${context} — expected index.html#kontakt without a query, found ${page.url()}`,
+    );
+  }
+}
 
 async function assertNoLightbox(page, context) {
   const state = await page.evaluate(() => ({
@@ -68,6 +115,7 @@ const serviceIndexScenarios = [
                 id: article.id,
                 quoteHref: quote?.getAttribute("href"),
                 quoteLabel: quote?.getAttribute("aria-label"),
+                quoteService: quote?.dataset.usluga,
                 titleHref: heading?.querySelector("a")?.getAttribute("href"),
                 labelledByOwnHeading:
                   heading?.tagName === "H3" && article.contains(heading),
@@ -85,6 +133,14 @@ const serviceIndexScenarios = [
             "the index should list the featured entry first, then the five specialties",
           );
 
+          const serviceOptions = await page.evaluate(
+            (selector) =>
+              [...(document.querySelector(selector)?.options || [])].map(
+                (option) => option.value,
+              ),
+            SERVICE_FIELD,
+          );
+
           for (const [id, name, href] of ENTRIES) {
             const entry = entries.find((item) => item.id === id);
             assertEqual(entry.quoteHref, "#kontakt", `${id} image link target`);
@@ -92,6 +148,15 @@ const serviceIndexScenarios = [
               entry.quoteLabel,
               `Zamów wycenę — ${name}`,
               `${id} image link name`,
+            );
+            assertEqual(
+              entry.quoteService,
+              name,
+              `${id} image link service value`,
+            );
+            assert(
+              serviceOptions.includes(name),
+              `the form's service field should offer "${name}"`,
             );
             assertEqual(entry.titleHref, href, `${id} title link target`);
             assert(
@@ -148,12 +213,26 @@ const serviceIndexScenarios = [
           await page.locator(`${quoteLink("oferta-kompleksowe")} img`).click();
           await page.waitForURL("**/index.html#kontakt", NAVIGATION_WAIT);
           await assertNoLightbox(page, "after clicking the featured image");
+          assertEqual(
+            await readServiceField(page),
+            "Remonty kompleksowe",
+            "clicking the featured image should select its service",
+          );
+          assert(
+            await page.locator(SERVICE_FIELD).isVisible(),
+            "the selected service should be visible in the form",
+          );
 
           await openPage(page, HOME_PAGE);
           await page.locator(quoteLink("oferta-hydraulika")).focus();
           await page.keyboard.press("Enter");
           await page.waitForURL("**/index.html#kontakt", NAVIGATION_WAIT);
           await assertNoLightbox(page, "after Enter on a specialty image link");
+          assertEqual(
+            await readServiceField(page),
+            "Hydraulika",
+            "Enter on a specialty image link should select its service",
+          );
 
           await openPage(page, HOME_PAGE);
           const [response] = await Promise.all([
@@ -168,6 +247,109 @@ const serviceIndexScenarios = [
             200,
             "the title link should load its service page",
           );
+        },
+      );
+    },
+  },
+
+  {
+    name: "home-service-index-image-links-select-every-service",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: DESKTOP_VIEWPORT },
+        async ({ page }) => {
+          await openPage(page, HOME_PAGE);
+          assertEqual(
+            await readServiceField(page),
+            "",
+            "the service field should start with no service selected",
+          );
+
+          /* One page, every link in turn: each activation replaces the
+             previous choice, including one made manually in the form. */
+          for (const [id, name] of ENTRIES) {
+            await page.locator(SERVICE_FIELD).selectOption("");
+            await page.locator(quoteLink(id)).click();
+            await page.waitForURL("**/index.html#kontakt", NAVIGATION_WAIT);
+            assertEqual(
+              await readServiceField(page),
+              name,
+              `clicking the ${id} image link should select its service`,
+            );
+          }
+
+          await page.locator(SERVICE_FIELD).selectOption("Elektryka");
+          await page.locator(quoteLink("oferta-lazienki")).focus();
+          await page.keyboard.press("Enter");
+          assertEqual(
+            await readServiceField(page),
+            "Łazienki",
+            "Enter on an image link should replace a manual choice",
+          );
+
+          const fields = await page.evaluate(
+            () => document.querySelectorAll('[name="usluga"]').length,
+          );
+          assertEqual(
+            fields,
+            1,
+            "image links should never add a second usluga field",
+          );
+          assertEqual(
+            new URL(page.url()).hash,
+            "#kontakt",
+            "image links should keep plain #kontakt navigation",
+          );
+        },
+      );
+    },
+  },
+
+  {
+    name: "service-pages-pass-their-service-from-both-quote-ctas",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: DESKTOP_VIEWPORT },
+        async ({ page }) => {
+          for (const [route, name] of SERVICE_PAGES) {
+            for (const [label, selector] of [
+              ["upper", UPPER_QUOTE_CTA],
+              ["closing", CLOSING_QUOTE_CTA],
+            ]) {
+              const context = `${route} ${label} quote CTA`;
+              await openPage(page, route);
+
+              const cta = page.locator(selector);
+              assertEqual(
+                await cta.count(),
+                1,
+                `${context} — exactly one should exist`,
+              );
+              const target = await cta.evaluate((link) => {
+                const url = new URL(link.href);
+                return {
+                  path: url.pathname,
+                  hash: url.hash,
+                  service: url.searchParams.get("usluga"),
+                };
+              });
+              assertDeepEqual(
+                target,
+                { path: "/index.html", hash: "#kontakt", service: name },
+                `${context} — target`,
+              );
+
+              await cta.click();
+              await waitForQuoteLanding(page, context);
+              assertEqual(
+                await readServiceField(page),
+                name,
+                `${context} — the form should arrive with the service selected`,
+              );
+            }
+          }
         },
       );
     },
