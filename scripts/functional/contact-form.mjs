@@ -32,11 +32,25 @@ const NOTE = `${FORM} .form-note`;
 const SUBMIT = `${FORM} button[type="submit"]`;
 const SUBMIT_URL = "**/thank-you.html";
 
+/* The validation summary counts the fields in error; the optional service
+   field is never one of them. */
 const MESSAGES = {
-  validation: "Uzupełnij poprawnie wszystkie pola i zaznacz zgodę.",
+  validation: {
+    oneField: "Popraw 1 pole formularza.",
+    twoFields: "Popraw 2 pola formularza.",
+    allFields: "Popraw 4 pola formularza.",
+  },
   tooFast: "Odczekaj chwilę i spróbuj ponownie.",
   success: "Dziękujemy! Skontaktujemy się wkrótce.",
   failure: "Nie udało się wysłać formularza. Spróbuj ponownie.",
+};
+
+const FIELD_ERRORS = {
+  nameMissing: "Podaj imię i nazwisko (min. 2 znaki).",
+  phoneMissing: "Podaj numer telefonu.",
+  phoneFormat: "Podaj poprawny numer (np. 533 537 091 lub +48 533 537 091).",
+  msgMissing: "Napisz krótki opis prac.",
+  consentMissing: "Wymagana zgoda na kontakt w celu wyceny.",
 };
 
 const VALID_INPUT = {
@@ -44,6 +58,13 @@ const VALID_INPUT = {
   phone: "533537091",
   formattedPhone: "533 537 091",
   msg: "Proszę o wycenę remontu łazienki w bloku.",
+};
+
+/* One digit short: present, so not a required-field error, but not a valid
+   Polish number either. */
+const INCOMPLETE_PHONE = {
+  raw: "53353709",
+  formatted: "533 537 09",
 };
 
 /* The optional service field: an empty default plus the six services, in the
@@ -213,6 +234,23 @@ function assertVisibleError(error, expected, context) {
   );
 }
 
+function assertNoFieldError(state, field, context) {
+  assertEqual(
+    state.invalid[field],
+    null,
+    `${context} — should not be marked invalid`,
+  );
+  assertEqual(
+    state.errors[field].text,
+    "",
+    `${context} — should show no error message`,
+  );
+  assert(
+    state.errors[field].clipped,
+    `${context} — the empty error message should stay visually hidden`,
+  );
+}
+
 const contactFormScenarios = [
   {
     name: "contact-form-rejects-an-empty-submission",
@@ -227,10 +265,12 @@ const contactFormScenarios = [
           const initialisedAt = await openContactForm(page);
           await waitOutAntiSpamWindow(page, initialisedAt);
 
+          /* Four required fields are empty; the empty service field is
+             optional and must not raise the count to five. */
           await page.locator(SUBMIT).click();
           await waitForNote(
             page,
-            MESSAGES.validation,
+            MESSAGES.validation.allFields,
             "submitting the empty form",
           );
 
@@ -268,22 +308,22 @@ const contactFormScenarios = [
 
           assertVisibleError(
             state.errors.name,
-            "Podaj imię i nazwisko (min. 2 znaki).",
+            FIELD_ERRORS.nameMissing,
             "name field",
           );
           assertVisibleError(
             state.errors.phone,
-            "Podaj numer telefonu.",
+            FIELD_ERRORS.phoneMissing,
             "phone field",
           );
           assertVisibleError(
             state.errors.msg,
-            "Napisz krótki opis prac.",
+            FIELD_ERRORS.msgMissing,
             "message field",
           );
           assertVisibleError(
             state.errors.consent,
-            "Wymagana zgoda na kontakt w celu wyceny.",
+            FIELD_ERRORS.consentMissing,
             "consent field",
           );
 
@@ -305,6 +345,187 @@ const contactFormScenarios = [
             submissions.length,
             0,
             "an invalid form should not be submitted",
+          );
+        },
+      );
+    },
+  },
+
+  {
+    name: "contact-form-reports-every-problem-in-one-attempt",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: DESKTOP_VIEWPORT },
+        async ({ context, page }) => {
+          const submissions = await interceptSubmission(context, {
+            status: 200,
+          });
+          const initialisedAt = await openContactForm(page);
+
+          /* An empty name and an incomplete phone, with the message and
+             consent already valid: both problems must surface together. */
+          await page.locator("#f-phone").fill(INCOMPLETE_PHONE.raw);
+          await page.locator("#f-msg").fill(VALID_INPUT.msg);
+          await page.locator("#f-consent").check();
+          await waitOutAntiSpamWindow(page, initialisedAt);
+
+          await page.locator(SUBMIT).click();
+          await waitForNote(
+            page,
+            MESSAGES.validation.twoFields,
+            "submitting an empty name and an incomplete phone",
+          );
+
+          const state = await readFormState(page);
+
+          assertEqual(
+            state.invalid.name,
+            "true",
+            "the empty name field should be marked invalid",
+          );
+          assertVisibleError(
+            state.errors.name,
+            FIELD_ERRORS.nameMissing,
+            "name field",
+          );
+          assertEqual(
+            state.invalid.phone,
+            "true",
+            "the incomplete phone should be marked invalid in the same attempt",
+          );
+          assertVisibleError(
+            state.errors.phone,
+            FIELD_ERRORS.phoneFormat,
+            "phone field",
+          );
+          assertEqual(
+            state.values.phone,
+            INCOMPLETE_PHONE.formatted,
+            "the incomplete phone should keep its mask",
+          );
+          assertNoFieldError(state, "msg", "the filled message field");
+          assertNoFieldError(state, "consent", "the ticked consent box");
+          assertEqual(
+            state.invalid.service,
+            null,
+            "the optional service field should never be marked invalid",
+          );
+
+          assert(
+            !/zgod/i.test(state.note.text),
+            `the summary should not mention consent once it is given, it reads ${JSON.stringify(state.note.text)}`,
+          );
+          assert(
+            state.note.err,
+            "the validation summary should be styled as an error",
+          );
+          assertEqual(
+            state.note.live,
+            "polite",
+            "the validation summary should be announced politely",
+          );
+          await assertFocusOn(
+            page,
+            "#f-name",
+            "validation should move focus to the first invalid field",
+          );
+          assertEqual(
+            submissions.length,
+            0,
+            "an invalid form should not be submitted",
+          );
+        },
+      );
+    },
+  },
+
+  {
+    name: "contact-form-submits-a-phone-corrected-after-a-format-error",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: DESKTOP_VIEWPORT },
+        async ({ context, page }) => {
+          const submissions = await interceptSubmission(context, {
+            status: 200,
+          });
+          const initialisedAt = await openContactForm(page);
+          const phone = page.locator("#f-phone");
+
+          await fillValidForm(page);
+          await phone.fill(INCOMPLETE_PHONE.raw);
+          await waitOutAntiSpamWindow(page, initialisedAt);
+
+          await page.locator(SUBMIT).click();
+          await waitForNote(
+            page,
+            MESSAGES.validation.oneField,
+            "submitting an incomplete phone only",
+          );
+
+          const state = await readFormState(page);
+
+          assertEqual(
+            state.invalid.phone,
+            "true",
+            "the incomplete phone should be marked invalid",
+          );
+          assertVisibleError(
+            state.errors.phone,
+            FIELD_ERRORS.phoneFormat,
+            "phone field",
+          );
+          assertNoFieldError(state, "name", "the filled name field");
+          assertNoFieldError(state, "msg", "the filled message field");
+          assertNoFieldError(state, "consent", "the ticked consent box");
+          await assertFocusOn(
+            page,
+            "#f-phone",
+            "a single phone error should move focus to the phone field",
+          );
+          assertEqual(
+            submissions.length,
+            0,
+            "an incomplete phone should not be submitted",
+          );
+
+          /* The correction is assigned without an input event, so the
+             custom error from the failed attempt is still attached when the
+             form is submitted again; it must not outlive the value it
+             described. */
+          await phone.evaluate((el, value) => {
+            el.value = value;
+          }, VALID_INPUT.phone);
+          assert(
+            await phone.evaluate((el) => el.validity.customError),
+            "precondition — the earlier phone error should still be attached",
+          );
+
+          await page.locator(SUBMIT).click();
+          await waitForNote(
+            page,
+            MESSAGES.success,
+            "resubmitting the corrected phone",
+          );
+
+          assertEqual(
+            submissions.length,
+            1,
+            "the corrected form should send exactly one request",
+          );
+          assertEqual(
+            new URLSearchParams(submissions[0].body).get("phone"),
+            VALID_INPUT.formattedPhone,
+            "the corrected phone should be masked before it is sent",
+          );
+
+          const after = await readFormState(page);
+          assertNoFieldError(after, "phone", "the corrected phone field");
+          assertEqual(
+            after.busy,
+            "false",
+            "the form should leave its busy state after the corrected submission",
           );
         },
       );

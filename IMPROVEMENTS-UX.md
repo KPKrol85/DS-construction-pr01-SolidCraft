@@ -25,13 +25,9 @@ No `PLAN.md`, `CONTEXT-PROJECT.md`, active audit, or previous `IMPROVEMENTS-UX.m
 
 ### IMP-UX-02 — Report every contact-form problem in one validation pass
 
-- **Affected journey:** Contact form submission and error recovery on `index.html#kontakt`.
-- **Evidence:** `js/modules/forms.js:183-226`, `js/modules/forms.js:129`; `index.html:1112-1183`.
-- **Current experience:** On submit, required-field errors are set first. The phone format check (`isValidPLPhone`) runs only once `form.checkValidity()` passes. A visitor who leaves the name empty and types an incomplete phone number sees only the name error. After fixing it and submitting again, they get a second error for the phone. The summary note is always "Uzupełnij poprawnie wszystkie pola i zaznacz zgodę.", even when the consent box is already ticked and only one field is wrong.
-- **Proposed improvement:** Validate required fields and phone format in a single pass, and replace the fixed summary note with one that reflects the actual number or names of the fields needing correction.
-- **Expected user value:** All corrections are visible after the first failed attempt, so recovery takes one round instead of two. The summary accurately tells keyboard and screen-reader users what remains, rather than giving a generic instruction that may not apply.
-- **Implementation scope:** Restructure the validation branch of the submit handler in `js/modules/forms.js` so that every field's error, including phone format, is set before focus moves to the first invalid field. Derive the `.form-note` text from the fields actually in error. Keep the existing field error messages, `aria-invalid` and `aria-describedby` wiring, error clearing on input, the anti-spam order (honeypot, content heuristic, 2-second window before validation), the phone mask, and the submit, timeout, and failure behavior.
-- **Acceptance criteria:** Submitting with an empty name, an 8-digit phone number, and consent ticked shows the name and phone errors together, moves focus to the name field, and shows a summary that names or counts two fields without mentioning consent. Submitting an empty form still marks all four fields and focuses the first. A valid submission and the anti-spam timing rejection behave as before. Existing `contact-form` scenarios in `qa:functional` pass, extended with the combined-error case.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** The submit handler in `js/modules/forms.js` now validates name, phone (required and format), message, and consent in one pass, sets every field error before focusing the first invalid field, and discards custom errors from earlier attempts before reading each field. The fixed summary was replaced by a count-based Polish message such as "Popraw 2 pola formularza.", and the optional service select is not counted.
+- **Verification:** `format:check`, `build:js`, `qa:functional` (24/24, with two new and one updated `contact-form` scenarios that fail against the previous handler), and `qa:a11y` (28 scans, 0 serious/critical) passed. An additional axe scan of the form's error state found no violations in light and dark themes at 375 and 1280 px; screen-reader output was not tested.
 - **Impact:** Medium
 - **Effort:** Small
 

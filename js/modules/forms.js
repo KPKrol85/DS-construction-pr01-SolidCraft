@@ -110,6 +110,48 @@ function initContactForm() {
     return false;
   };
 
+  /* Error message for one validated field, or "" when it is valid. The custom
+     error left by an earlier attempt is dropped first, so only the current
+     value decides. */
+  const fieldError = (el) => {
+    el.setCustomValidity("");
+    const { validity } = el;
+    if (el === nameInput) {
+      if (validity.valueMissing) return "Podaj imię i nazwisko (min. 2 znaki).";
+      if (validity.tooShort) {
+        return "Imię i nazwisko powinno mieć co najmniej 2 znaki.";
+      }
+    } else if (el === phoneInput) {
+      if (validity.valueMissing) return "Podaj numer telefonu.";
+      if (!isValidPLPhone(el.value.trim())) {
+        return "Podaj poprawny numer (np. 533 537 091 lub +48 533 537 091).";
+      }
+    } else if (el === msgInput) {
+      if (validity.valueMissing) return "Napisz krótki opis prac.";
+      if (validity.tooLong) return "Opis może mieć maksymalnie 1000 znaków.";
+    } else if (el === consentInput && !el.checked) {
+      return "Wymagana zgoda na kontakt w celu wyceny.";
+    }
+    return "";
+  };
+
+  /* Sets or clears the error of every validated field in one pass and returns
+     the invalid ones in form order. The optional service select is not one of
+     them. */
+  const validateFields = () =>
+    [nameInput, phoneInput, msgInput, consentInput].filter((el) => {
+      if (!el) return false;
+      const message = fieldError(el);
+      if (message) setFieldError(el, message);
+      else clearFieldError(el);
+      return message !== "";
+    });
+
+  const pluralPL = new Intl.PluralRules("pl");
+  const FIELD_WORDS = { one: "pole", few: "pola", many: "pól" };
+  const invalidSummary = (count) =>
+    `Popraw ${count} ${FIELD_WORDS[pluralPL.select(count)]} formularza.`;
+
   const applyPhoneMask = () => {
     if (!phoneInput) return;
     const active = document.activeElement === phoneInput;
@@ -180,49 +222,12 @@ function initContactForm() {
         showNote("Odczekaj chwilę i spróbuj ponownie.", false);
         return;
       }
-      if (!form.checkValidity()) {
-        if (nameInput && nameInput.validity.valueMissing) {
-          setFieldError(nameInput, "Podaj imię i nazwisko (min. 2 znaki).");
-        } else if (nameInput && nameInput.validity.tooShort) {
-          setFieldError(
-            nameInput,
-            "Imię i nazwisko powinno mieć co najmniej 2 znaki.",
-          );
-        }
-        if (phoneInput && phoneInput.validity.valueMissing) {
-          setFieldError(phoneInput, "Podaj numer telefonu.");
-        }
-        if (msgInput && msgInput.validity.valueMissing) {
-          setFieldError(msgInput, "Napisz krótki opis prac.");
-        } else if (msgInput && msgInput.validity.tooLong) {
-          setFieldError(msgInput, "Opis może mieć maksymalnie 1000 znaków.");
-        }
-        if (consentInput && !consentInput.checked) {
-          setFieldError(
-            consentInput,
-            "Wymagana zgoda na kontakt w celu wyceny.",
-          );
-        }
-        form
-          .querySelector(':invalid, [aria-invalid="true"]')
-          ?.focus({ preventScroll: true });
-        showNote("Uzupełnij poprawnie wszystkie pola i zaznacz zgodę.", false);
+      applyPhoneMask();
+      const invalidFields = validateFields();
+      if (invalidFields.length > 0) {
+        invalidFields[0].focus({ preventScroll: true });
+        showNote(invalidSummary(invalidFields.length), false);
         return;
-      }
-
-      if (phoneInput) {
-        applyPhoneMask();
-        const raw = phoneInput.value.trim();
-        if (!isValidPLPhone(raw)) {
-          setFieldError(
-            phoneInput,
-            "Podaj poprawny numer (np. 533 537 091 lub +48 533 537 091).",
-          );
-          phoneInput.focus({ preventScroll: true });
-          showNote("Sprawdź format numeru telefonu.", false);
-          return;
-        }
-        clearFieldError(phoneInput);
       }
 
       submitting = true;
