@@ -327,30 +327,13 @@
             Pod klucz.
           </span>
         </h1>
-        <p
-          class="hero__lead lead"
-          id="hero-lead"
-          data-reveal="up"
-          data-reveal-delay="80"
-        >
+        <p class="hero__lead lead" id="hero-lead">
           Remonty mieszkań i domów, przebudowy oraz kompleksowe wykończenia
           wnętrz. Darmowa wycena w 24–48 godzin.
         </p>
         <div class="hero__cta hero-cta">
-          <a
-            class="btn btn--ghost"
-            href="#oferta"
-            data-reveal="up"
-            data-reveal-delay="160"
-            >Sprawdź ofertę</a
-          >
-          <a
-            class="btn"
-            href="tel:+48533537091"
-            data-reveal="up"
-            data-reveal-delay="240"
-            >Wyceń inwestycję</a
-          >
+          <a class="btn btn--ghost" href="#oferta">Sprawdź ofertę</a>
+          <a class="btn" href="tel:+48533537091">Wyceń inwestycję</a>
         </div>
       </div>
     </section>
@@ -365,16 +348,11 @@
         aria-describedby="oferta-lead"
       >
         <div class="container">
-          <header class="block-head">
-            <h2 id="oferta-heading" class="block-head__title" data-reveal="up">
+          <header class="block-head" data-reveal="up">
+            <h2 id="oferta-heading" class="block-head__title">
               Remonty i wykończenia
             </h2>
-            <p
-              id="oferta-lead"
-              class="lead block-head__lead"
-              data-reveal="up"
-              data-reveal-delay="80"
-            >
+            <p id="oferta-lead" class="lead block-head__lead">
               Kompleksowe prace w mieszkaniach i domach — czysto, terminowo, z
               gwarancją.
             </p>
@@ -382,7 +360,7 @@
           <div class="svc-index" id="oferta-grid">
             <article
               id="oferta-kompleksowe"
-              class="card hover-card svc-index__feature"
+              class="card svc-index__feature"
               aria-labelledby="h-kompleksowe"
               aria-describedby="d-kompleksowe"
               data-reveal="up"
@@ -438,15 +416,19 @@
                 wykończenia i sprzątanie.
               </p>
             </article>
-            <ol class="svc-index__list" id="oferta-list" role="list">
+            <ol
+              class="svc-index__list"
+              id="oferta-list"
+              role="list"
+              data-reveal="up"
+              data-reveal-delay="80"
+            >
               <li class="svc-index__row">
                 <article
                   id="oferta-lazienki"
-                  class="card hover-card svc-index__item"
+                  class="card svc-index__item"
                   aria-labelledby="h-lazienki"
                   aria-describedby="d-lazienki"
-                  data-reveal="up"
-                  data-reveal-delay="160"
                 >
                   <a href="#kontakt" aria-label="Zamów wycenę — Łazienki">
                     <picture>
@@ -500,11 +482,9 @@
               <li class="svc-index__row">
                 <article
                   id="oferta-malowanie"
-                  class="card hover-card svc-index__item"
+                  class="card svc-index__item"
                   aria-labelledby="h-malowanie"
                   aria-describedby="d-malowanie"
-                  data-reveal="up"
-                  data-reveal-delay="240"
                 >
                   <a
                     href="#kontakt"
@@ -561,11 +541,9 @@
               <li class="svc-index__row">
                 <article
                   id="oferta-kafelkowanie"
-                  class="card hover-card svc-index__item"
+                  class="card svc-index__item"
                   aria-labelledby="h-kafelkowanie"
                   aria-describedby="d-kafelkowanie"
-                  data-reveal="up"
-                  data-reveal-delay="320"
                 >
                   <a href="#kontakt" aria-label="Zamów wycenę — Kafelkowanie">
                     <picture>
@@ -629,11 +607,9 @@
               <li class="svc-index__row">
                 <article
                   id="oferta-elektryka"
-                  class="card hover-card svc-index__item"
+                  class="card svc-index__item"
                   aria-labelledby="h-elektryka"
                   aria-describedby="d-elektryka"
-                  data-reveal="up"
-                  data-reveal-delay="400"
                 >
                   <a href="#kontakt" aria-label="Zamów wycenę — Elektryka">
                     <picture>
@@ -696,11 +672,9 @@
               <li class="svc-index__row">
                 <article
                   id="oferta-hydraulika"
-                  class="card hover-card svc-index__item"
+                  class="card svc-index__item"
                   aria-labelledby="h-hydraulika"
                   aria-describedby="d-hydraulika"
-                  data-reveal="up"
-                  data-reveal-delay="480"
                 >
                   <a href="#kontakt" aria-label="Zamów wycenę — Hydraulika">
                     <picture>
@@ -762,7 +736,7 @@
               </li>
             </ol>
           </div>
-          <div class="block-cta" data-reveal="up" data-reveal-delay="600">
+          <div class="block-cta">
             <a class="btn" href="#kontakt">Zamów wycenę</a>
           </div>
         </div>
@@ -776,28 +750,26 @@
         aria-describedby="partners-desc"
       >
         <div class="container">
-          <header class="block-head">
-            <h2
-              id="partners-heading"
-              class="block-head__title partners__title"
-              data-reveal="up"
-              data-reveal-delay="80"
-            >
+          <header class="block-head" data-reveal="up">
+            <h2 id="partners-heading" class="block-head__title partners__title">
               Przykładowe logotypy klientów
             </h2>
             <p
               id="partners-desc"
               class="block-head__lead block-head__lead--note"
-              data-reveal="up"
-              data-reveal-delay="100"
             >
               Sekcja demonstracyjna — logotypy są przykładowe i nie
               przedstawiają rzeczywistych klientów ani partnerów.
             </p>
           </header>
 
-          <ul class="partners__grid" aria-label="Przykładowe logotypy klientów">
-            <li class="partners__item" data-reveal="up" data-reveal-delay="100">
+          <ul
+            class="partners__grid"
+            aria-label="Przykładowe logotypy klientów"
+            data-reveal="up"
+            data-reveal-delay="80"
+          >
+            <li class="partners__item">
               <img
                 class="partners__logo"
                 src="assets/img/partners-logos/partner-01-80x60.svg"
@@ -810,11 +782,7 @@
               />
             </li>
 
-            <li
-              class="partners__item"
-              data-reveal="down"
-              data-reveal-delay="160"
-            >
+            <li class="partners__item">
               <img
                 class="partners__logo"
                 src="assets/img/partners-logos/partner-02-80x60.svg"
@@ -827,7 +795,7 @@
               />
             </li>
 
-            <li class="partners__item" data-reveal="up" data-reveal-delay="220">
+            <li class="partners__item">
               <img
                 class="partners__logo"
                 src="assets/img/partners-logos/partner-03-80x60.svg"
@@ -840,11 +808,7 @@
               />
             </li>
 
-            <li
-              class="partners__item"
-              data-reveal="down"
-              data-reveal-delay="280"
-            >
+            <li class="partners__item">
               <img
                 class="partners__logo"
                 src="assets/img/partners-logos/partner-04-80x60.svg"
@@ -857,7 +821,7 @@
               />
             </li>
 
-            <li class="partners__item" data-reveal="up" data-reveal-delay="340">
+            <li class="partners__item">
               <img
                 class="partners__logo"
                 src="assets/img/partners-logos/partner-05-80x60.svg"
@@ -870,11 +834,7 @@
               />
             </li>
 
-            <li
-              class="partners__item"
-              data-reveal="down"
-              data-reveal-delay="400"
-            >
+            <li class="partners__item">
               <img
                 class="partners__logo"
                 src="assets/img/partners-logos/partner-06-80x60.svg"
@@ -898,21 +858,11 @@
         aria-describedby="opinie-note opinie-desc"
       >
         <div class="container">
-          <header class="block-head testimonials__head">
-            <h2
-              id="opinie-heading"
-              class="block-head__title"
-              data-reveal="up"
-              data-reveal-delay="80"
-            >
+          <header class="block-head testimonials__head" data-reveal="up">
+            <h2 id="opinie-heading" class="block-head__title">
               Opinie klientów
             </h2>
-            <p
-              id="opinie-note"
-              class="block-head__lead block-head__lead--note"
-              data-reveal="up"
-              data-reveal-delay="120"
-            >
+            <p id="opinie-note" class="block-head__lead block-head__lead--note">
               Sekcja demonstracyjna — ocena i opinie poniżej są przykładowe i
               nie pochodzą od rzeczywistych klientów.
             </p>
@@ -920,8 +870,6 @@
               id="opinie-desc"
               class="muted testimonials__rating"
               role="status"
-              data-reveal="up"
-              data-reveal-delay="140"
             >
               <span
                 class="testimonials__rating-icon"
@@ -939,14 +887,14 @@
           <ul
             class="testimonials__grid"
             aria-label="Przykładowe opinie klientów"
+            data-reveal="up"
+            data-reveal-delay="80"
           >
             <li class="testimonials__item testimonials__item--featured">
               <figure
                 class="testimonials__card"
                 aria-labelledby="op1-quote"
                 aria-describedby="op1-author"
-                data-reveal="up"
-                data-reveal-delay="160"
               >
                 <blockquote id="op1-quote" class="testimonials__quote">
                   <p>Pełen profesjonalizm. Szybko i bardzo czysto.</p>
@@ -963,8 +911,6 @@
                 class="testimonials__card"
                 aria-labelledby="op2-quote"
                 aria-describedby="op2-author"
-                data-reveal="up"
-                data-reveal-delay="220"
               >
                 <blockquote id="op2-quote" class="testimonials__quote">
                   <p>
@@ -983,8 +929,6 @@
                 class="testimonials__card"
                 aria-labelledby="op4-quote"
                 aria-describedby="op4-author"
-                data-reveal="up"
-                data-reveal-delay="280"
               >
                 <blockquote id="op4-quote" class="testimonials__quote">
                   <p>
@@ -1004,8 +948,6 @@
                 class="testimonials__card"
                 aria-labelledby="op3-quote"
                 aria-describedby="op3-author"
-                data-reveal="up"
-                data-reveal-delay="340"
               >
                 <blockquote id="op3-quote" class="testimonials__quote">
                   <p>
@@ -1030,34 +972,19 @@
         aria-describedby="faq-desc"
       >
         <div class="container">
-          <header class="block-head">
-            <h2
-              class="block-head__title"
-              id="faq-heading"
-              data-reveal="up"
-              data-reveal-delay="80"
-            >
+          <header class="block-head" data-reveal="up">
+            <h2 class="block-head__title" id="faq-heading">
               FAQ — najczęstsze pytania
             </h2>
-            <p
-              class="block-head__lead"
-              id="faq-desc"
-              data-reveal="up"
-              data-reveal-delay="120"
-            >
+            <p class="block-head__lead" id="faq-desc">
               Krótko i konkretnie — jak pracujemy i jak wyglądają wyceny.
             </p>
           </header>
           <!-- FAQ list -->
-          <ul class="faq-list">
+          <ul class="faq-list" data-reveal="up" data-reveal-delay="80">
             <!-- FAQ 1-->
             <li>
-              <details
-                class="faq"
-                id="faq-1"
-                data-reveal="up"
-                data-reveal-delay="160"
-              >
+              <details class="faq" id="faq-1">
                 <summary id="q-1" aria-controls="a-1">
                   Ile trwa standardowy remont łazienki?
                 </summary>
@@ -1071,12 +998,7 @@
             </li>
             <!-- FAQ 2-->
             <li>
-              <details
-                class="faq"
-                id="faq-2"
-                data-reveal="up"
-                data-reveal-delay="240"
-              >
+              <details class="faq" id="faq-2">
                 <summary id="q-2" aria-controls="a-2">
                   Jak wygląda wycena?
                 </summary>
@@ -1090,12 +1012,7 @@
             </li>
             <!-- FAQ 3-->
             <li>
-              <details
-                class="faq"
-                id="faq-3"
-                data-reveal="up"
-                data-reveal-delay="320"
-              >
+              <details class="faq" id="faq-3">
                 <summary id="q-3" aria-controls="a-3">
                   Czy sprzątacie po zakończeniu prac?
                 </summary>
@@ -1108,12 +1025,7 @@
             </li>
             <!-- FAQ 4-->
             <li>
-              <details
-                class="faq"
-                id="faq-4"
-                data-reveal="up"
-                data-reveal-delay="400"
-              >
+              <details class="faq" id="faq-4">
                 <summary id="q-4" aria-controls="a-4">
                   Na jakie prace dajecie gwarancję?
                 </summary>
@@ -1137,26 +1049,16 @@
         aria-describedby="kontakt-desc"
       >
         <div class="container cta-wrap">
-          <div class="cta-text">
-            <h2
-              class="block-head__title cta__title"
-              id="kontakt-heading"
-              data-reveal="up"
-              data-reveal-delay="80"
-            >
+          <div class="cta-text" data-reveal="up">
+            <h2 class="block-head__title cta__title" id="kontakt-heading">
               Porozmawiajmy o Twoim remoncie
             </h2>
-            <p
-              class="lead cta__lead"
-              id="kontakt-desc"
-              data-reveal="up"
-              data-reveal-delay="120"
-            >
+            <p class="lead cta__lead" id="kontakt-desc">
               Skontaktuj się z nami — przygotujemy bezpłatną wycenę i doradzimy
               rozwiązania.
             </p>
             <ul class="contact-list" aria-label="Dane kontaktowe">
-              <li data-reveal="left" data-reveal-delay="180">
+              <li>
                 <span class="contact__label">Telefon</span>
                 <a
                   class="contact-item"
@@ -1166,7 +1068,7 @@
                   <span class="contact__details">+48 533 537 091</span>
                 </a>
               </li>
-              <li data-reveal="left" data-reveal-delay="260">
+              <li>
                 <span class="contact__label">E-mail</span>
                 <a
                   class="contact-item"
@@ -1190,8 +1092,6 @@
             novalidate
             aria-labelledby="kontakt-heading"
             aria-describedby="privacy-note"
-            data-reveal="right"
-            data-reveal-delay="200"
           >
             <input type="hidden" name="form-name" value="contact" />
             <div class="visually-hidden" aria-hidden="true">
@@ -1204,11 +1104,7 @@
                 autocomplete="off"
               />
             </div>
-            <div
-              class="form-row form-row--half"
-              data-reveal="up"
-              data-reveal-delay="240"
-            >
+            <div class="form-row form-row--half">
               <label for="f-name">Imię i nazwisko</label>
               <input
                 id="f-name"
@@ -1228,11 +1124,7 @@
                 aria-live="polite"
               ></span>
             </div>
-            <div
-              class="form-row form-row--half"
-              data-reveal="up"
-              data-reveal-delay="280"
-            >
+            <div class="form-row form-row--half">
               <label for="f-phone">Telefon</label>
               <input
                 id="f-phone"
@@ -1250,7 +1142,7 @@
                 aria-live="polite"
               ></span>
             </div>
-            <div class="form-row" data-reveal="up" data-reveal-delay="320">
+            <div class="form-row">
               <label for="f-msg">Opis prac</label>
               <textarea
                 id="f-msg"
@@ -1267,11 +1159,7 @@
                 aria-live="polite"
               ></span>
             </div>
-            <div
-              class="form-row form-row--consent"
-              data-reveal="up"
-              data-reveal-delay="360"
-            >
+            <div class="form-row form-row--consent">
               <label class="checkbox" for="f-consent">
                 <input
                   id="f-consent"
@@ -1291,26 +1179,9 @@
                 aria-live="polite"
               ></span>
             </div>
-            <button
-              class="btn"
-              type="submit"
-              data-reveal="up"
-              data-reveal-delay="420"
-            >
-              Wyślij wiadomość
-            </button>
-            <p
-              class="form-note"
-              aria-live="polite"
-              data-reveal="up"
-              data-reveal-delay="460"
-            ></p>
-            <p
-              class="muted small"
-              id="privacy-note"
-              data-reveal="up"
-              data-reveal-delay="500"
-            >
+            <button class="btn" type="submit">Wyślij wiadomość</button>
+            <p class="form-note" aria-live="polite"></p>
+            <p class="muted small" id="privacy-note">
               Wysyłając formularz akceptujesz naszą
               <a href="polityka-prywatnosci.html">Politykę prywatności</a>.
             </p>

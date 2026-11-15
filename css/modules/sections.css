@@ -316,8 +316,8 @@
 }
 
 /* Measured Craft marker: a short amber dimension line (|—|) set above each
-   section title. Decorative only; it travels with the heading's reveal and
-   follows the heading's alignment. */
+   section title. Decorative only; it travels with the section head's reveal
+   and follows the heading's alignment. */
 :is(
     .block-head > :is(h1, h2):first-child,
     .cta__title,

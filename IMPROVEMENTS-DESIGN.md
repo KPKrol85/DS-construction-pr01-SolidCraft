@@ -197,17 +197,9 @@ Priorities express design value and dependency, not defect severity. P1 items es
 
 ### IMP-DESIGN-09 — Reserve motion for structure and state
 
-- **Status:** Proposed
-- **Priority:** P2
-- **Affected area:** `[data-reveal]` usage in maintained pages and `partials/footer.html`; reveal, hover-card, and `.btn::before` rules in `utilities.css`, `components.css`, and `sections.css`.
-- **Evidence:** Source: 51 reveal elements on the home page with up, down, left, right, and scale variants and delays up to 600 ms; 24 per sampled service page; hover shimmer and card lifts. Historical: the no-JS reveal fix and the QUALITY-01 gate precondition of fully opaque reveal elements.
-- **Current state:** nearly every element animates individually and from varying directions.
-- **Design judgment:** uniform element-level motion competes with the calm, precise character of the recommended direction.
-- **Proposed improvement:** use section-level entrances (heading plus one content group) with one direction and a short distance. Remove alternating directions and the decorative shimmer, and keep state motion only: hover, focus, pressed, disclosure, dialog, and lightbox.
-- **Expected value:** motion that clarifies structure and state and reinforces the direction's restraint.
-- **Implementation scope:** keep the `[data-reveal]` mechanism and its initializer contract, `.no-js` visibility, `prefers-reduced-motion` behavior, and compatibility with the `qa:a11y` reveal-settle precondition.
-- **Dependencies:** best applied after IMP-DESIGN-04 to IMP-DESIGN-08 settle their compositions; otherwise none.
-- **Acceptance criteria:** reveals are applied at section or group level only, no elements enter from opposing directions, and no decorative hover sweep remains. With reduced motion and without JavaScript, all content is immediately visible, and `npm run qa:a11y` passes.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Reveals fell from 194 to 46: 10 on the home page, 6 per service page, and none in the footer. Section heads and at most one content group fade up 10 px over 320 ms with 0 or 80 ms delays; the hero, service openings, primary actions, contact form, and footer are static. Directional, scale, stagger, `hover-card`, and `rise` rules were removed, and focus reveals a group instantly and permanently via `:focus-within` and a `focusin` handler in `initScrollReveal()`.
+- **Verification:** `format:check`, `check:html`, `qa:a11y` (28 scans, 0 serious/critical), `qa:functional` (16/16), and `build:dist` passed. Chromium checks of all seven pages at 390–1440 px in both themes found settled groups, no overflow, unchanged layout, and immediate visibility with reduced motion and without JavaScript. Every Tab stop was opaque in its first frame and no group faded when focus left (`HEAD`: 4–14 obscured stops per view); only Chromium was tested, and owner visual approval is pending.
 - **Impact:** Medium
 - **Effort:** Small
 

@@ -166,6 +166,18 @@ function initScrollReveal() {
     },
   );
   items.forEach((el) => io.observe(el));
+  // Focus can enter a group before it reaches the threshold; reveal it for
+  // good so it stays visible after focus moves on.
+  document.addEventListener(
+    "focusin",
+    (event) => {
+      const el = event.target.closest?.("[data-reveal]:not(.is-revealed)");
+      if (!el) return;
+      el.classList.add("is-revealed");
+      if (el.getAttribute("data-reveal-once") !== "false") io.unobserve(el);
+    },
+    { signal },
+  );
   window.addEventListener("pagehide", () => io.disconnect(), {
     once: true,
     signal,

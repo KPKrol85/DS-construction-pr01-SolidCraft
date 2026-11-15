@@ -124,9 +124,9 @@
   --sep-h: 1px;
   --sep-buffer: var(--section-py-sm);
 
-  --sr-duration: 600ms;
+  --sr-duration: 320ms;
   --sr-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --sr-distance: 18px;
+  --sr-distance: 10px;
 }
 
 :root[data-theme="dark"] {
