@@ -40,7 +40,7 @@
           <a
             id="dd-oferta-trigger"
             href="{{home}}#oferta"
-            class="nav-link dropdown-trigger"
+            class="nav-link dropdown-trigger{{#if active-oferta}} is-active{{/if}}"
             aria-expanded="false"
             aria-haspopup="true"
             aria-controls="dd-oferta"
@@ -54,14 +54,14 @@
             aria-label="Podmenu: Oferta"
             aria-labelledby="dd-oferta-trigger"
           >
-            <li><a href="{{base}}oferta/lazienki.html">Łazienki</a></li>
+            <li><a href="{{base}}oferta/lazienki.html"{{#if active-lazienki}} aria-current="page"{{/if}}>Łazienki</a></li>
             <li>
-              <a href="{{base}}oferta/malowanie.html">Malowanie &amp; gładzie</a>
+              <a href="{{base}}oferta/malowanie.html"{{#if active-malowanie}} aria-current="page"{{/if}}>Malowanie &amp; gładzie</a>
             </li>
-            <li><a href="{{base}}oferta/kafelkowanie.html">Kafelkowanie</a></li>
-            <li><a href="{{base}}oferta/elektryka.html">Elektryka</a></li>
-            <li><a href="{{base}}oferta/hydraulika.html">Hydraulika</a></li>
-            <li><a href="{{base}}oferta/remonty.html">Remonty</a></li>
+            <li><a href="{{base}}oferta/kafelkowanie.html"{{#if active-kafelkowanie}} aria-current="page"{{/if}}>Kafelkowanie</a></li>
+            <li><a href="{{base}}oferta/elektryka.html"{{#if active-elektryka}} aria-current="page"{{/if}}>Elektryka</a></li>
+            <li><a href="{{base}}oferta/hydraulika.html"{{#if active-hydraulika}} aria-current="page"{{/if}}>Hydraulika</a></li>
+            <li><a href="{{base}}oferta/remonty.html"{{#if active-remonty}} aria-current="page"{{/if}}>Remonty</a></li>
           </ul>
         </li>
         <li><a href="{{home}}#realizacje">Klienci</a></li>

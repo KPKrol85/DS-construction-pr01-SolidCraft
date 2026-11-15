@@ -316,6 +316,11 @@
 .dropdown a:focus-visible {
   background: var(--c-tint);
 }
+.dropdown a[aria-current="page"] {
+  background: var(--c-tint);
+  box-shadow: inset 3px 0 0 var(--c-mark);
+  font-weight: 600;
+}
 :root[data-theme="dark"][data-accent="sand"] {
   --line: #2a2f3a;
 }

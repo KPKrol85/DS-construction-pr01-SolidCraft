@@ -41,13 +41,9 @@ No `PLAN.md`, `CONTEXT-PROJECT.md`, active audit, or previous `IMPROVEMENTS-UX.m
 
 ### IMP-UX-04 — Indicate the current service page in the header navigation
 
-- **Affected journey:** Orientation and wayfinding on the six `oferta/` pages, on desktop and in the mobile drawer.
-- **Evidence:** `partials/header.html:36-66`; `oferta/lazienki.html:174` (each service page passes only `base`, `home`, and an empty `active-home` to `@layout`; `remonty.html:180`); `js/modules/nav.js:260`, `js/modules/nav.js:316-324`; `css/modules/layout.css:236-241`.
-- **Current experience:** The header marks only the home link with `aria-current="page"`, through the `active-home` layout token. On a service page, neither the "Oferta" trigger nor the matching submenu item carries a current-page state. ScrollSpy applies `.is-active` only to same-page `#` links, which are not present on service pages. Visitors who reach a service page from search or a shared link see no indication in the navigation of where they are within the offer.
-- **Proposed improvement:** Mark the open service page in the header: `aria-current="page"` and a visible current style on its submenu item, and the existing `.is-active` underline on the "Oferta" trigger.
-- **Expected user value:** Visitors can see where they are within the offer and which sibling services remain to explore. Screen-reader users hear the current page announced in the submenu.
-- **Implementation scope:** Add a per-page layout token for the active service to the six service pages and render it in `partials/header.html` through the existing `{{#if}}` support of `scripts/utils/partials.js`. The renderer rejects undefined tokens, so every page using the header must declare the new token. Add a current-item style in `css/modules/layout.css` for desktop and the mobile drawer. Keep the `aria-expanded`, `aria-haspopup`, and `aria-controls` contracts, submenu open and close behavior, ScrollSpy on the home page, and link targets.
-- **Acceptance criteria:** On `oferta/kafelkowanie.html`, only the "Kafelkowanie" submenu link has `aria-current="page"` and a visible current style when the submenu is open on desktop and in the mobile drawer. The "Oferta" trigger shows the active underline, and no other header link is marked current. Home-page ScrollSpy states are unchanged. `check:html`, `qa:a11y`, and the `navigation` scenarios in `qa:functional` pass.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Marked the current service with `aria-current="page"` and a visible submenu state in both themes, with the Oferta category underline rendered from explicit layout flags. Restored submenu initialization on service pages and prevented desktop Escape focus restoration from reopening the submenu.
+- **Verification:** `format:check`, `check:html` (13 pages; 11 external HTTP 403 skips), `qa:functional` (30/30), `qa:a11y` (28 scans, 0 serious/critical), and `build:dist` passed. Functional coverage verifies all six services and seven other shared-header pages, desktop/mobile keyboard and ARIA behavior in both themes, and home ScrollSpy. Focused checks at 320, 390, and 1280 px in both themes found no current-link clipping, horizontal overflow, or open-header axe violations; real screen-reader output was not tested.
 - **Impact:** Medium
 - **Effort:** Small
 

@@ -82,9 +82,7 @@ function initNav() {
       if (!isOpen) return;
       if (e.key === "Escape") {
         const ddMenuLive = document.querySelector("#dd-oferta");
-        const ddTrigLive = document.querySelector(
-          '.dropdown-trigger[href="#oferta"]',
-        );
+        const ddTrigLive = document.querySelector("#dd-oferta-trigger");
         const active = document.activeElement;
         const insideDd =
           ddMenuLive &&
@@ -114,7 +112,7 @@ function initNav() {
     { signal },
   );
 
-  const ddTrigger = document.querySelector('.dropdown-trigger[href="#oferta"]');
+  const ddTrigger = document.querySelector("#dd-oferta-trigger");
   const ddMenu = document.querySelector("#dd-oferta");
 
   if (ddTrigger && ddMenu) {
@@ -155,8 +153,9 @@ function initNav() {
       );
       parentLi.addEventListener(
         "focusin",
-        () => {
-          if (mqDesktop.matches) setDd(true);
+        (e) => {
+          if (mqDesktop.matches && !parentLi.contains(e.relatedTarget))
+            setDd(true);
         },
         { signal },
       );

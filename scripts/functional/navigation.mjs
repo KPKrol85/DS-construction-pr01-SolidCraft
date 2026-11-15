@@ -1,12 +1,9 @@
-/* Navigation scenarios — the responsive drawer and the Oferta submenu.
-
-   Both run below the 1024 px navigation breakpoint that js/modules/nav.js and
-   css/modules/layout.css share, because that is the only viewport where the
-   drawer and the mobile submenu exist. The assertions target the interaction
-   contract — rendered state, ARIA state and keyboard reachability agreeing
-   with each other — not the markup, which the static checks already cover. */
+/* Navigation scenarios — the responsive drawer, the Oferta submenu and the
+   current service page. Rendered state, ARIA state and keyboard reachability
+   must agree on both sides of the shared 1024 px navigation breakpoint. */
 
 import {
+  DESKTOP_VIEWPORT,
   MOBILE_VIEWPORT,
   NAVIGATION_BREAKPOINT,
   assert,
@@ -28,6 +25,19 @@ const SERVICE_LINKS = [
   "oferta/remonty.html",
 ];
 
+const NON_SERVICE_PAGES = [
+  "/index.html",
+  "/404.html",
+  "/offline.html",
+  "/cookies.html",
+  "/polityka-prywatnosci.html",
+  "/regulamin.html",
+  "/thank-you.html",
+];
+
+const CURRENT_SERVICE = '#dd-oferta a[aria-current="page"]';
+const REPRESENTATIVE_SERVICE = "/oferta/kafelkowanie.html";
+
 async function assertBelowBreakpoint(page) {
   const isMobileLayout = await page.evaluate(
     (breakpoint) => !window.matchMedia(`(min-width: ${breakpoint}px)`).matches,
@@ -37,6 +47,122 @@ async function assertBelowBreakpoint(page) {
     isMobileLayout,
     `viewport should sit below the ${NAVIGATION_BREAKPOINT} px navigation breakpoint`,
   );
+}
+
+async function assertCurrentService(page, route) {
+  const current = page.locator(CURRENT_SERVICE);
+  assertEqual(
+    await page.locator('.site-header a[aria-current="page"]').count(),
+    1,
+    `${route} should have exactly one current-page header link`,
+  );
+  assertEqual(
+    await current.count(),
+    1,
+    `${route} should mark exactly one submenu destination as current`,
+  );
+  assertEqual(
+    await current.evaluate((link) => new URL(link.href).pathname),
+    route,
+    `${route} should mark its own service destination`,
+  );
+  assert(
+    await hasClass(page, "#dd-oferta-trigger", "is-active"),
+    `${route} should mark the Oferta category as active`,
+  );
+  assertEqual(
+    await page.locator("#dd-oferta-trigger").getAttribute("aria-current"),
+    null,
+    "the category trigger should not claim to be a current page",
+  );
+}
+
+async function assertServiceStyle(page, context) {
+  assert(
+    await page.locator(CURRENT_SERVICE).isVisible(),
+    `${context} — the current service should be visible in the open submenu`,
+  );
+  const style = await page.evaluate((selector) => {
+    const current = document.querySelector(selector);
+    const other = document.querySelector(
+      "#dd-oferta a:not([aria-current]):not(:focus):not(:hover)",
+    );
+    const read = (node) => {
+      const computed = getComputedStyle(node);
+      return {
+        background: computed.backgroundColor,
+        weight: Number(computed.fontWeight),
+        shadow: computed.boxShadow,
+      };
+    };
+    const bounds = current.getBoundingClientRect();
+    return {
+      current: read(current),
+      other: read(other),
+      underlineWidth: parseFloat(
+        getComputedStyle(
+          document.querySelector("#dd-oferta-trigger"),
+          "::after",
+        ).width,
+      ),
+      inViewport:
+        bounds.left >= 0 &&
+        bounds.right <= innerWidth &&
+        bounds.top >= 0 &&
+        bounds.bottom <= innerHeight,
+    };
+  }, CURRENT_SERVICE);
+
+  assert(
+    style.current.background !== style.other.background,
+    `${context} — the current service should have a distinct background`,
+  );
+  assert(
+    style.current.weight > style.other.weight,
+    `${context} — the current service should have a stronger text weight`,
+  );
+  assert(
+    style.current.shadow !== "none" &&
+      style.current.shadow !== style.other.shadow,
+    `${context} — a visible marker should distinguish the current service`,
+  );
+  assert(
+    style.underlineWidth > 0,
+    `${context} — the active Oferta category should retain its underline`,
+  );
+  assert(
+    style.inViewport,
+    `${context} — the current service should fit on screen`,
+  );
+}
+
+async function assertServiceSubmenuState(page, open, context) {
+  assertEqual(
+    await hasClass(page, "#dd-oferta", "open"),
+    open,
+    `${context} — the submenu open class should match its state`,
+  );
+  assertEqual(
+    await page.locator("#dd-oferta").isVisible(),
+    open,
+    `${context} — submenu visibility should match its state`,
+  );
+  assertEqual(
+    await page.locator("#dd-oferta-trigger").getAttribute("aria-expanded"),
+    String(open),
+    `${context} — aria-expanded should match submenu visibility`,
+  );
+}
+
+async function tabThroughServiceLinks(page) {
+  for (const [index, href] of SERVICE_LINKS.entries()) {
+    if (index > 0) await page.keyboard.press("Tab");
+    await assertFocusOn(
+      page,
+      `#dd-oferta a[href="../${href}"]`,
+      `keyboard navigation should reach ${href}`,
+    );
+  }
 }
 
 const navigationScenarios = [
@@ -391,6 +517,242 @@ const navigationScenarios = [
             "/index.html",
             "the subpage home link should load the home page",
           );
+        },
+      );
+    },
+  },
+
+  {
+    name: "nav-current-service-on-all-shared-header-pages",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: DESKTOP_VIEWPORT },
+        async ({ page }) => {
+          for (const href of SERVICE_LINKS) {
+            const route = `/${href}`;
+            await openPage(page, route);
+            await assertCurrentService(page, route);
+            await assertServiceSubmenuState(page, false, route);
+          }
+
+          for (const route of NON_SERVICE_PAGES) {
+            await openPage(page, route);
+            assertEqual(
+              await page.locator(CURRENT_SERVICE).count(),
+              0,
+              `${route} should not mark any service as the current page`,
+            );
+            assert(
+              !(await hasClass(page, "#dd-oferta-trigger", "is-active")),
+              `${route} should not statically activate the Oferta category`,
+            );
+          }
+        },
+      );
+    },
+  },
+
+  {
+    name: "nav-service-submenu-desktop-current-style-and-keyboard",
+    async run({ browser, baseURL }) {
+      for (const theme of ["light", "dark"]) {
+        await withPage(
+          browser,
+          { baseURL, viewport: DESKTOP_VIEWPORT },
+          async ({ context, page }) => {
+            await context.addInitScript((value) => {
+              localStorage.setItem("theme", value);
+            }, theme);
+            await openPage(page, REPRESENTATIVE_SERVICE);
+            const initialURL = page.url();
+            const trigger = page.locator("#dd-oferta-trigger");
+            await assertCurrentService(page, REPRESENTATIVE_SERVICE);
+            await assertServiceSubmenuState(page, false, `${theme} initial`);
+            assertEqual(
+              await trigger.getAttribute("aria-haspopup"),
+              "true",
+              "the trigger should retain its submenu semantics",
+            );
+            assertEqual(
+              await trigger.getAttribute("aria-controls"),
+              "dd-oferta",
+              "the trigger should retain its submenu relationship",
+            );
+
+            await trigger.hover();
+            await assertServiceSubmenuState(page, true, `${theme} hover`);
+            await assertServiceStyle(page, `${theme} desktop`);
+            await page.mouse.move(0, 200);
+            await assertServiceSubmenuState(
+              page,
+              false,
+              `${theme} pointer leave`,
+            );
+
+            await trigger.focus();
+            await assertServiceSubmenuState(
+              page,
+              true,
+              `${theme} keyboard focus`,
+            );
+            await page.keyboard.press("Tab");
+            await tabThroughServiceLinks(page);
+            await page.keyboard.press("Escape");
+            await assertServiceSubmenuState(page, false, `${theme} Escape`);
+            await assertFocusOn(
+              page,
+              "#dd-oferta-trigger",
+              "desktop Escape should restore focus to the submenu trigger",
+            );
+            await assertCurrentService(page, REPRESENTATIVE_SERVICE);
+            assertEqual(
+              page.url(),
+              initialURL,
+              "opening and closing the service submenu should not navigate",
+            );
+          },
+        );
+      }
+    },
+  },
+
+  {
+    name: "nav-service-submenu-mobile-current-style-and-keyboard",
+    async run({ browser, baseURL }) {
+      for (const theme of ["light", "dark"]) {
+        await withPage(
+          browser,
+          { baseURL, viewport: MOBILE_VIEWPORT },
+          async ({ context, page }) => {
+            await context.addInitScript((value) => {
+              localStorage.setItem("theme", value);
+            }, theme);
+            await openPage(page, REPRESENTATIVE_SERVICE);
+            await assertBelowBreakpoint(page);
+            const initialURL = page.url();
+            const trigger = page.locator("#dd-oferta-trigger");
+            const toggle = page.locator(".nav-toggle");
+            await assertCurrentService(page, REPRESENTATIVE_SERVICE);
+            await toggle.click();
+            await assertServiceSubmenuState(page, false, `${theme} initial`);
+
+            for (const key of ["Enter", "Space"]) {
+              await trigger.focus();
+              await page.keyboard.press(key);
+              await assertServiceSubmenuState(page, true, `${theme} ${key}`);
+              await assertServiceStyle(page, `${theme} mobile ${key}`);
+              await tabThroughServiceLinks(page);
+              await page.keyboard.press("Escape");
+              await assertServiceSubmenuState(page, false, `${theme} Escape`);
+              await assertFocusOn(
+                page,
+                "#dd-oferta-trigger",
+                "mobile Escape should restore focus to the submenu trigger",
+              );
+              assert(
+                await hasClass(page, "#navMenu", "open"),
+                "submenu Escape should leave the mobile drawer open",
+              );
+              await assertCurrentService(page, REPRESENTATIVE_SERVICE);
+            }
+
+            await trigger.click();
+            await assertServiceSubmenuState(page, true, `${theme} click`);
+            await toggle.click();
+            await assertServiceSubmenuState(
+              page,
+              false,
+              `${theme} drawer close`,
+            );
+            assertEqual(
+              await toggle.getAttribute("aria-expanded"),
+              "false",
+              "closing the drawer should clear its expanded state",
+            );
+            await assertFocusOn(
+              page,
+              ".nav-toggle",
+              "closing the service-page drawer should restore focus to its control",
+            );
+            await assertCurrentService(page, REPRESENTATIVE_SERVICE);
+            assertEqual(
+              page.url(),
+              initialURL,
+              "service submenu controls should preserve the current URL",
+            );
+          },
+        );
+      }
+    },
+  },
+
+  {
+    name: "nav-home-scrollspy-oferta-and-contact",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: DESKTOP_VIEWPORT },
+        async ({ page }) => {
+          await openPage(page, "/index.html");
+          await page.locator("#dd-oferta-trigger").focus();
+          await assertServiceSubmenuState(page, true, "home keyboard focus");
+          await page.keyboard.press("Tab");
+          await assertFocusOn(
+            page,
+            `#dd-oferta a[href="${SERVICE_LINKS[0]}"]`,
+            "Tab should enter the home-page service submenu",
+          );
+          await page.keyboard.press("Escape");
+          await assertServiceSubmenuState(page, false, "home Escape");
+          await assertFocusOn(
+            page,
+            "#dd-oferta-trigger",
+            "home Escape should restore focus without reopening the submenu",
+          );
+          await page.evaluate(() => document.fonts.ready);
+          for (const id of ["oferta", "kontakt"]) {
+            const section = page.locator(`#${id}`);
+            await section.scrollIntoViewIfNeeded();
+            /* Let content-visibility resolve before scrolling into the
+               section, away from its moving boundary and the header offset. */
+            await section.evaluate(async (node) => {
+              await new Promise((resolve) =>
+                requestAnimationFrame(() => requestAnimationFrame(resolve)),
+              );
+              const bounds = node.getBoundingClientRect();
+              window.scrollTo({
+                top:
+                  scrollY +
+                  bounds.top +
+                  Math.min(bounds.height / 4, innerHeight / 4),
+                behavior: "instant",
+              });
+            });
+            await page.waitForFunction(
+              (sectionId) => {
+                const active = document.querySelector(
+                  `#navMenu > li > a[href="#${sectionId}"]`,
+                );
+                return (
+                  active?.classList.contains("is-active") &&
+                  active.getAttribute("aria-current") === "true"
+                );
+              },
+              id,
+              { timeout: 2000 },
+            );
+            assertEqual(
+              await hasClass(page, "#dd-oferta-trigger", "is-active"),
+              id === "oferta",
+              `home ScrollSpy should track the ${id} section`,
+            );
+            assertEqual(
+              await page.locator(CURRENT_SERVICE).count(),
+              0,
+              "home ScrollSpy should not mark any service page as current",
+            );
+          }
         },
       );
     },

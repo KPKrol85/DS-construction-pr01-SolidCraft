@@ -61,6 +61,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Replaced the runtime-created hidden service field with a visible, optional service select in the static quote-form markup, prefilled from both quote CTAs on every service page and from the home service-index image links.
 - Reported every invalid contact-form field, including the phone format, in a single validation pass with a summary that counts the fields to correct.
 - Extended the service-gallery lightbox with each image's authored caption and gallery position, announced politely to assistive technology without moving focus.
+- Marked the current service in header navigation and restored service-page submenu interactions and desktop Escape focus restoration.
 
 ### Fixed
 
