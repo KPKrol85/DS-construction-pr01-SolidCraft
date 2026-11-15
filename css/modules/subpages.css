@@ -109,6 +109,19 @@
   color: var(--c-muted);
 }
 
+/* The enlargement hint names the items' action in the utility voice (see
+   base.css). It stays visible without hover, so touch screens get it too. */
+.gallery__hint {
+  margin: var(--space-3) 0 0;
+  color: var(--c-muted);
+  font-family: var(--ff-display);
+  font-size: var(--fs-utility);
+  font-weight: 600;
+  line-height: var(--lh-title);
+  letter-spacing: var(--ls-utility);
+  text-transform: uppercase;
+}
+
 /* Editorial rhythm in DOM order. Mobile: the lead image across the width,
    then two halves and three thirds. From 760 px: the lead spans two columns
    and two rows, items 2–3 stack beside it and items 4–6 close the third row.
@@ -201,7 +214,11 @@
   }
 }
 
+/* Hover-capable pointers also get the zoom cursor on the gallery links. */
 @media (hover: hover) {
+  .gallery .gallery-item {
+    cursor: zoom-in;
+  }
   .gallery .gallery-item:hover {
     border-color: var(--c-border-strong);
   }

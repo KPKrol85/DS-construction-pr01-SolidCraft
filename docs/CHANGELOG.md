@@ -63,6 +63,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Extended the service-gallery lightbox with each image's authored caption and gallery position, announced politely to assistive technology without moving focus.
 - Marked the current service in header navigation and restored service-page submenu interactions and desktop Escape focus restoration.
 - Exposed the contact message length limit with a remaining-character count and accessible feedback for reached limits and truncated pastes.
+- Made image enlargement explicit in the six service galleries with a permanent hint under each introduction and a zoom cursor on hover-capable pointers.
 
 ### Fixed
 

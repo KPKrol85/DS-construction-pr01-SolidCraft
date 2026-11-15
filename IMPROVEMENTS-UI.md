@@ -15,13 +15,9 @@ Four improvements qualify: make existing gallery actions more explicit, align do
 
 ### IMP-UI-01 — Make the image-enlargement affordance explicit in service galleries
 
-- **Affected area:** The six service-page galleries, before opening the lightbox.
-- **Evidence:** `oferta/lazienki.html:193-236` and `oferta/lazienki.html:283-347`; equivalent `.gallery-item` anchors in the other five `oferta/*.html` pages; `css/modules/subpages.css:27-41`, `css/modules/subpages.css:138-157`, and `css/modules/subpages.css:204-210`; `js/modules/lightbox.js`, `initOfertaLightbox()`.
-- **Current state:** Each service page has a noninteractive opening photograph and six gallery image links. Both presentations use rounded 4:3 media frames. Gallery links gain border emphasis and image scaling on hover, but their markup contains no visible enlargement label. Authored captions and position indicators already appear inside the open lightbox.
-- **Proposed improvement:** Add one concise Polish enlargement hint beside each gallery introduction and a consistent zoom cursor on its image links. Keep the hint in the existing utility typography so it explains the action without competing with the images or demonstrational disclaimer.
-- **Expected value:** Distinguish the gallery's existing interactive role from the opening illustration, including on touch screens where hover styling is unavailable.
-- **Implementation scope:** Gallery introductions in the six canonical service HTML files and gallery styles in `css/modules/subpages.css`. Preserve image sources, mosaic geometry, anchor targets, accessible names, `data-lb`, `data-lb-caption`, lightbox behavior, and the home service images' quote-form links. Add no extra controls or animation.
-- **Acceptance criteria:** All six gallery introductions display the same enlargement hint without hover; gallery links use the zoom cursor on pointer devices; the hint wraps without overflow at 320, 390, 760, and 1440 px in both themes. Existing image-link focus states, keyboard activation, captions, gallery order, and no-JavaScript image navigation remain intact.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Added a permanent enlargement hint to all six service galleries. Applied a scoped `zoom-in` cursor on hover-capable devices without changing gallery or lightbox behavior. Added a focused functional regression test.
+- **Verification:** `format:check`, `check:html`, `qa:functional` (35/35), `qa:a11y` (28 scans, 0 serious/critical), and `build:dist` passed. All six galleries passed responsive checks at 320–1440 px in both themes, with no overflow and contrast ratios of 5.31:1 (light) and 7.48:1 (dark). Keyboard, focus, captions, and no-JavaScript navigation remained intact; touch emulation passed, but physical devices were not tested.
 - **Impact:** Medium
 - **Effort:** Small
 

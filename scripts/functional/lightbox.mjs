@@ -9,11 +9,14 @@
    the raw JPEG, and a dialog that owns its own controls and focus. IMP-UX-03
    adds the active item's authored data-lb-caption and its "n z 6" position,
    kept in step with every navigation path and announced without moving
-   focus. */
+   focus. IMP-UI-01 adds the enlargement hint under each of the six
+   hand-maintained gallery introductions, checked on every service page, and
+   the zoom cursor scoped to the gallery links. */
 
 import {
   DESKTOP_VIEWPORT,
   assert,
+  assertDeepEqual,
   assertEqual,
   assertFocusOn,
   assertFocusWithin,
@@ -29,6 +32,15 @@ const DIALOG = ".lb-wrap";
 const INFO = `${DIALOG} .lb-info`;
 const ITEM_COUNT = 6;
 const NARROW_VIEWPORT = { width: 320, height: 568 };
+const SERVICE_PAGES = [
+  "/oferta/elektryka.html",
+  "/oferta/hydraulika.html",
+  "/oferta/kafelkowanie.html",
+  "/oferta/lazienki.html",
+  "/oferta/malowanie.html",
+  "/oferta/remonty.html",
+];
+const GALLERY_HINT = "Wybierz zdjęcie, aby je powiększyć.";
 
 const itemSelector = (n) =>
   `${GALLERY_ITEM}[href$="bathr-0${n}-2048x1536.jpg"]`;
@@ -532,6 +544,85 @@ const lightboxScenarios = [
             !layout.infoOverflows && !layout.pageOverflows,
             "a long caption should wrap without horizontal overflow",
           );
+        },
+      );
+    },
+  },
+
+  {
+    name: "lightbox-gallery-hint-and-zoom-cursor",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: NARROW_VIEWPORT },
+        async ({ page }) => {
+          for (const route of SERVICE_PAGES) {
+            await openPage(page, route);
+
+            const state = await page.evaluate((itemSelector) => {
+              const hints = document.querySelectorAll(".gallery__hint");
+              const hint = hints[0];
+              const style = hint ? getComputedStyle(hint) : null;
+              const cursorOf = (el) => (el ? getComputedStyle(el).cursor : "");
+              return {
+                hints: hints.length,
+                text: hint?.textContent.trim() ?? null,
+                followsLead: Boolean(
+                  hint?.parentElement?.matches(".gallery .block-head") &&
+                    hint.previousElementSibling?.matches(".lead"),
+                ),
+                visible: Boolean(
+                  hint &&
+                    hint.getClientRects().length > 0 &&
+                    style.visibility === "visible" &&
+                    !hint.closest('[aria-hidden="true"]'),
+                ),
+                overflows: Boolean(
+                  hint &&
+                    (hint.scrollWidth > hint.clientWidth ||
+                      document.documentElement.scrollWidth > window.innerWidth),
+                ),
+                itemCursors: [...document.querySelectorAll(itemSelector)].map(
+                  cursorOf,
+                ),
+                openingCursor: cursorOf(
+                  document.querySelector(".subpage-header__media img"),
+                ),
+              };
+            }, GALLERY_ITEM);
+
+            assertEqual(
+              state.hints,
+              1,
+              `${route} — the gallery should carry one enlargement hint`,
+            );
+            assertEqual(
+              state.text,
+              GALLERY_HINT,
+              `${route} — the hint should use the shared wording`,
+            );
+            assert(
+              state.followsLead,
+              `${route} — the hint should follow the lead inside the gallery introduction`,
+            );
+            assert(
+              state.visible,
+              `${route} — the hint should be visible without hover`,
+            );
+            assert(
+              !state.overflows,
+              `${route} — the hint should wrap without horizontal overflow at 320 px`,
+            );
+            assertDeepEqual(
+              state.itemCursors,
+              Array(ITEM_COUNT).fill("zoom-in"),
+              `${route} — every gallery link should show the zoom cursor`,
+            );
+            assert(
+              state.openingCursor !== "zoom-in",
+              `${route} — the noninteractive opening photograph should keep its cursor`,
+            );
+          }
         },
       );
     },
