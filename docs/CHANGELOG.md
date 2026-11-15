@@ -62,6 +62,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Reported every invalid contact-form field, including the phone format, in a single validation pass with a summary that counts the fields to correct.
 - Extended the service-gallery lightbox with each image's authored caption and gallery position, announced politely to assistive technology without moving focus.
 - Marked the current service in header navigation and restored service-page submenu interactions and desktop Escape focus restoration.
+- Exposed the contact message length limit with a remaining-character count and accessible feedback for reached limits and truncated pastes.
 
 ### Fixed
 

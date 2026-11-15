@@ -49,13 +49,9 @@ No `PLAN.md`, `CONTEXT-PROJECT.md`, active audit, or previous `IMPROVEMENTS-UX.m
 
 ### IMP-UX-05 — Make the message length limit visible before input is cut off
 
-- **Affected journey:** Writing the "Opis prac" description in the contact form.
-- **Evidence:** `index.html:1145-1161` (`maxlength="1000"` on `#f-msg`, placeholder "Krótko opisz zakres prac..."); `js/modules/forms.js:195-199`.
-- **Current experience:** The textarea enforces `maxlength="1000"`, so the browser stops typing and truncates pasted text at 1,000 characters without notice. The "Opis może mieć maksymalnie 1000 znaków." message in `forms.js` handles `validity.tooLong`, which typing and pasting under `maxlength` do not produce, so in practice the limit is never communicated. A visitor who pastes a longer scope description can send it without realizing the end was dropped.
-- **Proposed improvement:** Show the limit and the remaining character count for "Opis prac", with a calm notice when the limit is reached or a paste was truncated.
-- **Expected user value:** Visitors can plan the length of their description and know when text was cut, rather than unknowingly sending an incomplete request.
-- **Implementation scope:** Add a counter element linked to `#f-msg` through `aria-describedby`, alongside the existing error id, in `index.html`, and update it from the form's existing `input` handling in `js/modules/forms.js`. Announcements must stay polite and must not fire on every keystroke. Keep `maxlength`, the `msg` field name, existing error messages and clearing, and the form layout.
-- **Acceptance criteria:** The field shows the 1,000-character limit and an updating remaining count while typing. Pasting 1,200 characters leaves 1,000 in the field and displays a visible notice that the text was shortened. Screen readers receive the limit through the field description and the truncation notice once, not per keystroke. The `contact-form` scenarios in `qa:functional` and `qa:a11y` pass.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Exposed the message length limit and remaining count through a visible field description, with separate polite notices for reaching the limit and confirmed paste truncation. Preserved native `maxlength`, selected-text replacement, validation, submission, and anti-spam behavior, and synchronized the count after input, trimming, initialization, and reset.
+- **Verification:** `format:check`, `check:html` (13 pages; 11 external HTTP 403 skips), `qa:functional` (34/34), `qa:a11y` (28 scans, 0 serious/critical), and `build:dist` passed. Native clipboard regressions cover overflow, selected-text replacement, newlines, emoji, unavailable clipboard data, and cancellation; counter checks cover editing, trimming, resets, initialization, and unchanged validation, anti-spam, and intercepted POST flows. Focused checks at 320, 390, and 1280 px in both themes found no clipping, overflow, or serious/critical form axe violations; real screen-reader output and deployed Netlify storage were not tested.
 - **Impact:** Low
 - **Effort:** Small
 

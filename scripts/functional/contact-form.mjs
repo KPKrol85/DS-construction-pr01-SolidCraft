@@ -31,6 +31,41 @@ const FORM = "section#kontakt .form";
 const NOTE = `${FORM} .form-note`;
 const SUBMIT = `${FORM} button[type="submit"]`;
 const SUBMIT_URL = "**/thank-you.html";
+const MSG_REMAINING = "#f-msg-remaining";
+const MSG_NOTICE = "#f-msg-notice";
+const LIMIT_NOTICE = "Osiągnięto limit 1000 znaków.";
+const PASTE_NOTICE =
+  "Wklejony tekst został skrócony do dostępnego limitu znaków. Sprawdź, czy opis jest kompletny.";
+
+async function assertMessageLength(page, remaining, notice = "") {
+  assertEqual(
+    await page.locator(MSG_REMAINING).textContent(),
+    `Pozostało znaków: ${remaining}.`,
+    "remaining message characters",
+  );
+  assertEqual(
+    await page.locator(MSG_NOTICE).textContent(),
+    notice,
+    "message limit notice",
+  );
+  if (notice)
+    assert(await page.locator(MSG_NOTICE).isVisible(), "visible limit notice");
+}
+
+/* A real clipboard write plus the browser paste shortcut exercises native
+   maxlength enforcement; dispatchEvent alone cannot perform a default paste. */
+async function pasteMessage(page, text, start, end = start) {
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.evaluate((value) => navigator.clipboard.writeText(value), text);
+  const field = page.locator("#f-msg");
+  await field.focus();
+  await field.evaluate(
+    (el, selection) => el.setSelectionRange(...selection),
+    [start, end],
+  );
+  await page.keyboard.press("ControlOrMeta+V");
+  await page.evaluate(() => new Promise(requestAnimationFrame));
+}
 
 /* The validation summary counts the fields in error; the optional service
    field is never one of them. */
@@ -252,6 +287,320 @@ function assertNoFieldError(state, field, context) {
 }
 
 const contactFormScenarios = [
+  {
+    name: "contact-form-message-length-counts-edits-and-announces-the-limit-once",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: MOBILE_VIEWPORT },
+        async ({ page }) => {
+          await openContactForm(page);
+          await assertMessageLength(page, 1000);
+          const semantics = await page.locator("#f-msg").evaluate((el) => {
+            const ids = el.getAttribute("aria-describedby").split(/\s+/);
+            return {
+              maxLength: el.maxLength,
+              name: el.name,
+              required: el.required,
+              ids,
+              referencesExist: ids.every((id) =>
+                Boolean(document.getElementById(id)),
+              ),
+              routineLive: Boolean(
+                document
+                  .getElementById("f-msg-length")
+                  .closest('[aria-live], [role="status"], [role="alert"]'),
+              ),
+              noticeLive: document
+                .getElementById("f-msg-notice")
+                .getAttribute("aria-live"),
+              description: document.getElementById("f-msg-length").textContent,
+            };
+          });
+          assertEqual(semantics.maxLength, 1000, "native maxlength");
+          assertEqual(semantics.name, "msg", "Netlify field name");
+          assert(
+            semantics.required && semantics.referencesExist,
+            "required field with valid descriptions",
+          );
+          assertDeepEqual(
+            semantics.ids,
+            ["f-msg-length", "f-msg-notice", "f-msg-error"],
+            "field descriptions and existing error",
+          );
+          assertIncludes(
+            semantics.description,
+            "Maksymalnie 1000 znaków.",
+            "visible maximum",
+          );
+          assert(
+            !semantics.routineLive,
+            "routine count must stay outside live regions",
+          );
+          assertEqual(
+            semantics.noticeLive,
+            "polite",
+            "significant notices should be polite",
+          );
+
+          const field = page.locator("#f-msg");
+          await field.pressSequentially("Opis");
+          await assertMessageLength(page, 996);
+          await field.press("Backspace");
+          await assertMessageLength(page, 997);
+          await field.fill("a".repeat(999));
+          await field.press("End");
+          await field.press("b");
+          await assertMessageLength(page, 0, LIMIT_NOTICE);
+          assertEqual(
+            await field.getAttribute("aria-invalid"),
+            null,
+            "the limit is not a validation error",
+          );
+          await page.evaluate(() => {
+            window.limitMutations = 0;
+            new MutationObserver((entries) => {
+              window.limitMutations += entries.length;
+            }).observe(document.getElementById("f-msg-notice"), {
+              childList: true,
+              characterData: true,
+              subtree: true,
+            });
+          });
+          await field.pressSequentially("xyz");
+          await page.locator("#f-name").focus();
+          await assertMessageLength(page, 0, LIMIT_NOTICE);
+          assertEqual(
+            await page.evaluate(() => window.limitMutations),
+            0,
+            "blocked typing and blur must not repeat the announcement",
+          );
+          await field.focus();
+          await field.press("Backspace");
+          await assertMessageLength(page, 1);
+          assertEqual(
+            (await field.inputValue()).length,
+            999,
+            "native typing limit and deletion",
+          );
+        },
+      );
+    },
+  },
+  {
+    name: "contact-form-message-paste-reports-only-native-truncation",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: DESKTOP_VIEWPORT },
+        async ({ page }) => {
+          await openContactForm(page);
+          const field = page.locator("#f-msg");
+          await page.evaluate(() => {
+            window.pasteNoticeMutations = 0;
+            new MutationObserver((entries) => {
+              window.pasteNoticeMutations += entries.length;
+            }).observe(document.getElementById("f-msg-notice"), {
+              childList: true,
+            });
+          });
+          await pasteMessage(page, "a".repeat(1200), 0);
+          assertEqual(
+            await field.inputValue(),
+            "a".repeat(1000),
+            "native paste retains 1000 characters",
+          );
+          await assertMessageLength(page, 0, PASTE_NOTICE);
+          assertEqual(
+            await page.evaluate(() => window.pasteNoticeMutations),
+            1,
+            "truncation should produce one notice without a competing limit announcement",
+          );
+          await page.locator("#f-name").focus();
+          await assertMessageLength(page, 0, PASTE_NOTICE);
+
+          await field.fill("a".repeat(999));
+          await pasteMessage(page, "😀", 999);
+          assertEqual(
+            await field.inputValue(),
+            "a".repeat(999),
+            "native maxlength must not split a surrogate pair",
+          );
+          await assertMessageLength(page, 1, PASTE_NOTICE);
+
+          await field.fill("a".repeat(900));
+          await pasteMessage(page, "b".repeat(200), 400);
+          assertEqual(
+            await field.inputValue(),
+            "a".repeat(400) + "b".repeat(100) + "a".repeat(500),
+            "partial-field paste preserves surrounding text",
+          );
+          await assertMessageLength(page, 0, PASTE_NOTICE);
+
+          await field.fill("a".repeat(900));
+          await pasteMessage(page, "b".repeat(300), 400, 600);
+          assertEqual(
+            await field.inputValue(),
+            "a".repeat(400) + "b".repeat(300) + "a".repeat(300),
+            "selection makes room for an exact-fit paste",
+          );
+          await assertMessageLength(page, 0, LIMIT_NOTICE);
+
+          await field.fill("a".repeat(900));
+          await pasteMessage(page, "b".repeat(400), 400, 600);
+          assertEqual(
+            await field.inputValue(),
+            "a".repeat(400) + "b".repeat(300) + "a".repeat(300),
+            "oversized selection replacement",
+          );
+          await assertMessageLength(page, 0, PASTE_NOTICE);
+
+          await field.fill("a".repeat(1000));
+          await pasteMessage(page, "more", 1000);
+          await assertMessageLength(page, 0, PASTE_NOTICE);
+          assertEqual(
+            await field.inputValue(),
+            "a".repeat(1000),
+            "paste into full field keeps its value",
+          );
+
+          await field.fill("");
+          await pasteMessage(page, "Opis\r\nprac", 0);
+          assertEqual(
+            await field.inputValue(),
+            "Opis\nprac",
+            "native newline normalization",
+          );
+          await assertMessageLength(page, 991);
+          await field.fill("a".repeat(990));
+          await pasteMessage(page, "\r\nb".repeat(10), 990);
+          assertEqual(
+            await field.inputValue(),
+            "a".repeat(990) + "\nb".repeat(5),
+            "normalized oversized multiline paste",
+          );
+          await assertMessageLength(page, 0, PASTE_NOTICE);
+
+          await field.fill("Opis");
+          await field.dispatchEvent("paste");
+          await page.evaluate(() => new Promise(requestAnimationFrame));
+          await assertMessageLength(page, 996);
+          await field.evaluate((el) =>
+            el.addEventListener(
+              "paste",
+              (event) =>
+                Object.defineProperty(event, "clipboardData", { value: null }),
+              { once: true, capture: true },
+            ),
+          );
+          await pasteMessage(page, "c".repeat(1200), 4);
+          assertEqual(
+            (await field.inputValue()).length,
+            1000,
+            "native paste still enforces maxlength without readable clipboard data",
+          );
+          await assertMessageLength(page, 0, LIMIT_NOTICE);
+          await field.fill("Opis");
+          await field.evaluate((el) =>
+            el.addEventListener("paste", (event) => event.preventDefault(), {
+              once: true,
+            }),
+          );
+          await pasteMessage(page, "c".repeat(1200), 4);
+          assertEqual(
+            await field.inputValue(),
+            "Opis",
+            "canceled paste leaves the value intact",
+          );
+          await assertMessageLength(page, 996);
+        },
+      );
+    },
+  },
+  {
+    name: "contact-form-message-length-syncs-trimming-reset-and-initialization",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: MOBILE_VIEWPORT },
+        async ({ page }) => {
+          await openContactForm(page);
+          const field = page.locator("#f-msg");
+          await field.fill("  Opis prac  ");
+          await assertMessageLength(page, 987);
+          await page.locator("#f-name").focus();
+          assertEqual(
+            await field.inputValue(),
+            "Opis prac",
+            "blur trims the message",
+          );
+          await assertMessageLength(page, 991);
+          await field.fill(" " + "a".repeat(998) + " ");
+          await assertMessageLength(page, 0, LIMIT_NOTICE);
+          await page.locator("#f-name").focus();
+          await assertMessageLength(page, 2);
+          await pasteMessage(page, "b".repeat(20), 998);
+          await assertMessageLength(page, 0, PASTE_NOTICE);
+          await page.locator(FORM).evaluate((el) => el.reset());
+          await assertMessageLength(page, 1000);
+          assertEqual(await field.inputValue(), "", "reset clears the message");
+
+          // Reinitialization must read restored DOM values and clean up listeners.
+          await page.evaluate(async () => {
+            document.getElementById("f-msg").value = "Gotowy opis";
+            const { initContactForm } = await import("/js/modules/forms.js");
+            initContactForm();
+          });
+          await assertMessageLength(page, 989);
+          await field.fill("Nowy opis");
+          await assertMessageLength(page, 991);
+        },
+      );
+    },
+  },
+  {
+    name: "contact-form-message-length-resets-on-both-anti-spam-paths",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: DESKTOP_VIEWPORT },
+        async ({ context, page }) => {
+          const submissions = await interceptSubmission(context, {
+            status: 200,
+          });
+          await openContactForm(page);
+          for (const spam of ["honeypot", "links"]) {
+            await page.locator("#f-msg").fill("a".repeat(1000));
+            await assertMessageLength(page, 0, LIMIT_NOTICE);
+            if (spam === "honeypot") {
+              await page.locator('input[name="bot-field"]').evaluate((el) => {
+                el.value = "bot";
+              });
+            } else {
+              await page
+                .locator("#f-msg")
+                .fill(
+                  "https://example.com https://example.org " + "a".repeat(962),
+                );
+            }
+            await page.locator(FORM).evaluate((el) => el.requestSubmit());
+            await assertMessageLength(page, 1000);
+            assertEqual(
+              await page.locator("#f-msg").inputValue(),
+              "",
+              `${spam} resets the value`,
+            );
+            assertEqual(
+              await page.locator(NOTE).textContent(),
+              "",
+              `${spam} stays silent`,
+            );
+          }
+          assertEqual(submissions.length, 0, "anti-spam paths never submit");
+        },
+      );
+    },
+  },
   {
     name: "contact-form-rejects-an-empty-submission",
     async run({ browser, baseURL }) {
@@ -677,6 +1026,7 @@ const contactFormScenarios = [
             state.note.ok,
             "the success message should be styled as a success",
           );
+          await assertMessageLength(page, 1000);
           assertEqual(
             state.values.name,
             "",
@@ -752,6 +1102,7 @@ const contactFormScenarios = [
             state.note.err,
             "the failure message should be styled as an error",
           );
+          await assertMessageLength(page, 1000 - VALID_INPUT.msg.length);
           assertEqual(
             state.values.service,
             "Hydraulika",

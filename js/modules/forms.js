@@ -13,6 +13,8 @@ function initContactForm() {
   const nameInput = form.querySelector("#f-name");
   const phoneInput = form.querySelector("#f-phone");
   const msgInput = form.querySelector("#f-msg");
+  const msgRemaining = form.querySelector("#f-msg-remaining");
+  const msgNotice = form.querySelector("#f-msg-notice");
   const consentInput = form.querySelector("#f-consent");
   const isDev = ["localhost", "127.0.0.1"].includes(window.location.hostname);
   if (note) {
@@ -164,12 +166,96 @@ function initContactForm() {
       }
     }
   };
+
+  let pendingPaste = null;
+  const syncMessageLength = (paste = null, announce = true) => {
+    if (!msgInput) return;
+    const remaining = Math.max(0, msgInput.maxLength - msgInput.value.length);
+    if (msgRemaining) {
+      msgRemaining.textContent = `Pozostało znaków: ${remaining}.`;
+    }
+    if (!msgNotice || !announce) return;
+
+    // Confirm the browser retained a prefix of an oversized paste, with the
+    // unselected text intact. Missing clipboard data never implies truncation.
+    let truncated = false;
+    if (paste && !paste.event.defaultPrevented) {
+      const value = msgInput.value;
+      const insertedLength =
+        value.length - paste.prefix.length - paste.suffix.length;
+      const inserted = value.slice(
+        paste.prefix.length,
+        paste.prefix.length + insertedLength,
+      );
+      truncated =
+        insertedLength >= 0 &&
+        insertedLength <= paste.capacity &&
+        (paste.inserted || paste.capacity === 0) &&
+        value.startsWith(paste.prefix) &&
+        value.endsWith(paste.suffix) &&
+        paste.text.startsWith(inserted) &&
+        insertedLength < paste.text.length;
+    }
+    const message = truncated
+      ? "Wklejony tekst został skrócony do dostępnego limitu znaków. Sprawdź, czy opis jest kompletny."
+      : remaining === 0
+        ? `Osiągnięto limit ${msgInput.maxLength} znaków.`
+        : "";
+    // Leave an unchanged live region alone, including attempts to type at max.
+    if (msgNotice.textContent !== message) msgNotice.textContent = message;
+  };
+  syncMessageLength();
+
+  msgInput?.addEventListener(
+    "paste",
+    (e) => {
+      pendingPaste = null;
+      const text = e.clipboardData
+        ?.getData("text/plain")
+        .replace(/\r\n?/g, "\n");
+      if (!text || !e.isTrusted) return;
+      const prefix = msgInput.value.slice(0, msgInput.selectionStart);
+      const suffix = msgInput.value.slice(msgInput.selectionEnd);
+      const capacity = Math.max(
+        0,
+        msgInput.maxLength - prefix.length - suffix.length,
+      );
+      if (text.length <= capacity) return;
+      const paste = {
+        event: e,
+        text,
+        prefix,
+        suffix,
+        capacity,
+        inserted: false,
+      };
+      pendingPaste = paste;
+      // A paste into a full field may not emit input. Check after the native
+      // default action without replacing it or retaining stale paste state.
+      requestAnimationFrame(() => {
+        if (signal.aborted || pendingPaste !== paste) return;
+        pendingPaste = null;
+        syncMessageLength(paste);
+      });
+    },
+    { signal },
+  );
   form.addEventListener(
     "input",
     (e) => {
       const t = e.target;
       if (note?.textContent) showNote("", true);
       if (t.matches("input, textarea")) clearFieldError(t);
+
+      if (t === msgInput) {
+        if (pendingPaste && e.isTrusted && e.inputType === "insertFromPaste") {
+          pendingPaste.inserted = true;
+        }
+        syncMessageLength(
+          e.inputType === "insertFromPaste" ? pendingPaste : null,
+        );
+        pendingPaste = null;
+      }
 
       if (t === phoneInput) {
         applyPhoneMask();
@@ -189,14 +275,25 @@ function initContactForm() {
     "blur",
     (e) => {
       const t = e.target;
-      if (t.matches('input[type="text"], textarea')) t.value = t.value.trim();
+      if (t.matches('input[type="text"], textarea')) {
+        const before = t.value;
+        t.value = t.value.trim();
+        if (t === msgInput) syncMessageLength(null, t.value !== before);
+      }
     },
     { capture: true, signal },
   );
   form.addEventListener(
     "reset",
-    () => {
+    (e) => {
       showNote("", true);
+      pendingPaste = null;
+      // reset fires before the browser restores the controls' default values.
+      queueMicrotask(() => {
+        if (signal.aborted || e.defaultPrevented) return;
+        syncMessageLength(null, false);
+        if (msgNotice) msgNotice.textContent = "";
+      });
       form
         .querySelectorAll('[aria-invalid="true"]')
         .forEach((el) => clearFieldError(el));
