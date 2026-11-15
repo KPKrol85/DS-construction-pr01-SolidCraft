@@ -17,6 +17,7 @@ function initOfertaLightbox() {
     .map((trigger) => ({
       trigger,
       image: trigger.querySelector("picture img"),
+      caption: (trigger.getAttribute("data-lb-caption") || "").trim(),
     }))
     .filter(({ image }) => image);
 
@@ -81,6 +82,35 @@ function initOfertaLightbox() {
     btnNext = wrap.querySelector(".lb-btn.lb-next");
   }
 
+  /* Position and authored data-lb-caption of the active image. A single
+     polite, atomic live region announces each change while focus stays on the
+     control that made it. On opening, the region is newly exposed rather than
+     changed, so the dialog's description carries the same text instead. */
+  let info = wrap.querySelector(".lb-info");
+
+  if (!info) {
+    info = $("div");
+    info.className = "lb-info";
+    info.id = "lb-info";
+    info.setAttribute("aria-live", "polite");
+    info.setAttribute("aria-atomic", "true");
+
+    const counterEl = $("p");
+    counterEl.className = "lb-counter";
+    const captionEl = $("p");
+    captionEl.className = "lb-caption";
+    info.append(counterEl, captionEl);
+
+    const anchor = wrap.querySelector(".lb-viewport");
+    if (anchor) anchor.after(info);
+    else wrap.prepend(info);
+  }
+
+  wrap.setAttribute("aria-describedby", info.id);
+
+  const counter = info.querySelector(".lb-counter");
+  const caption = info.querySelector(".lb-caption");
+
   const parseSrcset = (ss) => {
     if (!ss) return [];
 
@@ -132,6 +162,12 @@ function initOfertaLightbox() {
   let isOpen = false;
   let lastFocus = null;
 
+  const setInfo = (position, text) => {
+    counter.textContent = position;
+    caption.textContent = text;
+    caption.hidden = !text;
+  };
+
   const applyImage = () => {
     const el = thumbs[index].image;
     const url = bestUrlFor(el);
@@ -140,6 +176,7 @@ function initOfertaLightbox() {
 
     img.src = url;
     img.alt = el.getAttribute("alt") || "";
+    setInfo(`${index + 1} z ${thumbs.length}`, thumbs[index].caption);
 
     preload((index + 1) % thumbs.length);
     preload((index - 1 + thumbs.length) % thumbs.length);
@@ -179,6 +216,7 @@ function initOfertaLightbox() {
 
     img.src = "";
     img.alt = "";
+    setInfo("", "");
 
     btnPrev.style.display = "none";
     btnNext.style.display = "none";
