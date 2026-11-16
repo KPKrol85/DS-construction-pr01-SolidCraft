@@ -269,15 +269,28 @@
 
 /* Subpage doc */
 
+/* One reading column owns the heading, contents and article. The measure
+   resolves once on the container's body font, as a content-box width, so the
+   container padding stays the page gutter; text sits one --doc-gutter inside
+   the column edge, where the contents panel's border lies. */
+.doc-page {
+  --doc-column: 70ch;
+  --doc-gutter: var(--space-2);
+}
+
+.doc-page .block > .container {
+  box-sizing: content-box;
+  max-width: var(--doc-column);
+}
+
 .doc-page .block {
   padding-block: var(--section-py-lg);
 }
 
 .doc-page .block-head {
-  margin: var(--space-8) auto;
-  padding-inline: var(--space-2);
+  margin-block: var(--space-8);
+  padding-inline: var(--doc-gutter);
   text-align: left;
-  max-width: 70ch;
 }
 
 .doc-page h1 {
@@ -286,15 +299,13 @@
 }
 
 .doc-page .lead {
-  max-width: 70ch;
-  margin-inline: auto;
+  max-width: none;
   color: var(--c-muted);
 }
 
 /* The table of contents is navigation, so it keeps a worked surface. */
 .doc-toc {
-  max-width: 70ch;
-  margin: var(--space-6) auto var(--space-8);
+  margin-block: var(--space-6) var(--space-8);
   background: var(--c-surface);
   border: 1px solid var(--c-border);
   box-shadow: var(--shadow-sm);
@@ -349,15 +360,13 @@
   font-size: var(--fs-3);
   line-height: var(--lh-body);
   color: inherit;
-  max-width: 72ch;
   hyphens: auto;
   text-wrap: pretty;
 }
 
 /* The document body reads on open ground; its h2 rules divide sections. */
 .legal-doc {
-  margin-inline: auto;
-  padding: var(--space-2) var(--space-2) var(--space-5);
+  padding: var(--space-2) var(--doc-gutter) var(--space-5);
 }
 
 .doc-content h2:first-of-type {
@@ -370,7 +379,7 @@
   font-size: var(--fs-5);
   line-height: var(--lh-title);
   font-weight: 700;
-  margin: var(--space-8) var(--space-1) var(--space-4);
+  margin: var(--space-8) 0 var(--space-4);
   scroll-margin-top: calc(var(--header-h, 72px) + 16px);
   border-top: 1px solid var(--c-border);
   padding-top: var(--space-6);

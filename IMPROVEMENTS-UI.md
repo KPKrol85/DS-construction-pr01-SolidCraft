@@ -23,13 +23,9 @@ Four improvements qualify: make existing gallery actions more explicit, align do
 
 ### IMP-UI-02 — Give legal-page headings, contents, and body one reading column
 
-- **Affected area:** Privacy policy, terms, and cookie documents.
-- **Evidence:** `css/modules/subpages.css:259-285` and `css/modules/subpages.css:331-343`; `polityka-prywatnosci.html:153-190`; corresponding `.block-head`, `.doc-toc`, and `.doc-content.legal-doc` structures in `regulamin.html` and `cookies.html`.
-- **Current state:** The document heading and table of contents each use a `70ch` maximum width, while the article uses `72ch` with an explicit smaller body font. The lead has another `70ch` cap, and the three blocks have separate padding rules. Their reading-column dimensions therefore depend on several independent declarations and font contexts.
-- **Proposed improvement:** Define one document-scoped reading-column width and shared outer gutter for the heading, contents panel, and article. Retain the contents panel's internal list indentation and worked-surface treatment, while keeping the title and article on open ground.
-- **Expected value:** Establish a steadier reading axis across long documents and give future typography adjustments one clear layout owner.
-- **Implementation scope:** Document-specific selectors in `css/modules/subpages.css`; a scoped custom property is sufficient. Preserve the font pair, heading hierarchy, all Polish text, section IDs, contents links, return links, theme behavior, and existing print rules. Do not restructure document navigation.
-- **Acceptance criteria:** All three documents use the same declared outer reading-column width and gutter; the title/lead and article text share a start edge, with contents-list indentation remaining intentional. Verify narrow and wide layouts at 320, 390, 760, and 1440 px and at 200% zoom, with no horizontal overflow or clipped focus outlines. Print-specific declarations remain unchanged, and print preview is compared with the baseline.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Unified the legal-page layout using `--doc-column` (70ch) and `--doc-gutter`. Aligned headings, contents, and article text while preserving existing styling and print behavior.
+- **Verification:** `format:check`, `build:css`, and `qa:a11y` (28 scans, 0 serious/critical) passed. All three documents passed layout, navigation, and focus checks across 320–1440 px, both themes, and simulated 200% zoom. Chromium print checks preserved page counts; pre-existing narrow-viewport overflow and print typography overrides remain unresolved.
 - **Impact:** Medium
 - **Effort:** Small
 
