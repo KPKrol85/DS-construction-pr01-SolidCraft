@@ -31,13 +31,9 @@ Four improvements qualify: make existing gallery actions more explicit, align do
 
 ### IMP-UI-03 — Adapt contact-feedback surfaces to the active theme
 
-- **Affected area:** Contact-form status notices and inline field errors.
-- **Evidence:** `css/modules/tokens.css:36-41` and `css/modules/tokens.css:132-167`; `css/modules/sections.css`, `.form .form-note.is-ok`, `.form .form-note.is-err`, and `.form .form-error`; `js/modules/forms.js`, `showNote()` and `setFieldError()`.
-- **Current state:** Feedback already has semantic foreground, background, and border tokens, with distinct error and success border treatments. The token values use pale green and pink surfaces. Neither dark-theme branch overrides them, so those same pale feedback surfaces are used against the dark form and page grounds.
-- **Proposed improvement:** Extend the existing feedback tokens with dark-surface variants and corresponding light text and semantic borders. Retain the current light-theme palette and the existing text and border distinctions between states.
-- **Expected value:** Integrate validation and submission feedback with the navy dark-theme surfaces while preserving clear semantic emphasis.
-- **Implementation scope:** The existing feedback tokens in `css/modules/tokens.css`, including explicit dark and system-dark fallback branches. Keep the current feedback selectors and JavaScript state transitions, live regions, validation timing, message text, submission handling, and focus management unchanged.
-- **Acceptance criteria:** Explicit dark mode and the CSS system-dark fallback resolve to the intended dark feedback palette; light mode retains its current colors. Inline errors and status notices remain readable and distinguishable by text and border treatment, with actual text/background contrast measured at implementation time to at least 4.5:1. Messages wrap at 320 px, and changing theme while feedback is visible updates its presentation without clearing it.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Added dark values for the six existing feedback tokens to the explicit and system-dark theme branches, giving success and error states navy-tinted surfaces with light text and bright semantic borders. Light-theme values, feedback selectors, and form behavior remain unchanged.
+- **Verification:** `format:check`, `build:css`, `qa:a11y` (28 scans, 0 serious/critical), and focused contact-form `qa:functional` (14/14) passed. Rendered contrast measured 11.91:1 for success and 11.75:1 for error notices and field errors in explicit and system-dark modes, while light mode, including under a dark system preference, kept its original colors at 7.29:1 and 7.60:1. Feedback wrapped without overflow at 320 px and updated live on theme switches without losing messages or `aria-invalid` state; the system-dark fallback was checked by removing `data-theme` in a JavaScript-enabled page.
 - **Impact:** Medium
 - **Effort:** Small
 

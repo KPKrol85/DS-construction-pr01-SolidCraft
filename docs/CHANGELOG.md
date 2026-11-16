@@ -65,6 +65,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Exposed the contact message length limit with a remaining-character count and accessible feedback for reached limits and truncated pastes.
 - Made image enlargement explicit in the six service galleries with a permanent hint under each introduction and a zoom cursor on hover-capable pointers.
 - Aligned the legal-page heading, contents, and article to one shared reading column and gutter, letting the print rule give the article the full page width.
+- Adapted contact-form status notices and field errors to the dark theme with navy-tinted surfaces, light text, and semantic borders, keeping the light-theme palette unchanged.
 
 ### Fixed
 
