@@ -39,13 +39,9 @@ Four improvements qualify: make existing gallery actions more explicit, align do
 
 ### IMP-UI-04 — Consolidate responsive hero presentation in its section stylesheet
 
-- **Affected area:** Home hero sizing and image positioning, plus the following service section's top spacing.
-- **Evidence:** `css/style.css:5-7`; `css/modules/sections.css:279-307` and `css/modules/sections.css:541-543`; `css/modules/utilities.css:114-125`.
-- **Current state:** `sections.css` defines desktop and short-landscape hero sizing. The later-imported `utilities.css` sets another desktop minimum height and image position, and changes the service container's top padding. Determining the effective home opening therefore requires following component-specific rules across both modules.
-- **Proposed improvement:** Move these home-section presentation overrides into the relevant hero and service blocks in `sections.css`, resolving redundant declarations while preserving the effective cascade and rendered result.
-- **Expected value:** Make future hero and section-spacing adjustments easier to assess without relying on late utility overrides. This is a maintenance refinement, not a proposal to change the approved hero composition.
-- **Implementation scope:** Only the relevant rules in `css/modules/sections.css` and `css/modules/utilities.css`. Keep stylesheet import order, breakpoints, short-landscape precedence, effective dimensions, photograph crops, scrim, Craft Spotlight, reduced-motion behavior, copy, and action destinations unchanged. Avoid a general utility cleanup.
-- **Acceptance criteria:** `utilities.css` no longer owns these hero or service-spacing overrides, and their effective definitions are grouped with the sections they style. Before/after computed styles and screenshots match at 390, 760, 1023, 1024, 1440, and 1920 px, including a desktop-width viewport no taller than 540 px. Both themes and portrait/ultra-wide image treatments retain their current geometry and behavior.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Moved the desktop hero height, centered image position, and `#oferta` top inset from `utilities.css` into the hero and service blocks of `sections.css`, placing the desktop hero block after the portrait and short-landscape blocks to keep its precedence. Removed the dead `clamp(560px, 68vh, 880px)` hero height and the duplicate higher-specificity image selector, leaving import order, breakpoints, and rendered output unchanged.
+- **Verification:** `format:check`, `build:css`, and `qa:a11y` (28 scans, 0 serious/critical) passed. Before/after Playwright captures of 16 viewports from 390 to 2560 px, including 1024×540, 1440×500, 1920×540, desktop-width portrait, and 21:9+ ultra-wide, in both themes with and without reduced motion matched in all 3,648 computed values and pixel for pixel in 128 hero and `#oferta` screenshots. An 800-point computed-style sweep (320–3440 × 320–1920 px) and the minified production CSS also showed no differences; physical devices were not tested.
 - **Impact:** Medium
 - **Effort:** Small
 

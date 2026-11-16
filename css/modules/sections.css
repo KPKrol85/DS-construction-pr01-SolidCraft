@@ -276,13 +276,6 @@
   }
 }
 
-@media (min-width: 1024px) {
-  .hero {
-    --hero-light-rx: 40%;
-    min-height: clamp(560px, 68vh, 880px);
-  }
-}
-
 /* Short landscape screens (phones on their side, high zoom): the copy fills
    most of the frame, so the text field reaches its full height, and the
    spacing tightens to keep the actions as close to the fold as possible. */
@@ -304,6 +297,18 @@
   }
   .hero__cta {
     padding-block: var(--space-2) 0;
+  }
+}
+
+/* Desktop follows the portrait and short-landscape blocks, so its height and
+   centered crop also apply to desktop-width windows that match them. */
+@media (min-width: 1024px) {
+  .hero {
+    --hero-light-rx: 40%;
+    min-height: clamp(72vh, 82vh, 94vh);
+  }
+  .hero__bg img {
+    object-position: center center;
   }
 }
 
@@ -540,6 +545,14 @@
 
 :is(#oferta, #faq) > .container {
   padding-top: var(--space-2);
+}
+
+/* Desktop: the service index takes a deeper top inset below the hero; #faq
+   keeps the shared one. */
+@media (min-width: 1024px) {
+  #oferta > .container {
+    padding-top: calc(var(--sep-buffer) - 6px);
+  }
 }
 
 @media (min-width: 640px) {
