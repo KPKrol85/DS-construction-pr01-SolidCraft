@@ -9,7 +9,7 @@
     "type": "git",
     "url": "git+https://github.com/KPKrol85/DS-construction-pr01-SolidCraft.git"
   },
-  "homepage": "https://construction-pr01-solidcraft.netlify.app/",
+  "homepage": "https://ds-construction-pr01-solidcraft.netlify.app/",
   "scripts": {
     "start": "npm run dev",
     "dev": "node scripts/dev-server.mjs",
@@ -17,7 +17,7 @@
     "build:dist": "node scripts/build-dist.js && npm run build && npm run build:sitemap && npm run build:sw",
     "build:css": "postcss css/style.css --no-map -o dist/css/style.min.css && node scripts/verify-css-build.js",
     "build:js": "esbuild js/theme-init.js --bundle --minify --target=es2018 --format=iife --outfile=dist/js/theme-init.min.js && esbuild js/script.js --bundle --minify --target=es2018 --format=iife --outfile=dist/js/script.min.js && node scripts/verify-js-build.js",
-    "build:sitemap": "cross-env SITE_URL=https://construction-pr01-solidcraft.netlify.app node scripts/generate-sitemap.mjs",
+    "build:sitemap": "cross-env SITE_URL=https://ds-construction-pr01-solidcraft.netlify.app node scripts/generate-sitemap.mjs",
     "build:sw": "node scripts/generate-sw.js",
     "check:predeploy": "npm run check:html && npm run qa:a11y",
     "check:html": "npm run check:links && npm run check:assets",
