@@ -110,6 +110,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Standardized Git ignore rules and LF normalization through `.gitattributes`.
 - Standardized the npm package identity as `ds-construction-pr01-solidcraft`.
 - Added GitHub Actions CI checks for predeployment and functional verification.
+- Added the `qa:sw` Service Worker lifecycle and fetch-strategy suite to GitHub Actions CI as a separate step.
 - Upgraded `sharp` to 0.35 and replaced legacy development and Lighthouse tooling, eliminating critical and high dependency advisories.
 - Raised the Node.js baseline to `>=22.19.0`.
 - Excluded Lighthouse reports from production deployment artifacts.

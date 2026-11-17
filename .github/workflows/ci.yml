@@ -2,10 +2,11 @@
 #
 # Runs the project's own npm scripts rather than reproducing their internals
 # here, so the CI contract and the local contract cannot drift: the production
-# build, the documented pre-deploy gate (check:predeploy) and the functional
-# browser suite (qa:functional) stay separate steps, so a red run names which
-# one failed. Lighthouse (qa:lhci), repository-wide formatting (format:check)
-# and deployment are deliberately absent.
+# build, the documented pre-deploy gate (check:predeploy), the functional
+# browser suite (qa:functional) and the Service Worker suite (qa:sw) stay
+# separate steps, so a red run names which one failed. Lighthouse (qa:lhci),
+# repository-wide formatting (format:check) and deployment are deliberately
+# absent.
 name: CI
 
 on:
@@ -53,8 +54,8 @@ jobs:
         run: npm run build:dist
 
       # playwright ships no install script, so npm ci downloads no browser.
-      # Chromium alone is installed because that is the only browser qa:a11y
-      # and qa:functional launch.
+      # Chromium alone is installed because that is the only browser qa:a11y,
+      # qa:functional and qa:sw launch.
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
@@ -63,3 +64,6 @@ jobs:
 
       - name: Run functional regression suite
         run: npm run qa:functional
+
+      - name: Run Service Worker lifecycle suite
+        run: npm run qa:sw

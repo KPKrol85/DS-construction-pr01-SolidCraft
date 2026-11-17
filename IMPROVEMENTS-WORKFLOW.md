@@ -23,13 +23,9 @@ The remaining opportunities are narrow: tooling facts are maintained in three pl
 
 ### IMP-WORKFLOW-02 — Bring `qa:sw` into the documented and automated verification contract
 
-- **Affected workflow:** Verification workflow and CI.
-- **Evidence:** `package.json:28`; `scripts/qa-sw-lifecycle.mjs:3-40`; `docs/settings.md:21-44`, `docs/settings.md:81-91`, `docs/settings.md:101-107`; `.github/workflows/ci.yml:51-65`; `docs/CHANGELOG.md:127-128`.
-- **Current workflow:** `qa:sw` is the project's Service Worker lifecycle and fetch-strategy gate (origin: AUDIT P2-01, extended by IMP-QUALITY-02). It reads the canonical `sw.js`, needs no `dist/`, uses only Chromium, and states that nothing reaches the network or disk. It is absent from the `docs/settings.md` script list and QA section, is not listed among the scripts deliberately absent from CI, and is not run by CI, which already installs Chromium for `qa:a11y` and `qa:functional`. Changes to `sw.js` or `scripts/generate-sw.js` can therefore merge without the gate that protects them.
-- **Proposed improvement:** Document `qa:sw` in `docs/settings.md` and run it in CI as its own step after `qa:functional`.
-- **Expected practical value:** The Service Worker contract is checked on every pull request and push to `main` at no extra browser-install cost, and the canonical documentation lists every existing gate.
-- **Implementation scope:** Add one `npm run qa:sw` step to `.github/workflows/ci.yml`; update the `docs/settings.md` Scripts, QA / Validation, and Continuous Integration sections. Keep the `CI` workflow name, the `quality-gate` job name, existing step order, triggers, permissions, and timeout unchanged, and do not merge `qa:sw` into `check:predeploy`.
-- **Acceptance criteria:** `ci.yml` contains a separately named step running `npm run qa:sw` after the functional suite and no other step changes; `docs/settings.md` lists `qa:sw` in its script list, QA section, and CI step order; a local `npm run qa:sw` run or a CI run of the updated workflow completes successfully.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** CI runs `npm run qa:sw` as a separate step after `qa:functional`, reusing the existing Chromium install, with the workflow, job, triggers, permissions, runner, Node setup, concurrency, timeout, and prior steps unchanged. `docs/settings.md` documents `qa:sw` in its Scripts, QA / Validation, and CI sections and distinguishes tests of the canonical `sw.js` logic from validation of the generated `dist/sw.js`. The README PWA sections now link there.
+- **Verification:** A local `npm run qa:sw` run passed all 9 scenarios in about 60 s; the CI YAML step order and commands were inspected, and Prettier 3.3.3 `-c` on the modified Markdown files and `git diff --check` passed. No GitHub Actions run of the updated workflow has been inspected.
 - **Impact:** Medium
 - **Effort:** Small
 
