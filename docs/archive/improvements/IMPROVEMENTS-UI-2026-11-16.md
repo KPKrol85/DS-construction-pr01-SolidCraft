@@ -5,13 +5,19 @@
 **Analysis mode:** Evidence-based UI improvement review
 **Focus:** Project-wide UI
 
+## Implementation closure
+
+**Status:** COMPLETED — All four selected UI improvements were implemented and verified.
+**Completion date:** 2026-11-16
+**Archive note:** The UI improvement cycle is closed and archived. Remaining limitations are listed under [Remaining limitations](#remaining-limitations).
+
 ## Improvement overview
 
-The current interface implements the Measured Craft direction through semantic material tokens, editorial typography, an image-led service range, restrained motion, and shared closing treatments. The completed design and UX records were checked against current sources; their implemented outcomes and recorded owner decisions are not proposed again. No root `PLAN.md` or existing `IMPROVEMENTS-UI.md` was present.
+The original review assessed the interface built on the Measured Craft direction and excluded outcomes and owner decisions already recorded in the completed design and UX reports.
 
-Four improvements qualify: make existing gallery actions more explicit, align document reading columns, extend feedback colors to dark surfaces, and consolidate responsive presentation ownership. These are bounded refinements to the existing interface, without new features, replacement imagery, dependencies, or changes to established navigation and form behavior.
+It selected four bounded refinements: an explicit enlargement cue in service galleries, a shared reading column for legal pages, dark-theme contact-feedback colors, and consolidated responsive hero styles. All four were implemented within the existing architecture without new features, replacement imagery, dependencies, or changes to navigation and form behavior.
 
-## Proposed improvements
+## Completed improvements
 
 ### IMP-UI-01 — Make the image-enlargement affordance explicit in service galleries
 
@@ -45,16 +51,22 @@ Four improvements qualify: make existing gallery actions more explicit, align do
 - **Impact:** Medium
 - **Effort:** Small
 
-## Selection summary
+## Completion summary
 
-The proposals address existing, reusable presentation patterns: six galleries, three documents, contact-feedback states, and the home opening's responsive CSS. Ordering reflects interface clarity and consistency first, followed by maintenance value; it is not based on measured user outcomes. Impact and effort are relative estimates.
+**4 of 4 improvements completed.** Gallery affordance, legal-page reading layout, and dark-theme contact feedback were improved, and responsive hero styles were consolidated with no rendered change.
 
-All four can be implemented independently. IMP-UI-01 and IMP-UI-02 touch separate areas of `subpages.css`; IMP-UI-03 and IMP-UI-04 have no functional dependency on them. Preserve each proposal's scope when scheduling work.
+Each implementation passed `format:check` and the accessibility gate (28 scans, 0 serious/critical), with further checks recorded under each improvement. Ordering reflects interface clarity and consistency first, then maintenance value; impact and effort are relative estimates, not measured user outcomes. No additional tests were performed solely for archival closure.
 
-Four proposals met the evidence and scope requirements. No fifth item was added merely to revisit completed design/UX work, repeat known defects, or recommend a visual preference without sufficient evidence. Implementation remains subject to separate owner approval.
+## Remaining limitations
 
-## Analysis limitations
+- **Physical devices:** Gallery and hero changes were checked with emulation only; physical devices were not tested.
+- **Legal pages:** Pre-existing narrow-viewport overflow and print typography overrides remain unresolved.
+- **System-dark fallback:** The no-`data-theme` dark branch was checked by removing the attribute in a JavaScript-enabled page.
 
-- This review inspected canonical HTML and partials, all CSS modules, relevant runtime modules, package/build configuration, and current documentation and archived improvement/audit records. No browser rendering, interaction tests, screenshots, production build, or contrast measurement was performed during this analysis.
-- Alignment, interaction-cue, and feedback recommendations follow source-visible presentation choices. They do not establish responsive failures, accessibility failures, user confusion, or measured usability gains. Their acceptance criteria require direct verification during implementation.
-- Verification recorded in archived reports is historical evidence only. It was used to exclude completed work and preserve owner decisions, not as a current runtime pass.
+These items are outside the completed UI improvement scope.
+
+## Original analysis limitations
+
+The initial review was based on static source inspection and archived project documentation. No browser rendering, interaction tests, screenshots, production build, or contrast measurement was performed during that analysis, and archived verification was treated as historical evidence only.
+
+Subsequent implementation checks are recorded under each completed improvement.
