@@ -19,13 +19,13 @@ Allow: /
 
 # Lokalizacja mapy strony (dla Google i Bing)
 
-Sitemap: https://construction-pr01-solidcraft.netlify.app/sitemap.xml
+Sitemap: https://ds-construction-pr01-solidcraft.netlify.app/sitemap.xml
 
 
 
 # Netlify hostuje stronę przez HTTPS — preferowany adres kanoniczny
 
-# Host: https://construction-pr01-solidcraft.netlify.app
+# Host: https://ds-construction-pr01-solidcraft.netlify.app
 
 
 

@@ -12,7 +12,7 @@ Współdzielony nagłówek i stopka mają jedno źródło w `partials/` i są ro
 
 ### Wersja online
 
-Adres skonfigurowany jako `homepage` w `package.json` oraz jako adres kanoniczny stron: <https://construction-pr01-solidcraft.netlify.app/>
+Adres skonfigurowany jako `homepage` w `package.json` oraz jako adres kanoniczny stron: <https://ds-construction-pr01-solidcraft.netlify.app/>
 
 ### Kluczowe funkcje
 
@@ -210,7 +210,7 @@ The shared header and footer have a single source in `partials/` and are expande
 
 ### Live Version
 
-The address configured as `homepage` in `package.json` and as the canonical URL of the pages: <https://construction-pr01-solidcraft.netlify.app/>
+The address configured as `homepage` in `package.json` and as the canonical URL of the pages: <https://ds-construction-pr01-solidcraft.netlify.app/>
 
 ### Key Features
 

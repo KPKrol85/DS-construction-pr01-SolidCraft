@@ -94,6 +94,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Removed fictitious `GeneralContractor` structured data and identified sample business content as demonstrational.
 - Synchronized the structured-data service list on service, legal, and 404 pages with the six-service home index.
 - Corrected privacy and cookie disclosures to reflect actual form fields, storage keys, and consent-gated maps.
+- Corrected canonical, social, structured-data, and robots sitemap URLs to the current production domain.
 
 ### Build and Tooling
 
