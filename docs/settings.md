@@ -35,9 +35,9 @@ This file is the canonical source of truth for the Solidcraft build/development 
 - `check:links`: validates broken internal/external links and missing anchors across all HTML files.
 - `check:assets`: validates local asset references in HTML (`img/src`, `script/src`, `link[href]`, `source/srcset`, `img/srcset`).
 - `check:html`: runs `check:links` and `check:assets`.
-- `qa:a11y`: runs axe-based accessibility scans in a headless browser on key pages.
-- `qa:functional`: runs `scripts/qa-functional.mjs`, a Playwright-driven functional regression pass over the navigation drawer, the offer submenu, the lightbox and the contact-form submission paths.
-- `qa:lighthouse`: runs `build:dist` and then `scripts/qa-lighthouse.mjs` against `lighthouse.config.json`, serving `dist/` on an ephemeral loopback port and failing when a category falls below its threshold. `qa:lhci` is retained as an alias.
+- `qa:a11y`: runs `scripts/qa-a11y.mjs`, an axe-core scan in headless Chromium over the required routes `index.html`, `404.html`, `thank-you.html`, the six `oferta/` service pages and the three root-level legal pages, plus `offline.html` when it exists. Every route is scanned in the light and dark themes, and the home page is scanned with the first-visit project modal open and again after dismissal. A missing required route fails the run.
+- `qa:functional`: runs `scripts/qa-functional.mjs`, a Playwright-driven functional regression pass in headless Chromium over the scenario groups in `scripts/functional/`: navigation (mobile drawer, Oferta submenu, current-service state, back-to-top link, home scroll spy), the service-gallery lightbox, the home service index and service-page quote links, the contact form (validation, anti-spam window, submission paths, `?usluga=` service prefill), the first-visit project notice, and the consent-gated footer map. Pages are served locally and nothing reaches the network. `--only=<substring>` limits the run to scenarios whose name contains the substring.
+- `qa:lighthouse`: runs `build:dist` and then `scripts/qa-lighthouse.mjs` against `lighthouse.config.json`, serving `dist/` on an ephemeral loopback port and failing when a category falls below its threshold. The config audits `/`, `/oferta/remonty.html` and `/polityka-prywatnosci.html` with thresholds of performance `0.6`, accessibility `0.85`, SEO `0.85` and best practices `0.75`. `qa:lhci` is retained as an alias.
 - `check:predeploy`: runs `check:html` and `qa:a11y` as the local pre-deploy gate.
 - `format`: applies Prettier writes.
 - `format:check`: validates formatting without writes.
@@ -135,4 +135,4 @@ This file is the canonical source of truth for the Solidcraft build/development 
 
 ## Single Source of Truth
 
-Pipeline/tooling documentation lives only in `settings.md`. Keep pipeline notes out of separate docs to avoid drift.
+Pipeline, tooling, QA and CI documentation lives only in `settings.md`. `README.md` keeps only the essential entry commands and links here; keep pipeline notes out of separate docs to avoid drift.
