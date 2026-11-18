@@ -21,7 +21,7 @@ This file is the canonical source of truth for the Solidcraft build/development 
 ## Scripts
 
 - `start`: alias for `dev`.
-- `dev`: runs `scripts/dev-server.mjs`, which serves the project locally on `127.0.0.1:15500`, opens the server root in the browser, and answers every HTML request through the shared partial renderer so `partials/` edits are visible on refresh. Live reload is delivered over Server-Sent Events: a CSS change refreshes stylesheets in place, any other source change reloads the page.
+- `dev`: runs `scripts/dev-server.mjs`, which serves the project locally on `127.0.0.1:15500` by default (see "Development Server Environment" for a per-session port override), opens the server root in the browser, and answers every HTML request through the shared partial renderer so `partials/` edits are visible on refresh. Live reload is delivered over Server-Sent Events: a CSS change refreshes stylesheets in place, any other source change reloads the page.
 - `build:css`: builds `dist/css/style.min.css` and verifies no `@import` remains.
 - `build:js`: builds `dist/js/theme-init.min.js` and `dist/js/script.min.js` and verifies no `import`/`export` remains in either.
 - `build`: recreates `dist/`, renders every maintained HTML page with its `partials/` header and footer expanded, copies the optional runtime files and `assets/` (excluding `assets/img-src/`), and rewrites the HTML copies' references to minified assets; then runs `build:css` and `build:js` with their verification, `build:sitemap`, and finally `build:sw` to produce the complete deployment artifact. Required stages run once in sequence with `&&`, so any failure stops the build with a non-zero exit code.
@@ -43,6 +43,24 @@ This file is the canonical source of truth for the Solidcraft build/development 
 - `format`: applies Prettier writes.
 - `format:check`: validates formatting without writes.
 - `check:links`, `check:assets` and `qa:a11y` each render pages through `scripts/utils/partials.js` before inspecting them, so they validate the same document `dist/` ships.
+
+## Development Server Environment
+
+- `DEV_SERVER_PORT`: optional decimal integer from `1` through `65535`, using digits only. When unset, the port is `15500`; the host is always `127.0.0.1`. An explicitly empty, malformed, zero, or out-of-range value fails before listening with a clear error and a non-zero exit code. An occupied port also fails non-zero and identifies the selected port; no random or incremented fallback is used.
+- `DEV_SERVER_NO_OPEN=1`: disables automatic browser launching, including during automated checks.
+
+Choose a different port for each parallel worktree session. For example, in PowerShell:
+
+```powershell
+$env:DEV_SERVER_PORT = "15501"
+npm run dev
+```
+
+In a POSIX shell:
+
+```sh
+DEV_SERVER_PORT=15501 npm run dev
+```
 
 ## Source vs Generated Assets
 

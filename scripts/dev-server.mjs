@@ -28,7 +28,21 @@ const logger = createLogger();
 
 const rootDir = path.resolve(process.cwd());
 const HOST = "127.0.0.1";
-const PORT = 15500;
+const configuredPort = process.env.DEV_SERVER_PORT;
+const PORT = configuredPort === undefined ? 15500 : Number(configuredPort);
+if (
+  configuredPort !== undefined &&
+  (configuredPort === "" ||
+    /[^0-9]/.test(configuredPort) ||
+    !Number.isInteger(PORT) ||
+    PORT < 1 ||
+    PORT > 65535)
+) {
+  logger.error(
+    "FAIL: DEV_SERVER_PORT must be a decimal integer from 1 to 65535.",
+  );
+  process.exit(1);
+}
 const ENTRY_FILE = "index.html";
 const RELOAD_PATH = "/__dev/reload";
 const DEBOUNCE_MS = 100;

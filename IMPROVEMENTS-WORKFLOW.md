@@ -39,13 +39,9 @@ The remaining opportunities are narrow: tooling facts are maintained in three pl
 
 ### IMP-WORKFLOW-04 — Allow a per-session dev-server port for parallel worktrees
 
-- **Affected workflow:** Local development setup.
-- **Evidence:** `scripts/dev-server.mjs:31`, `scripts/dev-server.mjs:331-340`, `scripts/dev-server.mjs:348`; `.gitignore` (`.claude/`, `.codex/`); `docs/settings.md:116-117`; `scripts/utils/static-server.mjs:1-11`; `git worktree list` (9 `.claude` and 4 `.codex` worktrees).
-- **Current workflow:** The dev server binds the hard-coded port `15500` and exits with an error when it is in use. The project routinely works in parallel agent worktrees — the build, sitemap, and HTML checks explicitly skip `.claude/` and `.codex/` — so only one worktree can run `npm run dev` at a time, and the next session must find and stop the other server. The QA harnesses already avoid this by binding ephemeral ports, and the dev server already honours one environment switch (`DEV_SERVER_NO_OPEN`).
-- **Proposed improvement:** Let the dev server accept an optional port override through an environment variable consistent with `DEV_SERVER_NO_OPEN`, keeping `15500` as the default and the fail-loud behaviour on conflicts.
-- **Expected practical value:** Parallel worktrees can preview their own changes simultaneously without stopping another session's server, while the documented default workflow stays unchanged.
-- **Implementation scope:** Edit `scripts/dev-server.mjs` (read and validate the override; include the active port in the conflict message) and document the variable in `docs/settings.md`. Keep the `127.0.0.1` binding, the default port, the `dev`/`start` scripts, and the no-random-port rule.
-- **Acceptance criteria:** `npm run dev` without the variable serves on `127.0.0.1:15500` as before; with the variable set, a second instance serves on the given port while the first keeps running; an invalid value or occupied port exits non-zero with a clear message; `docs/settings.md` documents the variable.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Added optional `DEV_SERVER_PORT` validation for decimal ports from 1 through 65535, preserving the default `127.0.0.1:15500` and immediate failure without fallback for invalid or occupied ports. `docs/settings.md` documents configuration and parallel-session examples.
+- **Verification:** HTTP checks passed for the default port, a custom port, two concurrent source roots, boundary ports, and leading zeros; 17 invalid values and conflicts on both selected ports exited with code 1. Shared partial rendering, partial updates, SSE reload/CSS refresh, `DEV_SERVER_NO_OPEN=1`, and graceful test-process shutdown passed outside the sandbox, which blocked loopback connections. Node syntax, focused Prettier checks, and `git diff --check` passed; no browser UI or production build was tested.
 - **Impact:** Medium
 - **Effort:** Small
 
