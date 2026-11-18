@@ -13,8 +13,8 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "node scripts/dev-server.mjs",
-    "build": "npm run build:css && npm run build:js",
-    "build:dist": "node scripts/build-dist.js && npm run build && npm run build:sitemap && npm run build:sw",
+    "build": "node scripts/build-dist.js && npm run build:css && npm run build:js && npm run build:sitemap && npm run build:sw",
+    "build:dist": "npm run build",
     "build:css": "postcss css/style.css --no-map -o dist/css/style.min.css && node scripts/verify-css-build.js",
     "build:js": "esbuild js/theme-init.js --bundle --minify --target=es2018 --format=iife --outfile=dist/js/theme-init.min.js && esbuild js/script.js --bundle --minify --target=es2018 --format=iife --outfile=dist/js/script.min.js && node scripts/verify-js-build.js",
     "build:sitemap": "cross-env SITE_URL=https://ds-construction-pr01-solidcraft.netlify.app node scripts/generate-sitemap.mjs",

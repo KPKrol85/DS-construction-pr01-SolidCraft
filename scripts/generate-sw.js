@@ -8,9 +8,10 @@
    sync, and a forgotten version bump can no longer leave returning visitors on
    a stale unhashed style.min.css or script.min.js.
 
-   It must run after scripts/build-dist.js and after "npm run build": the CSS
-   and JS bundles it fingerprints do not exist until then, and the REQUIRED
-   rules below fail the build loudly if it is invoked too early. */
+   It runs last in "npm run build", after staging, build:css, build:js and
+   build:sitemap: the CSS and JS bundles it fingerprints do not exist before
+   those asset steps, and the REQUIRED rules below fail the build loudly if
+   it is invoked too early. */
 
 const fs = require("fs/promises");
 const path = require("path");

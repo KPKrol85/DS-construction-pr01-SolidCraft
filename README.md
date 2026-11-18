@@ -104,10 +104,10 @@ Pełną listę skryptów npm wraz z opcjami — build, pipeline obrazów, walida
 ### Build produkcyjny
 
 ```bash
-npm run build:dist
+npm run build
 ```
 
-Komenda odtwarza od zera katalog `dist/` — artefakt wdrożenia z wyrenderowanymi stronami, zminifikowanym CSS i JS, `sitemap.xml` oraz produkcyjnym `sw.js`. Kolejność kroków i ich kontrole opisuje [`docs/settings.md`](docs/settings.md).
+Komenda odtwarza od zera katalog `dist/` — artefakt wdrożenia z wyrenderowanymi stronami, zminifikowanym CSS i JS, `sitemap.xml` oraz produkcyjnym `sw.js`. `npm run build:dist` pozostaje zgodnym wstecznie aliasem tej komendy. Kolejność kroków i ich kontrole opisuje [`docs/settings.md`](docs/settings.md).
 
 ### Testy i walidacja
 
@@ -118,6 +118,13 @@ npm run check:predeploy
 Lokalna bramka przed wdrożeniem sprawdza linki i odwołania do zasobów w renderowanych stronach oraz uruchamia skan dostępności axe-core. Repozytorium zawiera ponadto funkcjonalne testy przeglądarkowe w Playwright, testy Service Workera i audyt Lighthouse z progami w `lighthouse.config.json`. Zakres poszczególnych bramek i sposób ich uruchamiania opisuje [`docs/settings.md`](docs/settings.md).
 
 ### Wdrożenie
+
+Ręczne wdrożenie produkcyjne po pomyślnym buildzie:
+
+```bash
+npm run build
+netlify deploy --prod --dir=dist
+```
 
 Repozytorium zawiera konfigurację wdrożenia na Netlify:
 
@@ -147,7 +154,7 @@ Dokumentacja nie zawiera potwierdzenia zgodności z konkretnym poziomem WCAG —
 - `title`, `meta description`, `canonical` i `meta robots` na stronach; `noindex` dla `404.html`, `offline.html` oraz `thank-you.html` (`noindex, follow`).
 - Metadane Open Graph i Twitter Card wraz z obrazami w `assets/img/og/`.
 - Dane strukturalne JSON-LD: `WebSite`, `CollectionPage`, `ItemList` i `FAQPage`. Znaczniki opisujące fikcyjny podmiot gospodarczy zostały usunięte, zgodnie z demonstracyjnym charakterem serwisu.
-- `robots.txt` z odwołaniem do `/sitemap.xml`; sam plik sitemapy nie jest utrzymywany w repozytorium — powstaje jako `dist/sitemap.xml` podczas `build:dist`.
+- `robots.txt` z odwołaniem do `/sitemap.xml`; sam plik sitemapy nie jest utrzymywany w repozytorium — powstaje jako `dist/sitemap.xml` podczas `build`.
 
 ### PWA i obsługa offline
 
@@ -183,7 +190,7 @@ Repozytorium nie zawiera zapisanych wyników pomiarów wydajności.
 - Pliki źródłowe do edycji: `partials/header.html`, `partials/footer.html`, `css/style.css` i `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/sw-register.js`, `js/modules/**`, `assets/img-src/**` oraz logika runtime w `sw.js`.
 - Wspólna warstwa layoutu ma jedno źródło — edytuj partial, nie wyrenderowaną kopię w `dist/`.
 - Nie edytuj ręcznie: zawartości `dist/` (w tym `dist/sitemap.xml` i `dist/sw.js`), bloku między znacznikami `build:sw-manifest` w `sw.js` oraz `assets/img/**`.
-- Po zmianie plików źródłowych uruchom `npm run build:dist`, a po zmianie obrazów źródłowych `npm run images:build`. Obraz podmieniony pod tą samą nazwą wymaga ponownego kodowania: `npm run images:build -- --only=<grupa> --force`.
+- Po zmianie plików źródłowych uruchom `npm run build`, a po zmianie obrazów źródłowych `npm run images:build`. Obraz podmieniony pod tą samą nazwą wymaga ponownego kodowania: `npm run images:build -- --only=<grupa> --force`.
 - Nazwy `CI` i `quality-gate` są częścią kontraktu — zmiana którejkolwiek odłącza wymagany status check w ustawieniach ochrony gałęzi.
 - Skrypty, build, pipeline obrazów, QA i CI są opisane w [`docs/settings.md`](docs/settings.md), który pozostaje jedynym źródłem prawdy dla tej warstwy; historia zmian jest prowadzona w [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 
@@ -302,10 +309,10 @@ The full list of npm scripts and their options — build, image pipeline, valida
 ### Production Build
 
 ```bash
-npm run build:dist
+npm run build
 ```
 
-The command recreates `dist/` from scratch — the deployment artifact with the rendered pages, minified CSS and JS, `sitemap.xml`, and the production `sw.js`. The step order and its checks are documented in [`docs/settings.md`](docs/settings.md).
+The command recreates `dist/` from scratch — the deployment artifact with the rendered pages, minified CSS and JS, `sitemap.xml`, and the production `sw.js`. `npm run build:dist` remains a backward-compatible alias for this command. The step order and its checks are documented in [`docs/settings.md`](docs/settings.md).
 
 ### Testing and Validation
 
@@ -316,6 +323,13 @@ npm run check:predeploy
 The local pre-deploy gate checks links and asset references in the rendered pages and runs the axe-core accessibility scan. The repository also contains Playwright functional browser tests, Service Worker tests, and a Lighthouse audit with thresholds in `lighthouse.config.json`. The scope of each gate and how to run it are documented in [`docs/settings.md`](docs/settings.md).
 
 ### Deployment
+
+Manual production deployment after a successful build:
+
+```bash
+npm run build
+netlify deploy --prod --dir=dist
+```
 
 The repository includes Netlify deployment configuration:
 
@@ -345,7 +359,7 @@ This documentation makes no claim of conformance with a specific WCAG level — 
 - `title`, `meta description`, `canonical`, and `meta robots` across pages; `noindex` for `404.html`, `offline.html`, and `thank-you.html` (`noindex, follow`).
 - Open Graph and Twitter Card metadata with images in `assets/img/og/`.
 - JSON-LD structured data: `WebSite`, `CollectionPage`, `ItemList`, and `FAQPage`. Markup describing a fictitious business entity was removed, in line with the demonstrational nature of the site.
-- `robots.txt` points to `/sitemap.xml`; the sitemap file itself is not maintained in the repository — it is produced as `dist/sitemap.xml` during `build:dist`.
+- `robots.txt` points to `/sitemap.xml`; the sitemap file itself is not maintained in the repository — it is produced as `dist/sitemap.xml` during `build`.
 
 ### PWA and Offline Support
 
@@ -381,7 +395,7 @@ The repository contains no recorded performance measurement results.
 - Editable source files: `partials/header.html`, `partials/footer.html`, `css/style.css` and `css/modules/**`, `js/script.js`, `js/theme-init.js`, `js/sw-register.js`, `js/modules/**`, `assets/img-src/**`, and the runtime logic in `sw.js`.
 - The shared layout has one source — edit the partial, not the rendered copy in `dist/`.
 - Do not edit by hand: anything under `dist/` (including `dist/sitemap.xml` and `dist/sw.js`), the block between the `build:sw-manifest` markers in `sw.js`, and `assets/img/**`.
-- After changing source files run `npm run build:dist`; after changing source images run `npm run images:build`. An image replaced under the same name must be re-encoded: `npm run images:build -- --only=<group> --force`.
+- After changing source files run `npm run build`; after changing source images run `npm run images:build`. An image replaced under the same name must be re-encoded: `npm run images:build -- --only=<group> --force`.
 - The `CI` and `quality-gate` names are part of the contract — renaming either detaches the required status check in branch-protection settings.
 - Scripts, the build, the image pipeline, QA, and CI are documented in [`docs/settings.md`](docs/settings.md), which remains the single source of truth for that layer; the change history is kept in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 

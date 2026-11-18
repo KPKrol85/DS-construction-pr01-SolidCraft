@@ -158,7 +158,7 @@ async function build() {
   const renderedCount = await copyRuntimeFilesToDist();
   const rewrittenCount = await rewriteHtmlReferencesInDist(distDir);
   logger.summary(
-    `OK: dist staged (rendered ${renderedCount} HTML file(s) from source + ${PARTIALS_DIR_NAME}/, rewrote ${rewrittenCount}); production CSS/JS are generated into dist/ by "npm run build".`,
+    `OK: dist staged (rendered ${renderedCount} HTML file(s) from source + ${PARTIALS_DIR_NAME}/, rewrote ${rewrittenCount}); build:css and build:js generate production assets next.`,
   );
 }
 

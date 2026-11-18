@@ -98,6 +98,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 
 ### Build and Tooling
 
+- Made `npm run build` recreate the complete deployment artifact in `dist/` and retained `build:dist` as a backward-compatible alias.
 - Added PostCSS and esbuild production pipelines with asset verification.
 - Introduced `dist/` deployment builds and Netlify configuration with redirects, security headers, and CSP.
 - Made deployment regenerate bundled assets and publish minified output from `dist/`.
