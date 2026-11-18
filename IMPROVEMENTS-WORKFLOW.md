@@ -31,13 +31,9 @@ The remaining opportunities are narrow: tooling facts are maintained in three pl
 
 ### IMP-WORKFLOW-03 — Extend Prettier coverage to the `.mjs` tooling scripts
 
-- **Affected workflow:** Formatting workflow.
-- **Evidence:** `package.json:35-36`; 17 tracked `.mjs` files under `scripts/`; `docs/settings.md:43`, `docs/settings.md:88`.
-- **Current workflow:** `format` and `format:check` match `**/*.{html,css,js,json,md}`, so the 17 `.mjs` files — the dev server, every QA harness, the functional scenarios, and the sitemap generator — are never formatted or checked, although `docs/settings.md` describes `format:check` as the formatting gate. A read-only `prettier -c "scripts/**/*.mjs"` run during this analysis reported style deviations in 5 of the 17 files (`check-html-assets.mjs`, `check-links.mjs`, `dev-server.mjs`, `generate-sitemap.mjs`, `qa-lighthouse.mjs`).
-- **Proposed improvement:** Add `mjs` to the `format` and `format:check` globs and bring the five deviating files into conformance in a formatting-only change.
-- **Expected practical value:** The formatting gate covers all project-owned JavaScript, so tooling scripts follow the same style contract as runtime code and formatting no longer depends on remembering a manual extra command.
-- **Implementation scope:** Edit the two `package.json` globs, apply Prettier to the five `.mjs` files only, and state the covered extensions in `docs/settings.md`. Keep `format:check` out of CI as currently decided, and keep `.prettierignore` unchanged.
-- **Acceptance criteria:** Both scripts include `.mjs`; `prettier -c "scripts/**/*.mjs"` reports no deviations; the formatting change contains no logic edits; `npm run check:predeploy` and `npm run qa:functional`, which exercise the reformatted scripts, still pass.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Both formatting scripts now include `.mjs`, and the five scripts with confirmed deviations were formatted with Prettier 3.3.3 without semantic changes. `docs/settings.md` lists the supported extensions; CI and `.prettierignore` remain unchanged.
+- **Verification:** All 17 tracked `.mjs` files, `npm run format:check`, `npm run build`, `npm run check:predeploy` (28 accessibility scans), and `git diff --check` passed; formatter-output and normalized-AST comparisons confirmed formatting-only changes. `npm run qa:functional` passed all 35 scenarios on a serial rerun after one initial anti-spam setup timing failure. Browser checks required execution outside the sandbox with existing Chromium; link validation skipped 11 external references returning HTTP 403.
 - **Impact:** Medium
 - **Effort:** Small
 

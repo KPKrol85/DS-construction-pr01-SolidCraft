@@ -25,12 +25,19 @@ function shouldExclude(relativePath) {
     return true;
   }
 
-  return EXCLUDED_PREFIXES.some((prefix) => normalized === prefix.slice(0, -1) || normalized.startsWith(prefix));
+  return EXCLUDED_PREFIXES.some(
+    (prefix) =>
+      normalized === prefix.slice(0, -1) || normalized.startsWith(prefix),
+  );
 }
 
 async function listIndexableHtmlFiles() {
-  const htmlFiles = await listSourceHtmlFiles(rootDir, { excludedTopLevelDirs: EXCLUDED_TOP_LEVEL_DIRS });
-  return htmlFiles.filter((relPath) => !shouldExclude(relPath)).map(normalizeSlashes);
+  const htmlFiles = await listSourceHtmlFiles(rootDir, {
+    excludedTopLevelDirs: EXCLUDED_TOP_LEVEL_DIRS,
+  });
+  return htmlFiles
+    .filter((relPath) => !shouldExclude(relPath))
+    .map(normalizeSlashes);
 }
 
 function buildPageUrl(siteUrl, relHtmlPath) {
@@ -42,7 +49,10 @@ function buildPageUrl(siteUrl, relHtmlPath) {
 }
 
 function renderSitemap(urls) {
-  const lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'];
+  const lines = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+  ];
 
   for (const url of urls) {
     lines.push("  <url>");
@@ -61,12 +71,16 @@ function getOutputPath() {
 async function main() {
   const siteUrl = process.env.SITE_URL;
   if (!siteUrl) {
-    console.error("FAIL: SITE_URL is required. Example: SITE_URL=https://example.com npm run build:sitemap");
+    console.error(
+      "FAIL: SITE_URL is required. Example: SITE_URL=https://example.com npm run build:sitemap",
+    );
     process.exit(1);
   }
 
   const htmlFiles = await listIndexableHtmlFiles();
-  const uniqueFiles = [...new Set(htmlFiles)].sort((a, b) => a.localeCompare(b));
+  const uniqueFiles = [...new Set(htmlFiles)].sort((a, b) =>
+    a.localeCompare(b),
+  );
 
   const urls = uniqueFiles.map((file) => buildPageUrl(siteUrl, file));
   const sitemap = renderSitemap(urls);
@@ -76,7 +90,9 @@ async function main() {
   await fs.writeFile(outputPath, sitemap, "utf8");
 
   const outRelPath = normalizeSlashes(path.relative(rootDir, outputPath));
-  console.log(`OK: sitemap generated with ${urls.length} URL(s) -> ${outRelPath}`);
+  console.log(
+    `OK: sitemap generated with ${urls.length} URL(s) -> ${outRelPath}`,
+  );
 }
 
 main().catch((error) => {

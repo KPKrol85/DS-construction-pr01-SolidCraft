@@ -98,6 +98,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 
 ### Build and Tooling
 
+- Extended Prettier formatting and validation to `.mjs` tooling scripts.
 - Made `npm run build` recreate the complete deployment artifact in `dist/` and retained `build:dist` as a backward-compatible alias.
 - Added PostCSS and esbuild production pipelines with asset verification.
 - Introduced `dist/` deployment builds and Netlify configuration with redirects, security headers, and CSP.

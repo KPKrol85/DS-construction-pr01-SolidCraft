@@ -32,8 +32,8 @@
     "watch:js": "esbuild js/theme-init.js --bundle --minify --target=es2018 --format=iife --outfile=dist/js/theme-init.min.js --watch=forever & esbuild js/script.js --bundle --minify --target=es2018 --format=iife --outfile=dist/js/script.min.js --watch=forever",
     "images:build": "node scripts/images.js build",
     "images:clean": "node scripts/images.js clean",
-    "format": "prettier -w \"**/*.{html,css,js,json,md}\"",
-    "format:check": "prettier -c \"**/*.{html,css,js,json,md}\""
+    "format": "prettier -w \"**/*.{html,css,js,mjs,json,md}\"",
+    "format:check": "prettier -c \"**/*.{html,css,js,mjs,json,md}\""
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",

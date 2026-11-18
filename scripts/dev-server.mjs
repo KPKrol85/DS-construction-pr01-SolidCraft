@@ -181,7 +181,9 @@ async function handleRequest(req, res) {
     const body =
       ext === ".html"
         ? Buffer.from(
-            injectReloadClient((await renderHtmlFile(target, { rootDir })).html),
+            injectReloadClient(
+              (await renderHtmlFile(target, { rootDir })).html,
+            ),
             "utf8",
           )
         : await fs.readFile(target);

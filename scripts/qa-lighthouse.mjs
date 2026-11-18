@@ -68,7 +68,9 @@ async function loadConfig() {
     throw new Error(`${CONFIG_FILE}: "urls" must be a non-empty array.`);
   }
   if (!Number.isInteger(numberOfRuns) || numberOfRuns < 1) {
-    throw new Error(`${CONFIG_FILE}: "numberOfRuns" must be a positive integer.`);
+    throw new Error(
+      `${CONFIG_FILE}: "numberOfRuns" must be a positive integer.`,
+    );
   }
   if (typeof reportDir !== "string" || !reportDir) {
     throw new Error(`${CONFIG_FILE}: "reportDir" must be a non-empty string.`);
@@ -151,7 +153,9 @@ async function startDistServer(distDir) {
         return;
       }
 
-      const contentType = resolveContentType(path.extname(target).toLowerCase());
+      const contentType = resolveContentType(
+        path.extname(target).toLowerCase(),
+      );
       let body = await fs.readFile(target);
 
       const headers = { "Content-Type": contentType, Vary: "Accept-Encoding" };

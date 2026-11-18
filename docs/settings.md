@@ -14,7 +14,7 @@ This file is the canonical source of truth for the Solidcraft build/development 
 - Image pipeline: `sharp` via `scripts/images.js`.
 - Sitemap: `scripts/generate-sitemap.mjs`, invoked with `SITE_URL` supplied through `cross-env`.
 - Service Worker: `scripts/generate-sw.js`, which derives the production precache list and cache version from the finished `dist/` tree.
-- Formatting: `prettier`.
+- Formatting: Prettier 3.3.3 for `.html`, `.css`, `.js`, `.mjs`, `.json`, and `.md` files, subject to `.prettierignore`.
 - Lighthouse: `lighthouse` + `chrome-launcher`, run by `scripts/qa-lighthouse.mjs` via `lighthouse.config.json`.
 - Continuous integration: GitHub Actions, one workflow (`.github/workflows/ci.yml`).
 
