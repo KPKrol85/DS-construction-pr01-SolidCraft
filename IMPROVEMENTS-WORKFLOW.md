@@ -47,13 +47,9 @@ The remaining opportunities are narrow: tooling facts are maintained in three pl
 
 ### IMP-WORKFLOW-05 — Retire the superseded `watch:css` and `watch:js` scripts
 
-- **Affected workflow:** Local development commands.
-- **Evidence:** `package.json:31-32`; `docs/settings.md:24`, `docs/settings.md:30-31`; `README.md:136-141`, `README.md:398-403`; `scripts/dev-server.mjs:40`; `package.json:17`.
-- **Current workflow:** The watch scripts rebuild minified assets into `dist/`, but no project command serves `dist/` for manual preview (`qa-lighthouse.mjs` serves it only during an audit), the dev server serves sources directly with live reload and ignores `dist/`, and `build:dist` recreates `dist/` from scratch. The watchers therefore produce output with no consumer in the documented workflow. `watch:js` also chains its two watchers with `&`; npm uses `cmd.exe` on Windows (`script-shell` is unset), where `&` runs sequentially, so the second watcher would not start while the first runs — inferred from shell semantics, not executed.
-- **Proposed improvement:** Remove `watch:css` and `watch:js` and their documentation, leaving `npm run dev` as the single local iteration workflow.
-- **Expected practical value:** Fewer commands with overlapping responsibilities and no documented workflow whose output cannot be viewed; the platform-dependent `&` chain disappears with it.
-- **Implementation scope:** Edit `package.json` scripts, `docs/settings.md`, and the README watch paragraphs. Keep `build`, `build:css`, `build:js`, `build:dist`, and `dev` unchanged; record the script removal in `docs/CHANGELOG.md` if authorized. If the owner prefers to keep the watchers, this proposal should be rejected and the `&` chain handled as a separate defect fix.
-- **Acceptance criteria:** `package.json` contains no `watch:*` scripts; neither `docs/settings.md` nor the README references them; `npm run dev` and `npm run build:dist` behave as before.
+- **Status:** COMPLETED — implemented and verified.
+- **Result:** Removed the obsolete npm watch scripts and their tooling documentation. `npm run dev` remains the supported local workflow.
+- **Verification:** Manifest comparison confirmed that only the two scripts were removed, and active tooling and workflow documentation had no remaining references. The dev smoke test confirmed HTTP responses, partial rendering, source assets, and the live-reload endpoint on loopback outside the sandbox. `npm run build:dist`, focused Prettier checks, and `git diff --check` passed.
 - **Impact:** Low
 - **Effort:** Small
 

@@ -27,8 +27,6 @@ This file is the canonical source of truth for the Solidcraft build/development 
 - `build`: recreates `dist/`, renders every maintained HTML page with its `partials/` header and footer expanded, copies the optional runtime files and `assets/` (excluding `assets/img-src/`), and rewrites the HTML copies' references to minified assets; then runs `build:css` and `build:js` with their verification, `build:sitemap`, and finally `build:sw` to produce the complete deployment artifact. Required stages run once in sequence with `&&`, so any failure stops the build with a non-zero exit code.
 - `build:sitemap`: scans real HTML pages and generates `dist/sitemap.xml`.
 - `build:sw`: rewrites the marked manifest block in `sw.js` from the finished `dist/` tree and writes `dist/sw.js`.
-- `watch:css`: watches `css/style.css` and rebuilds `dist/css/style.min.css`.
-- `watch:js`: watches `js/theme-init.js` and `js/script.js` and rebuilds `dist/js/theme-init.min.js` and `dist/js/script.min.js`.
 - `build:dist`: backward-compatible alias for `build`, producing the same complete `dist/` without repeating any stage.
 - `images:build`: generates production images from `assets/img-src` into `assets/img` and removes obsolete outputs; behavior and options are in "Image Pipeline".
 - `images:clean`: removes the generated outputs of the pipeline-owned image directories.

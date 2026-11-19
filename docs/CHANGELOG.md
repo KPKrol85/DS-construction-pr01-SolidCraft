@@ -98,6 +98,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 
 ### Build and Tooling
 
+- Removed the superseded `watch:css` and `watch:js` commands from the local workflow.
 - Added an optional `DEV_SERVER_PORT` override for parallel development previews with strict validation and no fallback on port conflicts.
 - Extended Prettier formatting and validation to `.mjs` tooling scripts.
 - Made `npm run build` recreate the complete deployment artifact in `dist/` and retained `build:dist` as a backward-compatible alias.

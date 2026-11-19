@@ -28,8 +28,6 @@
     "qa:sw": "node scripts/qa-sw-lifecycle.mjs",
     "qa:lighthouse": "npm run build:dist && node scripts/qa-lighthouse.mjs",
     "qa:lhci": "npm run qa:lighthouse",
-    "watch:css": "postcss css/style.css --watch --no-map -o dist/css/style.min.css",
-    "watch:js": "esbuild js/theme-init.js --bundle --minify --target=es2018 --format=iife --outfile=dist/js/theme-init.min.js --watch=forever & esbuild js/script.js --bundle --minify --target=es2018 --format=iife --outfile=dist/js/script.min.js --watch=forever",
     "images:build": "node scripts/images.js build",
     "images:clean": "node scripts/images.js clean",
     "format": "prettier -w \"**/*.{html,css,js,mjs,json,md}\"",
