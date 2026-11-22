@@ -1,6 +1,6 @@
-/* Contact-form scenarios — validation, anti-spam timing, the two submission
-   outcomes, and the optional service field (static markup, ?usluga= prefill,
-   manual change, serialization).
+/* Contact-form scenarios — native fallback, enhanced validation, anti-spam
+   timing, submission outcomes, and the optional service field (static markup,
+   ?usluga= prefill, manual change, serialization).
 
    The paths are kept apart on purpose: each one is a separate page in a
    separate context, so a failure names the path that broke instead of a step
@@ -30,7 +30,7 @@ import {
 const FORM = "section#kontakt .form";
 const NOTE = `${FORM} .form-note`;
 const SUBMIT = `${FORM} button[type="submit"]`;
-const SUBMIT_URL = "**/thank-you.html";
+const SUBMIT_PATH = "/thank-you.html";
 const MSG_REMAINING = "#f-msg-remaining";
 const MSG_NOTICE = "#f-msg-notice";
 const LIMIT_NOTICE = "Osiągnięto limit 1000 znaków.";
@@ -131,25 +131,27 @@ async function readServiceState(page) {
   }, SERVICE_FIELD);
 }
 
-/* Answers the form's own POST locally and records what was sent. Non-POST
-   traffic to the same URL is left alone, so the thank-you page keeps working
-   as a normal document. */
+/* Records every POST and answers submissions to the form action locally. GET
+   requests to the thank-you page still serve the normal document. */
 async function interceptSubmission(context, { status }) {
   const submissions = [];
 
-  await context.route(SUBMIT_URL, async (route) => {
-    const request = route.request();
-
-    if (request.method() !== "POST") {
-      await route.continue();
-      return;
-    }
-
+  context.on("request", (request) => {
+    if (request.method() !== "POST") return;
     submissions.push({
+      url: request.url(),
       method: request.method(),
+      type: request.resourceType(),
       contentType: request.headers()["content-type"] || "",
       body: request.postData() || "",
     });
+  });
+
+  await context.route(`**${SUBMIT_PATH}`, async (route) => {
+    if (route.request().method() !== "POST") {
+      await route.continue();
+      return;
+    }
 
     await route.fulfill({
       status,
@@ -182,11 +184,11 @@ async function openContactForm(
   return Date.now();
 }
 
-async function fillValidForm(page) {
+async function fillValidForm(page, { consent = true } = {}) {
   await page.locator("#f-name").fill(VALID_INPUT.name);
   await page.locator("#f-phone").fill(VALID_INPUT.phone);
   await page.locator("#f-msg").fill(VALID_INPUT.msg);
-  await page.locator("#f-consent").check();
+  await page.locator("#f-consent").setChecked(consent);
 }
 
 async function readFormState(page) {
@@ -204,7 +206,6 @@ async function readFormState(page) {
     };
 
     return {
-      nativeValidationDisabled: form.noValidate,
       busy: form.getAttribute("aria-busy"),
       submitDisabled: form.querySelector('button[type="submit"]').disabled,
       note: {
@@ -287,6 +288,95 @@ function assertNoFieldError(state, field, context) {
 }
 
 const contactFormScenarios = [
+  ...["js-disabled", "main-script-blocked"].map((mode) => ({
+    name: `contact-form-native-fallback-with-${mode}`,
+    async run({ browser, baseURL }) {
+      const javaScriptEnabled = mode === "main-script-blocked";
+      await withPage(
+        browser,
+        {
+          baseURL,
+          viewport: DESKTOP_VIEWPORT,
+          javaScriptEnabled,
+          preAcceptProjectBanner: false,
+        },
+        async ({ context, page }) => {
+          if (javaScriptEnabled) {
+            await context.route(
+              new URL("/js/script.js", baseURL).href,
+              (route) => route.abort(),
+            );
+          }
+          const submissions = await interceptSubmission(context, {
+            status: 200,
+          });
+          const response = await page.goto("/index.html#kontakt");
+          assertEqual(response?.status(), 200, "the contact page should load");
+
+          const form = page.locator(FORM);
+          const submit = page.locator(SUBMIT);
+          assertEqual(
+            await form.getAttribute("novalidate"),
+            null,
+            "native validation should stay enabled without the submit handler",
+          );
+          assertEqual(
+            await form.getAttribute("action"),
+            SUBMIT_PATH,
+            "the form should post to its local action",
+          );
+
+          await submit.click();
+          await assertFocusOn(page, "#f-name", "empty required fields");
+          assertEqual(submissions.length, 0, "empty fields should block POST");
+
+          await fillValidForm(page, { consent: false });
+          await submit.click();
+          await assertFocusOn(page, "#f-consent", "missing consent");
+          assertEqual(
+            submissions.length,
+            0,
+            "missing consent should block POST",
+          );
+
+          await page.locator("#f-consent").check();
+          const action = new URL(SUBMIT_PATH, baseURL).href;
+          await Promise.all([page.waitForURL(action), submit.click()]);
+          assertEqual(
+            submissions.length,
+            1,
+            "valid input should send one POST",
+          );
+          const [submission] = submissions;
+          assertEqual(submission.url, action, "native POST destination");
+          assertEqual(submission.method, "POST", "native submission method");
+          assertEqual(
+            submission.type,
+            "document",
+            "native document navigation",
+          );
+          assertIncludes(
+            submission.contentType,
+            "application/x-www-form-urlencoded",
+            "native form encoding",
+          );
+          assertDeepEqual(
+            [...new URLSearchParams(submission.body)],
+            [
+              ["form-name", "contact"],
+              ["bot-field", ""],
+              ["usluga", ""],
+              ["name", VALID_INPUT.name],
+              ["phone", VALID_INPUT.phone],
+              ["msg", VALID_INPUT.msg],
+              ["consent", "yes"],
+            ],
+            "native Netlify form payload",
+          );
+        },
+      );
+    },
+  })),
   {
     name: "contact-form-message-length-counts-edits-and-announces-the-limit-once",
     async run({ browser, baseURL }) {
@@ -612,6 +702,10 @@ const contactFormScenarios = [
             status: 200,
           });
           const initialisedAt = await openContactForm(page);
+          assert(
+            await page.locator(FORM).evaluate((form) => form.noValidate),
+            "enhanced initialization should enable novalidate",
+          );
           await waitOutAntiSpamWindow(page, initialisedAt);
 
           /* Four required fields are empty; the empty service field is
@@ -625,10 +719,6 @@ const contactFormScenarios = [
 
           const state = await readFormState(page);
 
-          assert(
-            state.nativeValidationDisabled,
-            "the form should keep novalidate so the custom path owns validation",
-          );
           assertEqual(
             state.invalid.name,
             "true",
@@ -982,6 +1072,16 @@ const contactFormScenarios = [
 
           const [submission] = submissions;
           assertEqual(submission.method, "POST", "the form should use POST");
+          assertEqual(
+            submission.url,
+            new URL(SUBMIT_PATH, baseURL).href,
+            "enhanced POST destination",
+          );
+          assertEqual(
+            submission.type,
+            "fetch",
+            "enhanced submission transport",
+          );
           assertIncludes(
             submission.contentType,
             "application/x-www-form-urlencoded",

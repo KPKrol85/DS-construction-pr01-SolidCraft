@@ -69,6 +69,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 
 ### Fixed
 
+- Restored native contact-form validation for required fields and consent whenever the enhanced submit handler is unavailable.
 - Restored keyboard-accessible mobile navigation and visible page content when the main script fails.
 - Preserved reveal content without JavaScript while retaining progressive animations.
 - Restored Polish diacritics through six `latin-ext` font subsets.

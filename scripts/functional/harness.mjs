@@ -73,6 +73,7 @@ async function withPage(
   {
     baseURL,
     viewport,
+    javaScriptEnabled = true,
     preAcceptProjectBanner = true,
     allowedOffOriginUrls = [],
   },
@@ -81,6 +82,7 @@ async function withPage(
   const context = await browser.newContext({
     baseURL,
     viewport,
+    javaScriptEnabled,
     reducedMotion: "reduce",
     serviceWorkers: "block",
   });

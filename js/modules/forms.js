@@ -302,6 +302,13 @@ function initContactForm() {
   );
 
   let submitting = false;
+  signal.addEventListener(
+    "abort",
+    () => {
+      form.noValidate = false;
+    },
+    { once: true },
+  );
   form.addEventListener(
     "submit",
     async (e) => {
@@ -371,6 +378,7 @@ function initContactForm() {
     },
     { signal },
   );
+  form.noValidate = true;
 }
 
 export { initContactForm };

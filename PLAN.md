@@ -26,11 +26,11 @@
   - [x] Verified keyboard navigation and content visibility on home, service, and legal routes at 390 px with the main script blocked and the theme script loaded.
   - **Completion condition:** Both fallback and enhanced navigation work, including keyboard access, and reveal still respects reduced motion. [Audit P1-01](AUDIT.md#p1-01-a-main-script-failure-disables-the-mobile-menu-and-hides-page-content).
 
-- [ ] **PH11-02 — Restore native contact form validation**
+- [x] **PH11-02 — Restore native contact form validation**
 
-  - [ ] Keep constraint validation active in `index.html` until `js/modules/forms.js` registers the enhanced submit handler. Preserve the enhanced field errors and Netlify form identifiers and action.
-  - [ ] Exercise the native path with JavaScript disabled and with the main script blocked. Intercept submissions and confirm that valid test input can reach the native action.
-  - **Completion condition:** Empty required fields or unchecked consent prevent any native POST. The enhanced path still announces errors and submits valid test data. [Audit P1-02](AUDIT.md#p1-02-the-native-contact-form-can-submit-without-required-fields-or-consent).
+  - [x] Restored native validation until enhanced submit registration, preserving accessible field errors and the Netlify form contract.
+  - [x] Verified that empty required fields or unchecked consent block POST and that valid submissions reach the form action with JavaScript disabled or the main script blocked.
+  - **Verification:** All 16 contact-form scenarios passed in Chromium, including enhanced validation and submission. [Audit P1-02](AUDIT.md#p1-02-the-native-contact-form-can-submit-without-required-fields-or-consent).
 
 - [ ] **PH11-03 — Describe the contact journey as a demonstration**
 
