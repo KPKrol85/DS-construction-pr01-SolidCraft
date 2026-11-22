@@ -20,10 +20,10 @@
 
 **Goal:** Preserve usable navigation and form behavior during partial script failures and make the demo's contact purpose clear.
 
-- [ ] **PH11-01 — Keep navigation and content usable when the main script fails**
+- [x] **PH11-01 — Keep navigation and content usable when the main script fails**
 
-  - [ ] Keep first-paint theme selection in `js/theme-init.js` independent of the navigation and scroll-reveal states. Enable the enhanced styles only when the corresponding handlers are ready.
-  - [ ] Block the main entry point while allowing the theme script on representative home, service, and legal routes at mobile width. Check that navigation links are usable, the offer and gallery content are visible, and unavailable controls are hidden.
+  - [x] Kept first-paint theme selection independent and enabled navigation, theme controls, and reveal effects after their respective handlers initialized.
+  - [x] Verified keyboard navigation and content visibility on home, service, and legal routes at 390 px with the main script blocked and the theme script loaded.
   - **Completion condition:** Both fallback and enhanced navigation work, including keyboard access, and reveal still respects reduced motion. [Audit P1-01](AUDIT.md#p1-01-a-main-script-failure-disables-the-mobile-menu-and-hides-page-content).
 
 - [ ] **PH11-02 — Restore native contact form validation**

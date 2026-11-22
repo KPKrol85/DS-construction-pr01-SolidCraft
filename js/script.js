@@ -45,7 +45,11 @@ const runInit = () => {
 
   const has = (selector) => !!document.querySelector(selector);
 
-  if (has("[data-icon]")) initIcons?.();
+  if (has("[data-icon]")) {
+    initIcons();
+    // The footer and testimonials use no-js for their icon fallbacks.
+    document.documentElement.classList.remove("no-js");
+  }
 
   if (has(".nav-toggle") && has("#navMenu")) initNav?.();
   if (has('.site-header, header[role="banner"]')) initHeaderShrink?.();

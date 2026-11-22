@@ -69,6 +69,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 
 ### Fixed
 
+- Restored keyboard-accessible mobile navigation and visible page content when the main script fails.
 - Preserved reveal content without JavaScript while retaining progressive animations.
 - Restored Polish diacritics through six `latin-ext` font subsets.
 - Corrected broken legal-document links in the first-visit modal.

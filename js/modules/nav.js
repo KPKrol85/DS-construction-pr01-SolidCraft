@@ -13,6 +13,7 @@ function initNav() {
   initNav._abort = ac;
 
   const html = document.documentElement;
+  html.classList.remove("is-nav-ready");
   const toggle = document.querySelector(".nav-toggle");
   const menu = document.querySelector("#navMenu");
 
@@ -119,10 +120,6 @@ function initNav() {
     const parentLi =
       ddTrigger.closest(".has-dropdown") || ddTrigger.parentElement;
     const isDdOpen = () => ddMenu.classList.contains("open");
-    ddTrigger.setAttribute("aria-expanded", String(isDdOpen()));
-    ddTrigger.setAttribute("aria-haspopup", "true");
-    if (!ddTrigger.getAttribute("aria-controls"))
-      ddTrigger.setAttribute("aria-controls", "dd-oferta");
     const focusFirstItem = () => {
       ddMenu
         .querySelector('a, button, [tabindex]:not([tabindex="-1"])')
@@ -241,7 +238,14 @@ function initNav() {
     if (mqDesktop.addEventListener)
       mqDesktop.addEventListener("change", onMqChange, { signal });
     else mqDesktop.addListener(onMqChange);
+
+    ddTrigger.setAttribute("aria-expanded", String(isDdOpen()));
+    ddTrigger.setAttribute("aria-haspopup", "true");
+    if (!ddTrigger.getAttribute("aria-controls"))
+      ddTrigger.setAttribute("aria-controls", "dd-oferta");
   }
+
+  html.classList.add("is-nav-ready");
 }
 
 /* ScrollSpy */

@@ -127,6 +127,9 @@ function initScrollReveal() {
   const ac = new AbortController();
   const { signal } = ac;
   initScrollReveal._abort = ac;
+  const root = document.documentElement;
+  root.classList.remove("is-reveal-ready");
+
   const prefersReduced = window.matchMedia?.(
     "(prefers-reduced-motion: reduce)",
   ).matches;
@@ -136,36 +139,41 @@ function initScrollReveal() {
     items.forEach((el) => el.classList.add("is-revealed"));
     return;
   }
+  if (typeof IntersectionObserver !== "function") return;
+
   const applyDelay = (el) => {
     const ms = parseInt(el.getAttribute("data-reveal-delay") || "0", 10);
     if (Number.isFinite(ms) && ms > 0) el.style.transitionDelay = `${ms}ms`;
   };
-  const onceByDefault = true;
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        const el = entry.target;
-        const revealOnceAttr = el.getAttribute("data-reveal-once");
-        const revealOnce =
-          revealOnceAttr == null ? true : revealOnceAttr !== "false";
-        if (entry.isIntersecting) {
-          if (!el.classList.contains("is-revealed")) {
-            applyDelay(el);
-            requestAnimationFrame(() => el.classList.add("is-revealed"));
-          }
-          if (revealOnce) io.unobserve(el);
-        } else if (!revealOnce) {
-          el.classList.remove("is-revealed");
+  const onIntersection = (entries, observer) => {
+    entries.forEach((entry) => {
+      const el = entry.target;
+      const revealOnce = el.getAttribute("data-reveal-once") !== "false";
+      if (entry.isIntersecting) {
+        if (!el.classList.contains("is-revealed")) {
+          applyDelay(el);
+          requestAnimationFrame(() => el.classList.add("is-revealed"));
         }
-      });
-    },
-    {
+        if (revealOnce) observer.unobserve(el);
+      } else if (!revealOnce) {
+        el.classList.remove("is-revealed");
+      }
+    });
+  };
+
+  let io;
+  try {
+    io = new IntersectionObserver(onIntersection, {
       root: null,
       rootMargin: "0px 0px -15% 0px",
       threshold: 0.14,
-    },
-  );
-  items.forEach((el) => io.observe(el));
+    });
+    items.forEach((el) => io.observe(el));
+  } catch {
+    io?.disconnect();
+    return;
+  }
+
   // Focus can enter a group before it reaches the threshold; reveal it for
   // good so it stays visible after focus moves on.
   document.addEventListener(
@@ -182,6 +190,7 @@ function initScrollReveal() {
     once: true,
     signal,
   });
+  root.classList.add("is-reveal-ready");
 }
 
 /* Theme Toggle */
@@ -194,6 +203,7 @@ function initThemeToggle() {
   const btn = document.querySelector(".theme-toggle");
   const root = document.documentElement;
   if (!btn || !root) return;
+  btn.hidden = true;
   const KEY = "theme";
   const mq = window.matchMedia?.("(prefers-color-scheme: dark)");
   const safeGet = (k) => {
@@ -275,6 +285,7 @@ function initThemeToggle() {
   initThemeToggle.set = (mode) => {
     apply(mode === "dark" ? "dark" : "light", { persist: true });
   };
+  btn.hidden = false;
 }
 
 /* CTA ripple */

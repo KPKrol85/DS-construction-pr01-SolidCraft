@@ -28,8 +28,8 @@
 .site-header.is-shrink {
   box-shadow: var(--shadow);
 }
-:root.is-nav-open,
-:root.is-nav-open body {
+:root.is-nav-ready.is-nav-open,
+:root.is-nav-ready.is-nav-open body {
   overflow: hidden;
 }
 .brand {
@@ -112,10 +112,7 @@
 :root[data-theme="dark"] .theme-toggle .icon-sun {
   display: block;
 }
-/* theme-init.js sets data-theme before first paint, but initIcons() only runs
-   with the deferred module, so the placeholder is briefly still empty. A
-   neutral ring holds the 24px box until the icon lands, and the button never
-   shows a blank hit area or reflows. */
+/* Keep a visible marker if the theme icon placeholder is empty. */
 .theme-toggle [data-icon]:empty {
   width: 24px;
   height: 24px;
@@ -123,8 +120,7 @@
   border-radius: 50%;
   opacity: 0.3;
 }
-/* The toggle is inert without JS — hidden, as .nav-toggle already is. */
-.no-js .theme-toggle {
+.theme-toggle[hidden] {
   display: none;
 }
 .theme-toggle:hover {
@@ -187,11 +183,32 @@
   display: flex;
   animation: menuIn 0.18s ease both;
 }
-.no-js .nav-menu {
+:root:not(.is-nav-ready) .nav-menu {
+  position: static;
   display: flex;
+  flex-wrap: wrap;
+  max-height: none;
+  overflow: visible;
+  animation: none;
 }
-.no-js .nav-toggle {
+:root:not(.is-nav-ready) .nav-toggle,
+:root:not(.is-nav-ready) .nav .nav-menu .caret {
   display: none;
+}
+/* Keep the full set of fallback links in the page flow. */
+:root:not(.is-nav-ready) {
+  scroll-padding-top: 0;
+}
+:root:not(.is-nav-ready) body {
+  padding-top: 0;
+}
+:root:not(.is-nav-ready) .site-header {
+  position: static;
+}
+@media (width < 1024px) {
+  :root:not(.is-nav-ready) .header-bar {
+    display: block;
+  }
 }
 .nav-menu > li {
   display: flex;
@@ -274,7 +291,7 @@
   border: 1px solid var(--line) !important;
   transform: none;
 }
-.no-js .has-dropdown > .dropdown {
+:root:not(.is-nav-ready) .has-dropdown > .dropdown {
   display: block !important;
   position: static;
   visibility: visible;

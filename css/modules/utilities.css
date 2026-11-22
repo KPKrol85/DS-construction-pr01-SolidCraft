@@ -1,8 +1,8 @@
 /* Entrance motion is reserved for structure: a section head or one content
    group fades up a short distance, once. Primary actions and the contact
-   form carry no reveal. Without JavaScript (no `.js` root class) and under
+   form carry no reveal. Before the observer is ready and under
    reduced motion, every group renders in place. */
-:where(.js) [data-reveal] {
+:where(.is-reveal-ready) [data-reveal] {
   opacity: 0;
   transform: translate3d(0, var(--sr-distance), 0);
   transition:
@@ -19,7 +19,7 @@
    reveal, for example at the viewport's bottom edge; the group then shows
    at once, without an entrance transition, so the focused control is never
    transparent. */
-:where(.js) [data-reveal]:focus-within {
+:where(.is-reveal-ready) [data-reveal]:focus-within {
   opacity: 1;
   transform: none;
   transition: none;

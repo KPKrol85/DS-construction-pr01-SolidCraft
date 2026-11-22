@@ -167,6 +167,215 @@ async function tabThroughServiceLinks(page) {
 
 const navigationScenarios = [
   {
+    name: "nav-and-content-with-main-script-blocked",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: MOBILE_VIEWPORT },
+        async ({ page }) => {
+          await page.route("**/js/script.js", (route) => route.abort());
+          await page.emulateMedia({
+            colorScheme: "dark",
+            reducedMotion: "no-preference",
+          });
+
+          const samples = [
+            ["/index.html", "#oferta [data-reveal]", "dark"],
+            ["/oferta/lazienki.html", "#galeria [data-reveal]", "light"],
+            ["/regulamin.html", "#tos h1", "light"],
+          ];
+          for (const [i, [route, selector, theme]] of samples.entries()) {
+            const response = await page.goto(route);
+            assertEqual(response.status(), 200, `${route} should be served`);
+            assertEqual(
+              await page.locator("html").getAttribute("data-theme"),
+              theme,
+              `${route} should apply the first-paint theme independently`,
+            );
+
+            for (const control of [".nav-toggle", ".theme-toggle"]) {
+              assert(
+                !(await page.locator(control).isVisible()),
+                `${route} should hide the unavailable ${control} control`,
+              );
+            }
+
+            assertEqual(
+              await page
+                .locator("#dd-oferta-trigger")
+                .getAttribute("aria-expanded"),
+              null,
+              `${route} should expose Oferta as a normal link`,
+            );
+            await page.locator(".brand").focus();
+            await page.keyboard.press("Tab");
+            await assertFocusOn(
+              page,
+              "#navMenu > li:first-child a",
+              `${route} home link`,
+            );
+            await page.keyboard.press("Tab");
+            await assertFocusOn(
+              page,
+              "#dd-oferta-trigger",
+              `${route} offer link`,
+            );
+            for (const href of SERVICE_LINKS) {
+              const link = `#dd-oferta a[href$="${href}"]`;
+              assert(
+                await page.locator(link).isVisible(),
+                `${route} should display ${href}`,
+              );
+              await page.keyboard.press("Tab");
+              await assertFocusOn(page, link, `${route} service link`);
+            }
+
+            const content = page.locator(selector);
+            await content.first().click({ trial: true, timeout: 5000 });
+            assert(
+              await content.evaluateAll((groups) =>
+                groups.every((group) => {
+                  const { opacity, visibility } = getComputedStyle(group);
+                  return (
+                    group.getClientRects().length > 0 &&
+                    opacity === "1" &&
+                    visibility === "visible"
+                  );
+                }),
+              ),
+              `${route} should display content at full opacity`,
+            );
+
+            // Follow two links from each sample, covering all six destinations.
+            const destinations = SERVICE_LINKS.slice(i * 2, i * 2 + 2);
+            for (const [index, href] of destinations.entries()) {
+              if (index > 0) await page.goto(route);
+              await Promise.all([
+                page.waitForURL(`**/${href}`, { timeout: 5000 }),
+                page.locator(`#dd-oferta a[href$="${href}"]`).press("Enter"),
+              ]);
+            }
+            if (i === 0)
+              await page.evaluate(() => localStorage.setItem("theme", "light"));
+          }
+        },
+      );
+    },
+  },
+
+  {
+    name: "nav-content-reveal-with-and-without-reduced-motion",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: MOBILE_VIEWPORT },
+        async ({ page }) => {
+          const gallery = page.locator(".gallery-grid");
+          const waitForGalleryOpacity = (opacity) =>
+            page.waitForFunction(
+              (expected) =>
+                getComputedStyle(document.querySelector(".gallery-grid"))
+                  .opacity === expected,
+              opacity,
+              { timeout: 5000 },
+            );
+          await page.emulateMedia({ reducedMotion: "no-preference" });
+          await openPage(page, REPRESENTATIVE_SERVICE);
+          await waitForGalleryOpacity("0");
+          await gallery.scrollIntoViewIfNeeded();
+          await waitForGalleryOpacity("1");
+          assertEqual(
+            await gallery.evaluate(
+              (node) => getComputedStyle(node).transitionDelay,
+            ),
+            "0.08s",
+            "the gallery should retain its authored reveal delay",
+          );
+
+          const faqState = await page
+            .locator("#faq .faq-list")
+            .evaluate((node) => {
+              const wasHidden = getComputedStyle(node).opacity === "0";
+              node.querySelector("summary").focus({ preventScroll: true });
+              return [
+                wasHidden,
+                node.classList.contains("is-revealed"),
+                getComputedStyle(node).opacity,
+              ];
+            });
+          assertDeepEqual(
+            faqState,
+            [true, true, "1"],
+            "keyboard focus should reveal the FAQ immediately",
+          );
+
+          await page.emulateMedia({ reducedMotion: "reduce" });
+          await openPage(page, REPRESENTATIVE_SERVICE);
+          assertDeepEqual(
+            await gallery.evaluate((node) => {
+              const { opacity, transform, transitionProperty } =
+                getComputedStyle(node);
+              return [opacity, transform, transitionProperty];
+            }),
+            ["1", "none", "none"],
+            "even off-screen reveal content should be visible without transitions under reduced motion",
+          );
+        },
+      );
+    },
+  },
+
+  {
+    name: "nav-content-visible-when-reveal-setup-fails",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: MOBILE_VIEWPORT },
+        async ({ page }) => {
+          await page.emulateMedia({
+            colorScheme: "light",
+            reducedMotion: "no-preference",
+          });
+          await page.addInitScript(() => {
+            window.IntersectionObserver = class extends IntersectionObserver {
+              observe(element) {
+                if (element.matches(".gallery-grid"))
+                  throw new Error("Cannot observe gallery");
+                super.observe(element);
+              }
+            };
+          });
+          await openPage(page, REPRESENTATIVE_SERVICE);
+
+          assertEqual(
+            await page
+              .locator(".gallery-grid")
+              .evaluate((node) => getComputedStyle(node).opacity),
+            "1",
+            "an observer that fails during setup should leave the gallery visible",
+          );
+          const toggle = page.locator(".nav-toggle");
+          await toggle.click();
+          assertEqual(
+            await toggle.getAttribute("aria-expanded"),
+            "true",
+            "navigation should still work",
+          );
+          await page.keyboard.press("Escape");
+
+          const theme = page.locator(".theme-toggle");
+          await theme.click();
+          assertEqual(
+            await theme.getAttribute("aria-pressed"),
+            "true",
+            "the theme toggle should still work",
+          );
+        },
+      );
+    },
+  },
+
+  {
     name: "nav-drawer-open-and-close",
     async run({ browser, baseURL }) {
       await withPage(
