@@ -152,7 +152,9 @@ function initScrollReveal() {
       if (entry.isIntersecting) {
         if (!el.classList.contains("is-revealed")) {
           applyDelay(el);
-          requestAnimationFrame(() => el.classList.add("is-revealed"));
+          requestAnimationFrame(() => {
+            if (!signal.aborted) el.classList.add("is-revealed");
+          });
         }
         if (revealOnce) observer.unobserve(el);
       } else if (!revealOnce) {
@@ -186,10 +188,14 @@ function initScrollReveal() {
     },
     { signal },
   );
-  window.addEventListener("pagehide", () => io.disconnect(), {
-    once: true,
-    signal,
-  });
+  signal.addEventListener("abort", () => io.disconnect(), { once: true });
+  window.addEventListener(
+    "pagehide",
+    (event) => {
+      if (!event.persisted) ac.abort();
+    },
+    { signal },
+  );
   root.classList.add("is-reveal-ready");
 }
 

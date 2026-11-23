@@ -38,7 +38,10 @@ function resolveServerPath(rootDir, urlPath) {
   return contained ? absPath : null;
 }
 
-async function startStaticServer({ rootDir = process.cwd() } = {}) {
+async function startStaticServer({
+  rootDir = process.cwd(),
+  cacheControl = "no-store",
+} = {}) {
   const root = path.resolve(rootDir);
 
   const server = createServer(async (req, res) => {
@@ -69,7 +72,7 @@ async function startStaticServer({ rootDir = process.cwd() } = {}) {
 
       res.writeHead(200, {
         "Content-Type": resolveContentType(ext),
-        "Cache-Control": "no-store",
+        "Cache-Control": cacheControl,
       });
       res.end(body);
     } catch (error) {

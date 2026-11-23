@@ -124,6 +124,89 @@ async function assertDialogClosed(page, context) {
 
 const lightboxScenarios = [
   {
+    name: "lightbox-and-reveal-survive-bfcache-restoration",
+    async run({ browser, baseURL }) {
+      await withPage(
+        browser,
+        { baseURL, viewport: DESKTOP_VIEWPORT },
+        async ({ context, page }) => {
+          await page.emulateMedia({ reducedMotion: "no-preference" });
+          await context.addInitScript(() => {
+            window.addEventListener("pageshow", (event) => {
+              if (event.isTrusted) window.qaPageShowPersisted = event.persisted;
+            });
+          });
+          await openPage(page, GALLERY_PAGE);
+
+          const galleryUrl = page.url();
+          const revealSelectors = [
+            "#galeria .block-head[data-reveal]",
+            "#faq .block-head[data-reveal]",
+          ];
+          for (const [index, selector] of revealSelectors.entries()) {
+            const step = `history return ${index + 1}`;
+            await page.evaluate(() => delete window.qaPageShowPersisted);
+            await openPage(page, "/regulamin.html");
+            await page.goBack({ waitUntil: "commit", timeout: 5000 });
+            assertEqual(
+              page.url(),
+              galleryUrl,
+              `${step} should return to the service page`,
+            );
+            await page.waitForFunction(
+              () => typeof window.qaPageShowPersisted === "boolean",
+              null,
+              { timeout: 5000 },
+            );
+            assertEqual(
+              await page.evaluate(() => window.qaPageShowPersisted),
+              true,
+              `${step} should fire a trusted pageshow with persisted=true`,
+            );
+
+            const target = page.locator(selector);
+            assert(
+              await target.evaluate(
+                (el) =>
+                  el.getBoundingClientRect().top >= innerHeight &&
+                  !el.classList.contains("is-revealed") &&
+                  getComputedStyle(el).opacity === "0",
+              ),
+              `${step} should leave ${selector} unrevealed below the viewport`,
+            );
+            await target.evaluate((el) =>
+              el.scrollIntoView({ block: "center", behavior: "instant" }),
+            );
+            await page.waitForFunction(
+              (sel) => {
+                const el = document.querySelector(sel);
+                return (
+                  el?.classList.contains("is-revealed") &&
+                  getComputedStyle(el).opacity === "1"
+                );
+              },
+              selector,
+              { timeout: 5000 },
+            );
+
+            await page.locator(itemSelector(1)).click();
+            assertEqual(
+              page.url(),
+              galleryUrl,
+              `${step} should keep the gallery URL on activation`,
+            );
+            await assertDialogOpen(page, step);
+            await assertLightboxInfo(page, 1, step);
+            await page.keyboard.press("ArrowRight");
+            await assertLightboxInfo(page, 2, `${step} after one ArrowRight`);
+            await page.keyboard.press("Escape");
+            await assertDialogClosed(page, `${step} after Escape`);
+          }
+        },
+      );
+    },
+  },
+  {
     name: "lightbox-gallery-item-is-one-tab-stop",
     async run({ browser, baseURL }) {
       await withPage(

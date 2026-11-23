@@ -48,11 +48,11 @@
 
 **Goal:** Keep galleries and page content usable after history restoration and correct two contained readability defects.
 
-- [ ] **PH12-01 — Keep gallery and reveal behavior working after history restoration**
+- [x] **PH12-01 — Keep gallery and reveal behavior working after history restoration**
 
-  - [ ] Adjust the `pagehide` handling in `js/modules/lightbox.js` and `js/modules/ui-core.js` to preserve or restore listeners and observation for persisted pages without duplicate handlers.
+  - [x] Preserved gallery listeners and reveal observation on persisted `pagehide` events and retained cleanup on ordinary navigation.
   - **Depends on:** `PH11-01` for the scroll-reveal initialization contract.
-  - **Completion condition:** After a real back/forward-cache restore confirmed by `pageshow.persisted`, a gallery trigger opens the dialog and a previously unrevealed group appears when scrolled into view. The audit reproduced the handler loss with a simulated transition. [Audit P2-02](AUDIT.md#p2-02-history-restoration-can-leave-the-gallery-and-reveal-handlers-inactive).
+  - **Verification:** Confirmed two Chromium history returns with `pageshow.persisted === true`. After each return, a previously hidden group revealed on scroll, and the gallery opened and advanced one image per arrow press. [Audit P2-02](AUDIT.md#p2-02-history-restoration-can-leave-the-gallery-and-reveal-handlers-inactive).
 
 - [ ] **PH12-02 — Improve the focused skip link's text contrast**
 

@@ -56,8 +56,17 @@ if (scenarios.length === 0) {
 
 const { chromium } = await loadDependency("playwright");
 
-const server = await startStaticServer({ rootDir: projectRoot });
-const browser = await chromium.launch({ headless: true });
+const server = await startStaticServer({
+  rootDir: projectRoot,
+  // Revalidate HTTP responses without making pages ineligible for bfcache.
+  cacheControl: "no-cache",
+});
+const browser = await chromium.launch({
+  channel: "chromium",
+  headless: true,
+  // The full Chromium browser supports bfcache in headless mode.
+  ignoreDefaultArgs: ["--disable-back-forward-cache"],
+});
 const failures = [];
 
 try {

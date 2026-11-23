@@ -390,7 +390,13 @@ function initOfertaLightbox() {
     { passive: false, signal },
   );
 
-  window.addEventListener("pagehide", () => ac.abort(), { once: true, signal });
+  window.addEventListener(
+    "pagehide",
+    (event) => {
+      if (!event.persisted) ac.abort();
+    },
+    { signal },
+  );
 }
 
 export { initOfertaLightbox };
