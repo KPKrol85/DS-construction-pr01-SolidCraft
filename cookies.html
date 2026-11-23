@@ -377,11 +377,15 @@
               przez Użytkownika w interfejsie Serwisu.
             </p>
             <p>
-              Załadowanie zewnętrznej mapy Google Maps następuje wyłącznie po
-              wyraźnym działaniu Użytkownika, a podjęta decyzja zapamiętywana
-              jest w kluczu
-              <code>consent.maps</code>
-              . Serwis nie stosuje plików cookies analitycznych ani
+              Gdy klucz <code>consent.maps</code> w
+              <code>localStorage</code> nie ma wartości <code>"true"</code>,
+              Serwis tworzy ramkę Google Maps po kliknięciu przycisku „Załaduj
+              mapę” i podejmuje próbę zapisania tej wartości. Kliknięcie działa
+              także wtedy, gdy przeglądarka nie udostępnia
+              <code>localStorage</code>, choć decyzja może się nie zapisać.
+              Jeśli zgoda została zapisana, ramka powstaje automatycznie przy
+              kolejnym otwarciu lub odświeżeniu strony, bez ponownego
+              kliknięcia. Serwis nie stosuje plików cookies analitycznych ani
               marketingowych, dla których wymagana byłaby odrębna zgoda.
             </p>
             <p>
@@ -418,8 +422,9 @@
               zapisane przez Serwis w mechanizmie
               <code>localStorage</code>
               , co przywraca domyślne ustawienia interfejsu, ponowne
-              wyświetlenie informacji o charakterze projektu oraz konieczność
-              ponownego załadowania mapy.
+              wyświetlenie informacji o charakterze projektu. Po usunięciu
+              zapisanej zgody na mapę i odświeżeniu strony trzeba ponownie
+              kliknąć „Załaduj mapę”.
             </p>
             <p>
               Ograniczenie stosowania plików cookies może wpłynąć na niektóre
@@ -447,19 +452,18 @@
                 obecnie Netlify,
               </li>
               <li>
-                dostawcy opcjonalnej mapy dojazdu – Google Maps; jest to treść
-                zewnętrzna osadzana wyłącznie po wyraźnym działaniu Użytkownika,
-                która po załadowaniu może korzystać z własnych plików cookies
-                lub innych mechanizmów przechowywania danych.
+                dostawcy opcjonalnej mapy dojazdu – Google Maps. Po załadowaniu
+                ta treść zewnętrzna może korzystać z własnych plików cookies lub
+                innych mechanizmów przechowywania danych.
               </li>
             </ul>
             <p>
-              Mapa Google Maps nie jest ładowana automatycznie – ramka mapy
-              tworzona jest dopiero po kliknięciu przez Użytkownika przycisku
-              „Załaduj mapę”. Po jej załadowaniu dostawca zewnętrzny może
-              stosować własne mechanizmy zapisu i odczytu informacji na
-              urządzeniu końcowym Użytkownika. Operator nie ustala ani nie
-              kontroluje zakresu tych mechanizmów.
+              Po utworzeniu ramki mapy przeglądarka może odroczyć pobranie jej
+              treści, dopóki ramka nie znajdzie się w pobliżu widocznego obszaru
+              strony. Po załadowaniu mapy dostawca zewnętrzny może stosować
+              własne mechanizmy zapisu i odczytu informacji na urządzeniu
+              końcowym Użytkownika. Operator nie ustala ani nie kontroluje
+              zakresu tych mechanizmów.
             </p>
             <p>
               Serwis nie korzysta z narzędzi analitycznych, statystycznych ani

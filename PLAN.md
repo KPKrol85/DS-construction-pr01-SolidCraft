@@ -38,11 +38,11 @@
   - [x] Aligned the home and service CTAs, metadata, and visible and structured FAQ content with the demonstration scope. Preserved the hero composition and service preselection.
   - **Verification:** Passed 40 functional scenarios and 28 axe scans in Chromium. Verified direct contact entry with and without JavaScript, local submissions, FAQ parity, and responsive layout in both themes. [Audit P1-03](AUDIT.md#p1-03-the-demo-contact-journey-promises-an-actual-quotation-and-follow-up), [design decisions](docs/archive/improvements/IMPROVEMENTS-DESIGN-2026-11-15.md#owner-decisions-and-open-items).
 
-- [ ] **PH11-04 — Match public disclosures to form and map behavior**
-  - [ ] Update `polityka-prywatnosci.html` to include the optional service in the submitted data and use the agreed contact-purpose wording.
-  - [ ] In the privacy and cookie notices, distinguish the first map activation from subsequent loads using stored consent. Compare the wording with fresh, saved, and cleared browser storage.
-  - **Depends on:** `PH11-03` for the contact-purpose wording.
-  - **Completion condition:** The disclosures describe the actual form payload and when the map iframe is created. [Audit P2-06](AUDIT.md#p2-06-public-data-disclosures-miss-two-implemented-behaviors).
+- [x] **PH11-04 — Match public disclosures to form and map behavior**
+
+  - [x] Documented every submitted form field, including the optional service, and aligned the contact purpose with `PH11-03`.
+  - [x] Documented first activation, automatic iframe creation with saved consent, and reactivation after clearing consent and reloading.
+  - **Verification:** Matched the disclosures to the form markup, serialization, and map module. The focused Chromium scenario passed with off-origin requests intercepted. [Audit P2-06](AUDIT.md#p2-06-public-data-disclosures-miss-two-implemented-behaviors).
 
 ## Phase 12 — Navigation, accessibility, and document rendering
 

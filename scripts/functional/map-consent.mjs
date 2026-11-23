@@ -5,8 +5,9 @@
    when `consent.maps` is already stored as "true". The scenario asserts the
    contract at the request level, not only in the DOM: nothing is requested
    from Google before consent, the iframe built after consent matches the
-   footer's data-map-src, the stored decision restores it on reload, and the
-   click still loads the map when localStorage throws.
+   footer's data-map-src, the stored decision restores it on reload, clearing
+   that decision restores the placeholder on reload, and the click still loads
+   the map when localStorage throws.
 
    No request reaches Google. Every context intercepts all off-origin requests
    before its first navigation and aborts them in the browser. The first
@@ -43,6 +44,7 @@ const EMBED_REQUEST_TIMEOUT_MS = 5000;
 const BEFORE_CONSENT = "before consent";
 const AFTER_CONSENT = "after consent";
 const AFTER_RELOAD = "after reload";
+const AFTER_CLEAR = "after clearing consent and reloading";
 
 const pageOptions = (baseURL, allowedOffOriginUrls = []) => ({
   baseURL,
@@ -268,7 +270,7 @@ const mapConsentScenarios = [
         },
       );
 
-      /* Explicit consent, then a reload that must restore the map unaided. */
+      /* Reload first with the saved decision and then after clearing it. */
       await withPage(
         browser,
         pageOptions(baseURL, [mapSrc]),
@@ -309,6 +311,34 @@ const mapConsentScenarios = [
             request: restored,
             phase: AFTER_RELOAD,
           });
+
+          await page.evaluate(
+            (key) => localStorage.removeItem(key),
+            CONSENT_STORAGE_KEY,
+          );
+          log.phase = AFTER_CLEAR;
+          const clearedResponse = await page.reload({ waitUntil: "load" });
+          assertEqual(
+            clearedResponse?.status(),
+            200,
+            `${ROUTE} should be reloaded`,
+          );
+          await page.waitForFunction(() => Boolean(window.SC), null, {
+            timeout: 5000,
+          });
+          assertEqual(
+            await readConsent(page),
+            null,
+            `${AFTER_CLEAR} — ${CONSENT_STORAGE_KEY} should remain absent`,
+          );
+          await assertGateClosed(page, AFTER_CLEAR);
+          await page.locator(MAP).scrollIntoViewIfNeeded();
+          await page.waitForTimeout(PRE_CONSENT_OBSERVATION_MS);
+          assertDeepEqual(
+            attemptsIn(log, AFTER_CLEAR),
+            [],
+            `${AFTER_CLEAR} — no off-origin request should be attempted`,
+          );
           assertDeepEqual(
             attemptsIn(log, BEFORE_CONSENT),
             [],
