@@ -129,10 +129,11 @@ function initContactForm() {
         return "Podaj poprawny numer (np. 533 537 091 lub +48 533 537 091).";
       }
     } else if (el === msgInput) {
-      if (validity.valueMissing) return "Napisz krótki opis prac.";
-      if (validity.tooLong) return "Opis może mieć maksymalnie 1000 znaków.";
+      if (validity.valueMissing) return "Wpisz treść wiadomości.";
+      if (validity.tooLong)
+        return "Wiadomość może mieć maksymalnie 1000 znaków.";
     } else if (el === consentInput && !el.checked) {
-      return "Wymagana zgoda na kontakt w celu wyceny.";
+      return "Wymagana jest zgoda na kontakt ze strony KP_Code Digital Studio w sprawie przesłanego zapytania.";
     }
     return "";
   };
@@ -362,7 +363,10 @@ function initContactForm() {
           .querySelectorAll('[aria-invalid="true"]')
           .forEach((el) => el.removeAttribute("aria-invalid"));
         form.reset();
-        showNote("Dziękujemy! Skontaktujemy się wkrótce.", true);
+        showNote(
+          "Wiadomość została wysłana przez formularz do KP_Code Digital Studio. Dziękujemy za kontakt z autorem projektu SolidCraft.",
+          true,
+        );
         note?.focus?.();
       } catch (err) {
         if (isDev) console.error(err);

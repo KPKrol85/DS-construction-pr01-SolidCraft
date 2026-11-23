@@ -1,13 +1,12 @@
-/* Home service-index and service-quote entry scenarios.
+/* Home service-index and service contact entry scenarios.
 
    The #oferta index leads with the turnkey entry and lists the five
-   specialties after it. Every entry carries two links: the image asks for a
-   quote (#kontakt) and the title opens the service page. Home images are plain
-   links, not lightbox triggers; the gallery lightbox is covered by
-   lightbox.mjs on a service page.
+   specialties after it. The image links to #kontakt and the title opens the
+   service page. The gallery lightbox is covered by lightbox.mjs on a service
+   page.
 
-   Every service-specific quote entry point — each home image link and both
-   quote CTAs of each service page — lands on #kontakt with that service
+   Every service-specific contact entry point — each home image link and both
+   contact CTAs of each service page — lands on #kontakt with that service
    selected in the form's static select[name="usluga"]. */
 
 import {
@@ -36,7 +35,7 @@ const ENTRIES = [
   ["oferta-hydraulika", "Hydraulika", "oferta/hydraulika.html"],
 ];
 
-/* Service page, its service value, and its two quote CTAs: the upper one in
+/* Service page, its service value, and its two contact CTAs: the upper one in
    the content and the closing one in the end band. */
 const SERVICE_PAGES = [
   ["/oferta/remonty.html", "Remonty kompleksowe"],
@@ -46,12 +45,12 @@ const SERVICE_PAGES = [
   ["/oferta/elektryka.html", "Elektryka"],
   ["/oferta/hydraulika.html", "Hydraulika"],
 ];
-const UPPER_QUOTE_CTA = "main section:not(.cta) .block-cta a";
-const CLOSING_QUOTE_CTA = "main section.cta .block-cta a";
+const UPPER_CONTACT_CTA = "main section:not(.cta) .block-cta a";
+const CLOSING_CONTACT_CTA = "main section.cta .block-cta a";
 
 const SERVICE_FIELD = '#kontakt form select[name="usluga"]';
 
-const quoteLink = (id) => `#${id} > a[href="#kontakt"]`;
+const contactLink = (id) => `#${id} > a[href="#kontakt"]`;
 const titleLink = (id) => `#${id} h3 a`;
 
 async function readServiceField(page) {
@@ -61,9 +60,9 @@ async function readServiceField(page) {
   );
 }
 
-/* Waits for a quote landing to settle: the home page has loaded and
+/* Waits for a contact landing to settle: the home page has loaded and
    prefillService() has dropped the query while keeping #kontakt. */
-async function waitForQuoteLanding(page, context) {
+async function waitForContactLanding(page, context) {
   await page.waitForURL(
     (url) => url.pathname.endsWith("/index.html"),
     NAVIGATION_WAIT,
@@ -99,12 +98,28 @@ const serviceIndexScenarios = [
         { baseURL, viewport: DESKTOP_VIEWPORT },
         async ({ page }) => {
           await openPage(page, HOME_PAGE);
+          const heroPhone = page
+            .locator(".hero__cta")
+            .getByRole("link", { name: "Zadzwoń do autora", exact: true });
+          assertEqual(
+            await heroPhone.getAttribute("href"),
+            "tel:+48533537091",
+            "the hero phone CTA should call the project author",
+          );
+          const homeContact = page
+            .locator("#oferta .block-cta")
+            .getByRole("link", { name: "Kontakt z autorem", exact: true });
+          assertEqual(
+            await homeContact.getAttribute("href"),
+            "#kontakt",
+            "the service-index CTA should open author contact",
+          );
 
           const entries = await page.evaluate(() =>
             [
               ...document.querySelectorAll("#oferta article[id^='oferta-']"),
             ].map((article) => {
-              const quote = article.querySelector(":scope > a");
+              const contact = article.querySelector(":scope > a");
               const heading = document.getElementById(
                 article.getAttribute("aria-labelledby"),
               );
@@ -113,9 +128,9 @@ const serviceIndexScenarios = [
               );
               return {
                 id: article.id,
-                quoteHref: quote?.getAttribute("href"),
-                quoteLabel: quote?.getAttribute("aria-label"),
-                quoteService: quote?.dataset.usluga,
+                contactHref: contact?.getAttribute("href"),
+                contactLabel: contact?.getAttribute("aria-label"),
+                contactService: contact?.dataset.usluga,
                 titleHref: heading?.querySelector("a")?.getAttribute("href"),
                 labelledByOwnHeading:
                   heading?.tagName === "H3" && article.contains(heading),
@@ -143,14 +158,18 @@ const serviceIndexScenarios = [
 
           for (const [id, name, href] of ENTRIES) {
             const entry = entries.find((item) => item.id === id);
-            assertEqual(entry.quoteHref, "#kontakt", `${id} image link target`);
             assertEqual(
-              entry.quoteLabel,
-              `Zamów wycenę — ${name}`,
+              entry.contactHref,
+              "#kontakt",
+              `${id} image link target`,
+            );
+            assertEqual(
+              entry.contactLabel,
+              `Kontakt z autorem — ${name}`,
               `${id} image link name`,
             );
             assertEqual(
-              entry.quoteService,
+              entry.contactService,
               name,
               `${id} image link service value`,
             );
@@ -177,7 +196,7 @@ const serviceIndexScenarios = [
             "#kontakt",
             href,
           ]);
-          await page.locator(quoteLink(ENTRIES[0][0])).focus();
+          await page.locator(contactLink(ENTRIES[0][0])).focus();
           const actualOrder = [
             await page.evaluate(() =>
               document.activeElement.getAttribute("href"),
@@ -202,7 +221,7 @@ const serviceIndexScenarios = [
   },
 
   {
-    name: "home-service-index-image-requests-quote-and-title-opens-page",
+    name: "home-service-index-image-opens-contact-and-title-opens-page",
     async run({ browser, baseURL }) {
       await withPage(
         browser,
@@ -210,7 +229,9 @@ const serviceIndexScenarios = [
         async ({ page }) => {
           await openPage(page, HOME_PAGE);
 
-          await page.locator(`${quoteLink("oferta-kompleksowe")} img`).click();
+          await page
+            .locator(`${contactLink("oferta-kompleksowe")} img`)
+            .click();
           await page.waitForURL("**/index.html#kontakt", NAVIGATION_WAIT);
           await assertNoLightbox(page, "after clicking the featured image");
           assertEqual(
@@ -224,7 +245,7 @@ const serviceIndexScenarios = [
           );
 
           await openPage(page, HOME_PAGE);
-          await page.locator(quoteLink("oferta-hydraulika")).focus();
+          await page.locator(contactLink("oferta-hydraulika")).focus();
           await page.keyboard.press("Enter");
           await page.waitForURL("**/index.html#kontakt", NAVIGATION_WAIT);
           await assertNoLightbox(page, "after Enter on a specialty image link");
@@ -270,7 +291,7 @@ const serviceIndexScenarios = [
              previous choice, including one made manually in the form. */
           for (const [id, name] of ENTRIES) {
             await page.locator(SERVICE_FIELD).selectOption("");
-            await page.locator(quoteLink(id)).click();
+            await page.locator(contactLink(id)).click();
             await page.waitForURL("**/index.html#kontakt", NAVIGATION_WAIT);
             assertEqual(
               await readServiceField(page),
@@ -280,7 +301,7 @@ const serviceIndexScenarios = [
           }
 
           await page.locator(SERVICE_FIELD).selectOption("Elektryka");
-          await page.locator(quoteLink("oferta-lazienki")).focus();
+          await page.locator(contactLink("oferta-lazienki")).focus();
           await page.keyboard.press("Enter");
           assertEqual(
             await readServiceField(page),
@@ -307,7 +328,7 @@ const serviceIndexScenarios = [
   },
 
   {
-    name: "service-pages-pass-their-service-from-both-quote-ctas",
+    name: "service-pages-pass-their-service-from-both-contact-ctas",
     async run({ browser, baseURL }) {
       await withPage(
         browser,
@@ -315,10 +336,10 @@ const serviceIndexScenarios = [
         async ({ page }) => {
           for (const [route, name] of SERVICE_PAGES) {
             for (const [label, selector] of [
-              ["upper", UPPER_QUOTE_CTA],
-              ["closing", CLOSING_QUOTE_CTA],
+              ["upper", UPPER_CONTACT_CTA],
+              ["closing", CLOSING_CONTACT_CTA],
             ]) {
-              const context = `${route} ${label} quote CTA`;
+              const context = `${route} ${label} contact CTA`;
               await openPage(page, route);
 
               const cta = page.locator(selector);
@@ -326,6 +347,11 @@ const serviceIndexScenarios = [
                 await cta.count(),
                 1,
                 `${context} — exactly one should exist`,
+              );
+              assertEqual(
+                (await cta.textContent()).trim(),
+                "Kontakt z autorem",
+                `${context} — visible label`,
               );
               const target = await cta.evaluate((link) => {
                 const url = new URL(link.href);
@@ -342,7 +368,7 @@ const serviceIndexScenarios = [
               );
 
               await cta.click();
-              await waitForQuoteLanding(page, context);
+              await waitForContactLanding(page, context);
               assertEqual(
                 await readServiceField(page),
                 name,

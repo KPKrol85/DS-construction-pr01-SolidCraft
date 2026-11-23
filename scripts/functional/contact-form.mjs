@@ -76,7 +76,8 @@ const MESSAGES = {
     allFields: "Popraw 4 pola formularza.",
   },
   tooFast: "Odczekaj chwilę i spróbuj ponownie.",
-  success: "Dziękujemy! Skontaktujemy się wkrótce.",
+  success:
+    "Wiadomość została wysłana przez formularz do KP_Code Digital Studio. Dziękujemy za kontakt z autorem projektu SolidCraft.",
   failure: "Nie udało się wysłać formularza. Spróbuj ponownie.",
 };
 
@@ -84,15 +85,16 @@ const FIELD_ERRORS = {
   nameMissing: "Podaj imię i nazwisko (min. 2 znaki).",
   phoneMissing: "Podaj numer telefonu.",
   phoneFormat: "Podaj poprawny numer (np. 533 537 091 lub +48 533 537 091).",
-  msgMissing: "Napisz krótki opis prac.",
-  consentMissing: "Wymagana zgoda na kontakt w celu wyceny.",
+  msgMissing: "Wpisz treść wiadomości.",
+  consentMissing:
+    "Wymagana jest zgoda na kontakt ze strony KP_Code Digital Studio w sprawie przesłanego zapytania.",
 };
 
 const VALID_INPUT = {
   name: "Jan Kowalski",
   phone: "533537091",
   formattedPhone: "533 537 091",
-  msg: "Proszę o wycenę remontu łazienki w bloku.",
+  msg: "Zapytanie testowe o stworzenie strony internetowej.",
 };
 
 /* One digit short: present, so not a required-field error, but not a valid
@@ -105,7 +107,7 @@ const INCOMPLETE_PHONE = {
 /* The optional service field: an empty default plus the six services, in the
    order of the home index. */
 const SERVICE_FIELD = `${FORM} select[name="usluga"]`;
-const SERVICE_LABEL = "Usługa (opcjonalnie)";
+const SERVICE_LABEL = "Przykładowa usługa (opcjonalnie)";
 const SERVICE_VALUES = [
   "",
   "Remonty kompleksowe",
@@ -131,8 +133,8 @@ async function readServiceState(page) {
   }, SERVICE_FIELD);
 }
 
-/* Records every POST and answers submissions to the form action locally. GET
-   requests to the thank-you page still serve the normal document. */
+/* Records every POST and answers submissions locally. A successful POST
+   serves the same confirmation document as a regular GET. */
 async function interceptSubmission(context, { status }) {
   const submissions = [];
 
@@ -150,6 +152,11 @@ async function interceptSubmission(context, { status }) {
   await context.route(`**${SUBMIT_PATH}`, async (route) => {
     if (route.request().method() !== "POST") {
       await route.continue();
+      return;
+    }
+
+    if (status === 200) {
+      await route.fulfill({ response: await context.request.get(SUBMIT_PATH) });
       return;
     }
 
@@ -310,11 +317,29 @@ const contactFormScenarios = [
           const submissions = await interceptSubmission(context, {
             status: 200,
           });
-          const response = await page.goto("/index.html#kontakt");
+          const response = await page.goto("/#kontakt");
           assertEqual(response?.status(), 200, "the contact page should load");
 
           const form = page.locator(FORM);
           const submit = page.locator(SUBMIT);
+          assert(
+            await page.locator("#kontakt-desc").isVisible(),
+            "the contact purpose should be visible on direct entry",
+          );
+          const purpose = await page.locator("#kontakt-desc").innerText();
+          for (const text of [
+            "projekt demonstracyjny",
+            "KP_Code Digital Studio o stworzenie strony internetowej",
+            "fikcyjnymi danymi",
+            "wyceny są tu wyłącznie przykładowe",
+          ]) {
+            assertIncludes(purpose, text, "the contact purpose");
+          }
+          assertIncludes(
+            await form.getAttribute("aria-describedby"),
+            "kontakt-desc",
+            "the form should reference its purpose",
+          );
           assertEqual(
             await form.getAttribute("novalidate"),
             null,
@@ -339,7 +364,12 @@ const contactFormScenarios = [
             "missing consent should block POST",
           );
 
-          await page.locator("#f-consent").check();
+          await page
+            .getByRole("checkbox", {
+              name: "Wyrażam zgodę na kontakt ze strony KP_Code Digital Studio w sprawie przesłanego zapytania.",
+              exact: true,
+            })
+            .check();
           const action = new URL(SUBMIT_PATH, baseURL).href;
           await Promise.all([page.waitForURL(action), submit.click()]);
           assertEqual(
@@ -372,6 +402,11 @@ const contactFormScenarios = [
               ["consent", "yes"],
             ],
             "native Netlify form payload",
+          );
+          assertEqual(
+            await page.locator("main .page-status__text").innerText(),
+            MESSAGES.success,
+            "native confirmation text should match the enhanced confirmation",
           );
         },
       );
@@ -764,6 +799,16 @@ const contactFormScenarios = [
             state.errors.consent,
             FIELD_ERRORS.consentMissing,
             "consent field",
+          );
+          assertEqual(
+            await page.locator("#f-consent").getAttribute("aria-describedby"),
+            "f-consent-error",
+            "consent should reference its validation error",
+          );
+          assertEqual(
+            await page.locator("#f-consent-error").getAttribute("aria-live"),
+            "polite",
+            "the consent validation error should be announced politely",
           );
 
           assertEqual(

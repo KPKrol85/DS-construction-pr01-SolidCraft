@@ -42,6 +42,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Replaced duplicated header and footer markup with build-time shared partials.
 - Consolidated interface icons into a shared SVG registry and removed legacy assets and redundant contact icons.
 - Aligned the home contact section and quote form with shared theme tokens.
+- Clarified that the contact form reaches KP_Code Digital Studio and identified SolidCraft's construction offers and quotation timelines as illustrative.
 - Refined testimonial layouts, rating summaries, and card presentation across themes.
 - Refined responsive hero typography, ghost buttons, and footer map controls.
 - Moved legal pages to the project root, updated active references, and preserved legacy URLs through 301 redirects.

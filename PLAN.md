@@ -32,11 +32,11 @@
   - [x] Verified that empty required fields or unchecked consent block POST and that valid submissions reach the form action with JavaScript disabled or the main script blocked.
   - **Verification:** All 16 contact-form scenarios passed in Chromium, including enhanced validation and submission. [Audit P1-02](AUDIT.md#p1-02-the-native-contact-form-can-submit-without-required-fields-or-consent).
 
-- [ ] **PH11-03 — Describe the contact journey as a demonstration**
+- [x] **PH11-03 — Describe the contact journey as a demonstration**
 
-  - [ ] Explain the demo purpose and the expected test input beside the form. Align the consent label, enhanced confirmation, and native confirmation in `thank-you.html` with that purpose.
-  - [ ] Review the home and service-page entry points into the form. Keep the approved hero design and distinguish illustrative quote language from actual service commitments. Align visible copy, metadata, and FAQ structured data where they advertise a response time.
-  - **Completion condition:** The contact purpose is clear on direct entry to `/#kontakt` and in both success states without relying on the first-visit notice. Any claim of follow-up or response time is supported by the operating workflow. [Audit P1-03](AUDIT.md#p1-03-the-demo-contact-journey-promises-an-actual-quotation-and-follow-up), [design decisions](docs/archive/improvements/IMPROVEMENTS-DESIGN-2026-11-15.md#owner-decisions-and-open-items).
+  - [x] Identified the fictional SolidCraft brand and the real contact recipient, KP_Code Digital Studio, in the footer, form, consent, and both confirmations.
+  - [x] Aligned the home and service CTAs, metadata, and visible and structured FAQ content with the demonstration scope. Preserved the hero composition and service preselection.
+  - **Verification:** Passed 40 functional scenarios and 28 axe scans in Chromium. Verified direct contact entry with and without JavaScript, local submissions, FAQ parity, and responsive layout in both themes. [Audit P1-03](AUDIT.md#p1-03-the-demo-contact-journey-promises-an-actual-quotation-and-follow-up), [design decisions](docs/archive/improvements/IMPROVEMENTS-DESIGN-2026-11-15.md#owner-decisions-and-open-items).
 
 - [ ] **PH11-04 — Match public disclosures to form and map behavior**
   - [ ] Update `polityka-prywatnosci.html` to include the optional service in the submitted data and use the agreed contact-purpose wording.
