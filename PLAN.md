@@ -70,11 +70,11 @@
 
   - **Verification:** All early-submit assertions passed in Chromium after a measured 2,403.8 ms delay following form initialization, with `Date.now()` fixed throughout the delay. The valid-submission scenario passed in the next browser context. [Audit P2-03](AUDIT.md#p2-03-the-early-submit-regression-case-depends-on-test-runner-speed).
 
-- [ ] **PH13-02 — Refresh changed portfolio images at stable URLs**
+- [x] **PH13-02 — Refresh changed portfolio images at stable URLs**
 
-  - [ ] Update the runtime image caching or asset versioning in the canonical worker or build sources. Keep an offline fallback for previously cached images.
-  - [ ] Add focused coverage for an image-only replacement and document the resulting cache policy in `docs/settings.md`.
-  - **Completion condition:** A returning visitor with the old image cached receives the replacement after an image-only update when online, and can still load a cached image offline. [Audit P2-01](AUDIT.md#p2-01-runtime-cached-images-can-stay-stale-after-an-image-only-release).
+  - [x] Applied network-first HTTP revalidation to runtime images and kept the cached-image fallback for transport failures.
+  - [x] Added browser regression coverage and documented the cache policy in `docs/settings.md` and `README.md`.
+  - **Verification:** The original worker served image A without an origin request. The corrected worker revalidated the fresh HTTP cache entry, served and stored image B at the same URL and cache version, and served B after a 404 and subsequent transport failure. All 11 Service Worker scenarios passed. The production build generated the corrected worker and a verified 40-URL precache manifest. [Audit P2-01](AUDIT.md#p2-01-runtime-cached-images-can-stay-stale-after-an-image-only-release).
 
 - [ ] **PH13-03 — Add the canonical redirects for the renovations page**
 

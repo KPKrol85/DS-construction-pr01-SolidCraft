@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-/* Service Worker lifecycle gate (AUDIT P2-01).
+/* Service Worker lifecycle and fetch-strategy gate.
 
-   Proves the one contract the finding is about: the promise each lifecycle
-   handler hands to event.waitUntil() covers the cache work *and* the
+   Verifies that the promise each lifecycle handler hands to event.waitUntil()
+   covers the cache work *and* the
    worker/client transition that follows it, so the browser is required to keep
    install alive until skipWaiting() has settled and activate alive until
    clients.claim() has settled.
@@ -20,16 +20,16 @@
      in the happy path, so behaviour alone cannot fail on the old shape.
    - the effect stage drives the same worker through a real install/activate
      and an update in headless Chromium, against a small in-memory fixture
-     origin, and asserts what AUDIT asks for: precache stored, superseded
-     caches gone, foreign caches untouched, and an already-open client taken
+     origin, and checks that the precache is stored, superseded app caches are
+     removed, foreign caches are untouched, and an already-open client is taken
      over — without a reload — by the activated worker. Its fetch-strategy
      scenarios (IMP-QUALITY-02) then put a production-mode worker in control
      of the page and assert responses, request logs and Cache Storage for
      network-first navigation with its ignoreSearch and /offline.html
-     fallbacks, cache-first precached assets, the refusal to runtime-cache
-     non-OK responses, and POST requests bypassing the worker. Network loss
-     is simulated by the fixture server dropping the connection, so fetch()
-     rejects exactly as it does offline.
+     fallbacks, cache-first precached assets, stable-URL image revalidation
+     and offline reuse, the refusal to runtime-cache non-OK responses, and
+     POST requests bypassing the worker. Dropping the fixture server connection
+     simulates offline fetch() rejections.
 
    The harness deliberately mirrors scripts/qa-functional.mjs rather than
    adding a test framework: the already-declared `playwright` package, a plain
@@ -57,12 +57,14 @@ const MANIFEST_START = "/* build:sw-manifest:start */";
 const MANIFEST_END = "/* build:sw-manifest:end */";
 
 const APP_ID = "solidcraft";
+const PRECACHED_IMAGE = "/icon.svg";
 
 /* The fixture origin's precache contract, in the generator's sorted order. */
 const FIXTURE_ASSETS = [
   "/",
   "/app.css",
   "/app.js",
+  PRECACHED_IMAGE,
   "/index.html",
   "/offline.html",
 ];
@@ -410,10 +412,15 @@ const UNVISITED_PAGE = "/unvisited.html";
 const MISSING_PAGE = "/missing.html";
 const MISSING_ASSET = "/missing.css";
 const RUNTIME_ASSET = "/runtime.css";
+const RUNTIME_IMAGE = "/portfolio.svg";
+const UNVISITED_IMAGE = "/unvisited.svg";
 const ECHO_ENDPOINT = "/echo";
 
 const fixturePage = (title) =>
   `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${title}</title></head><body><h1>${title}</h1></body></html>`;
+
+const fixtureImage = (fill) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="10" height="10" fill="${fill}"/></svg>`;
 
 const FIXTURE_FILES = new Map([
   [
@@ -431,6 +438,7 @@ const FIXTURE_FILES = new Map([
     },
   ],
   ["/app.css", { type: "text/css; charset=utf-8", body: ":root{color:#000}" }],
+  [PRECACHED_IMAGE, { type: "image/svg+xml", body: fixtureImage("black") }],
   [
     "/app.js",
     { type: "text/javascript; charset=utf-8", body: "/* fixture asset */" },
@@ -467,6 +475,7 @@ const FIXTURE_FILES = new Map([
 async function startFixtureServer(initialWorkerSource) {
   let workerSource = initialWorkerSource;
   let networkFailing = false;
+  const files = new Map(FIXTURE_FILES);
   const requests = [];
 
   const server = createServer((req, res) => {
@@ -475,6 +484,7 @@ async function startFixtureServer(initialWorkerSource) {
       method: req.method,
       url: req.url || "/",
       dropped: networkFailing,
+      ifNoneMatch: req.headers["if-none-match"],
     };
     requests.push(entry);
 
@@ -507,7 +517,7 @@ async function startFixtureServer(initialWorkerSource) {
       return;
     }
 
-    const file = FIXTURE_FILES.get(url === "/" ? "/index.html" : url);
+    const file = files.get(url === "/" ? "/index.html" : url);
 
     if (!file) {
       res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
@@ -515,10 +525,17 @@ async function startFixtureServer(initialWorkerSource) {
       return;
     }
 
-    res.writeHead(file.status ?? 200, {
+    const headers = {
       "Content-Type": file.type,
       "Cache-Control": "no-store",
-    });
+      ...file.headers,
+    };
+    if (headers.ETag && entry.ifNoneMatch === headers.ETag) {
+      res.writeHead(304, headers).end();
+      return;
+    }
+
+    res.writeHead(file.status ?? 200, headers);
     res.end(file.body);
   });
 
@@ -533,6 +550,9 @@ async function startFixtureServer(initialWorkerSource) {
     origin: `http://127.0.0.1:${port}`,
     serveWorker: (source) => {
       workerSource = source;
+    },
+    setFile: (url, file) => {
+      files.set(url, file);
     },
     setNetworkFailure: (failing) => {
       networkFailing = failing;
@@ -715,23 +735,31 @@ async function fetchFromPage(page, href, init = {}) {
    Storage entry itself — bounded, and failing with the strategy's own message
    — before anything is asserted about it or the network is cut. The exact
    lookup ignores nothing, so it finds only the URL that was really stored. */
-async function waitForCachedEntry(page, cacheName, url, expectation) {
+async function waitForCachedEntry(page, cacheName, url, expectation, body) {
   const stored = await page.evaluate(
-    async ([name, target, timeout]) => {
+    async ([name, target, expectedBody, timeout]) => {
       const deadline = performance.now() + timeout;
 
       do {
         const hit = await caches.match(target, { cacheName: name });
-        if (hit) return { status: hit.status, body: await hit.text() };
+        if (hit) {
+          const body = await hit.text();
+          if (expectedBody === undefined || body === expectedBody) {
+            return { status: hit.status, body };
+          }
+        }
         await new Promise((resolve) => setTimeout(resolve, 20));
       } while (performance.now() < deadline);
 
       return null;
     },
-    [cacheName, url, 10000],
+    [cacheName, url, body, 10000],
   );
 
-  assert(stored, `${expectation} — no entry appeared in ${cacheName}`);
+  assert(
+    stored,
+    `${expectation} — timed out waiting for ${url} in ${cacheName}`,
+  );
   return stored;
 }
 
@@ -1092,6 +1120,165 @@ const effectScenarios = [
             requestsTo(server, mark, asset),
             [],
             `cache-first should not touch the network for a precached ${asset}`,
+          );
+        },
+      );
+    },
+  },
+  {
+    name: "runtime-image-revalidates-at-stable-url-and-stays-available-offline",
+    async run({ browser }) {
+      await withControlledPage(
+        browser,
+        "image-refresh",
+        async ({ server, page, cacheName }) => {
+          const href = `${server.origin}${RUNTIME_IMAGE}`;
+          const imageA = fixtureImage("red");
+          const imageB = fixtureImage("blue");
+          const firstETag = '"image-a"';
+          const cacheControl = "public, max-age=86400";
+          server.setFile(RUNTIME_IMAGE, {
+            type: "image/svg+xml",
+            body: imageA,
+            headers: { "Cache-Control": cacheControl, ETag: firstETag },
+          });
+
+          const first = await fetchFromPage(page, href);
+          assertDeepEqual(
+            first,
+            { status: 200, body: imageA, fromServiceWorker: true },
+            "the worker should initially return image A",
+          );
+          const cachedA = await waitForCachedEntry(
+            page,
+            cacheName,
+            RUNTIME_IMAGE,
+            "the worker should store image A",
+          );
+          assertDeepEqual(
+            cachedA,
+            { status: 200, body: imageA },
+            "cached image A",
+          );
+
+          server.setFile(RUNTIME_IMAGE, {
+            type: "image/svg+xml",
+            body: imageB,
+            headers: { "Cache-Control": cacheControl, ETag: '"image-b"' },
+          });
+          const refreshMark = server.requests().length;
+          const replacement = await fetchFromPage(page, href);
+          const attempts = requestsTo(server, refreshMark, RUNTIME_IMAGE);
+          assertDeepEqual(
+            replacement,
+            { status: 200, body: imageB, fromServiceWorker: true },
+            `the same URL and worker should return image B immediately (origin requests: ${attempts.length})`,
+          );
+          assertDeepEqual(
+            attempts.map(({ ifNoneMatch, dropped }) => ({
+              ifNoneMatch,
+              dropped,
+            })),
+            [{ ifNoneMatch: firstETag, dropped: false }],
+            "the browser should revalidate its still-fresh HTTP cache entry for image A",
+          );
+          const cachedB = await waitForCachedEntry(
+            page,
+            cacheName,
+            RUNTIME_IMAGE,
+            "the worker should replace cached image A with image B",
+            imageB,
+          );
+          assertDeepEqual(
+            cachedB,
+            { status: 200, body: imageB },
+            "cached image B",
+          );
+
+          server.setFile(RUNTIME_IMAGE, {
+            status: 404,
+            type: "text/plain; charset=utf-8",
+            body: "Image unavailable",
+          });
+          assertDeepEqual(
+            await fetchFromPage(page, href),
+            { status: 404, body: "Image unavailable", fromServiceWorker: true },
+            "the worker should return the network 404 as-is",
+          );
+
+          const offlineMark = server.requests().length;
+          server.setNetworkFailure(true);
+          assertDeepEqual(
+            await fetchFromPage(page, href),
+            replacement,
+            "the network failure should still serve image B from Cache Storage",
+          );
+          const offlineAttempts = requestsTo(
+            server,
+            offlineMark,
+            RUNTIME_IMAGE,
+          );
+          assert(
+            offlineAttempts.length > 0 &&
+              offlineAttempts.every(({ dropped }) => dropped),
+            "the fallback should follow a transport failure at the image URL",
+          );
+          assertDeepEqual(
+            await waitForCachedEntry(
+              page,
+              cacheName,
+              RUNTIME_IMAGE,
+              "image B should still be cached after the 404 and transport failure",
+            ),
+            cachedB,
+            "neither an HTTP error nor a transport failure should overwrite image B",
+          );
+          assertDeepEqual(
+            (await readCacheState(page)).keys,
+            [cacheName],
+            "the image refresh should keep the existing cache version",
+          );
+
+          const uncached = await fetchFromPage(
+            page,
+            `${server.origin}${UNVISITED_IMAGE}`,
+          );
+          assert(uncached.error, "an uncached image should fail offline");
+        },
+      );
+    },
+  },
+  {
+    name: "precached-image-is-served-cache-first",
+    async run({ browser }) {
+      await withControlledPage(
+        browser,
+        "precache-image",
+        async ({ server, page, cacheName }) => {
+          const { body, type } = FIXTURE_FILES.get(PRECACHED_IMAGE);
+          const precached = await waitForCachedEntry(
+            page,
+            cacheName,
+            PRECACHED_IMAGE,
+            "installation should precache the fixture icon",
+          );
+          assertDeepEqual(precached, { status: 200, body }, "precached icon");
+
+          server.setFile(PRECACHED_IMAGE, {
+            type,
+            body: fixtureImage("green"),
+          });
+          const mark = server.requests().length;
+          const href = `${server.origin}${PRECACHED_IMAGE}`;
+          assertDeepEqual(
+            await fetchFromPage(page, href),
+            { ...precached, fromServiceWorker: true },
+            "the worker should serve the precached icon while online",
+          );
+          assertDeepEqual(
+            requestsTo(server, mark, PRECACHED_IMAGE),
+            [],
+            "cache-first should avoid the network for a precached image",
           );
         },
       );

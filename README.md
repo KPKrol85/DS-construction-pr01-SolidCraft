@@ -161,7 +161,8 @@ Dokumentacja nie zawiera potwierdzenia zgodności z konkretnym poziomem WCAG —
 - `manifest.webmanifest` definiuje `id`, `start_url` i `scope` `/`, tryb `standalone`, kolory motywu, ikony (w tym `maskable`), trzy skróty aplikacji oraz zrzuty ekranu dla widoku wąskiego i szerokiego.
 - `js/sw-register.js` rejestruje `/sw.js` w zakresie `/` po zdarzeniu `load`.
 - W drzewie źródłowym `CACHE_VERSION` ma wartość `"dev"`, a lista precache jest pusta — taki worker instaluje się czysto i działa w trybie network-only, więc lokalne zmiany nie są przesłaniane przez cache.
-- W buildzie produkcyjnym `dist/sw.js` otrzymuje wyliczoną listę precache i wersję cache, obsługuje dokumenty HTML strategią network-first z fallbackiem na `/offline.html`, a zasoby statyczne strategią cache-first z zapisem odpowiedzi sieciowych; przy aktywacji usuwa wyłącznie klucze z prefiksem `solidcraft-v`.
+- W buildzie produkcyjnym `dist/sw.js` otrzymuje wyliczoną listę precache i wersję cache. Dokumenty HTML korzystają ze strategii network-first z fallbackiem na `/offline.html`. Strategia cache-first obejmuje zasoby statyczne z listy precache oraz zasoby takie jak style, skrypty i fonty. Przy aktywacji worker usuwa wyłącznie nieaktualne cache z prefiksem `solidcraft-v`.
+- Obrazy spoza precache korzystają ze strategii network-first z rewalidacją cache HTTP (`cache: "no-cache"`). Udana odpowiedź aktualizuje Cache Storage pod tym samym URL-em. Błędy HTTP są przekazywane do klienta i zachowują zapisany obraz, z którego worker korzysta po awarii połączenia.
 
 Manifest i Service Worker są wskazywane ścieżkami bezwzględnymi, więc działają przy serwowaniu serwisu z katalogu głównego domeny. Testy Service Workera (`npm run qa:sw`) i ich zakres opisuje [`docs/settings.md`](docs/settings.md). Repozytorium nie zawiera weryfikacji instalowalności PWA ani testów offline zbudowanego serwisu.
 
@@ -366,7 +367,8 @@ This documentation makes no claim of conformance with a specific WCAG level — 
 - `manifest.webmanifest` defines `id`, `start_url` and `scope` `/`, `standalone` display, theme colors, icons (including `maskable`), three app shortcuts, and screenshots for narrow and wide form factors.
 - `js/sw-register.js` registers `/sw.js` with scope `/` after the `load` event.
 - In the source tree `CACHE_VERSION` is `"dev"` and the precache list is empty — such a worker installs cleanly and runs network-only, so local edits are never shadowed by a cached copy.
-- In the production build `dist/sw.js` receives the derived precache list and cache version, serves HTML documents network-first with an `/offline.html` fallback and static assets cache-first while persisting network responses, and on activation deletes only keys prefixed `solidcraft-v`.
+- In the production build, `dist/sw.js` receives the derived precache list and cache version. HTML documents use network-first with an `/offline.html` fallback. Cache-first covers precached static assets and assets such as styles, scripts, and fonts. On activation, the worker deletes only superseded caches with the `solidcraft-v` prefix.
+- Images outside the precache use network-first with HTTP cache revalidation (`cache: "no-cache"`). Successful responses update Cache Storage at the same URL. HTTP errors pass through to the client and preserve the cached image, which the worker serves if the network request fails.
 
 The manifest and Service Worker are referenced by absolute paths, so they work when the site is served from the domain root. The Service Worker tests (`npm run qa:sw`) and their scope are documented in [`docs/settings.md`](docs/settings.md). The repository contains no PWA installability verification and no offline tests of the built site.
 

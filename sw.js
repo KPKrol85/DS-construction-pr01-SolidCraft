@@ -25,13 +25,7 @@ const ASSETS = [];
 const CACHE_NAME = `${APP_ID}-v${CACHE_VERSION}`;
 const IS_DEV = CACHE_VERSION === "dev";
 
-const STATIC_DESTINATIONS = new Set([
-  "style",
-  "script",
-  "font",
-  "image",
-  "manifest",
-]);
+const STATIC_DESTINATIONS = new Set(["style", "script", "font", "manifest"]);
 
 const isCacheableResponse = (response) => response && response.ok;
 
@@ -107,12 +101,6 @@ self.addEventListener("fetch", (event) => {
   const isHTML =
     req.mode === "navigate" || req.headers.get("accept")?.includes("text/html");
 
-  const isStaticAsset =
-    STATIC_DESTINATIONS.has(req.destination) ||
-    /\.(?:css|js|mjs|png|jpg|jpeg|gif|svg|webp|avif|ico|woff2?|ttf|otf|eot|webmanifest)$/i.test(
-      url.pathname,
-    );
-
   if (isHTML) {
     const responsePromise = fetch(req).then((response) => ({
       response,
@@ -133,6 +121,35 @@ self.addEventListener("fetch", (event) => {
 
     return;
   }
+
+  const isImage =
+    req.destination === "image" ||
+    /\.(?:png|jpg|jpeg|gif|svg|webp|avif|ico)$/i.test(url.pathname);
+
+  if (isImage && !ASSETS.includes(url.pathname + url.search)) {
+    const responsePromise = fetch(req, { cache: "no-cache" }).then(
+      (response) => ({ response, fromNetwork: true }),
+    );
+
+    persistRuntimeResponse(event, req, responsePromise);
+
+    event.respondWith(
+      responsePromise
+        .then(({ response }) => response)
+        .catch(async (error) => {
+          const cached = await caches.match(req);
+          if (cached) return cached;
+          throw error;
+        }),
+    );
+
+    return;
+  }
+
+  const isStaticAsset =
+    isImage ||
+    STATIC_DESTINATIONS.has(req.destination) ||
+    /\.(?:css|js|mjs|woff2?|ttf|otf|eot|webmanifest)$/i.test(url.pathname);
 
   if (isStaticAsset) {
     const responsePromise = caches.match(req).then((cached) => {
