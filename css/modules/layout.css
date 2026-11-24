@@ -853,13 +853,14 @@
   z-index: 1000;
   transform: translateY(-150%);
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-3);
   box-shadow: var(--shadow);
 }
 
 .skip:focus {
+  z-index: 1001;
   transform: translateY(0);
 }
 

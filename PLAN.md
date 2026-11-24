@@ -54,10 +54,9 @@
   - **Depends on:** `PH11-01` for the scroll-reveal initialization contract.
   - **Verification:** Confirmed two Chromium history returns with `pageshow.persisted === true`. After each return, a previously hidden group revealed on scroll, and the gallery opened and advanced one image per arrow press. [Audit P2-02](AUDIT.md#p2-02-history-restoration-can-leave-the-gallery-and-reveal-handlers-inactive).
 
-- [ ] **PH12-02 — Improve the focused skip link's text contrast**
+- [x] **PH12-02 — Improve the focused skip link's text contrast**
 
-  - Adjust the shared `.skip` styling in `css/modules/layout.css` using the theme tokens. The current white text on the shared amber background computes to 2.15:1.
-  - **Completion condition:** Focused skip-link text measures at least 4.5:1 in light and dark themes, and keyboard activation still reaches the main content. [Design review](docs/archive/improvements/IMPROVEMENTS-DESIGN-2026-11-15.md#owner-decisions-and-open-items).
+  - **Verification:** Chromium measured 8.72:1 in both light and dark themes, including system theme selection. Tab revealed the link above the header, Enter reached `#main`, and the next Tab continued within the main content. [Design review](docs/archive/improvements/IMPROVEMENTS-DESIGN-2026-11-15.md#owner-decisions-and-open-items).
 
 - [ ] **PH12-03 — Restore the legal documents' print typography**
   - Adjust the print cascade where `css/modules/utilities.css` and `css/modules/subpages.css` currently disagree.
