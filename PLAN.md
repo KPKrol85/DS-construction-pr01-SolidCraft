@@ -76,10 +76,9 @@
   - [x] Added browser regression coverage and documented the cache policy in `docs/settings.md` and `README.md`.
   - **Verification:** The original worker served image A without an origin request. The corrected worker revalidated the fresh HTTP cache entry, served and stored image B at the same URL and cache version, and served B after a 404 and subsequent transport failure. All 11 Service Worker scenarios passed. The production build generated the corrected worker and a verified 40-URL precache manifest. [Audit P2-01](AUDIT.md#p2-01-runtime-cached-images-can-stay-stale-after-an-image-only-release).
 
-- [ ] **PH13-03 — Add the canonical redirects for the renovations page**
+- [x] **PH13-03 — Add the canonical redirects for the renovations page**
 
-  - Add both extensionless aliases in `_redirects` alongside the other service routes.
-  - **Completion condition:** The redirect table covers both alias forms for all six services and maps `/oferta/remonty` and `/oferta/remonty/` to `/oferta/remonty.html` with status 301. Verify the HTTP responses in `PH14-01`. [Audit P2-04](AUDIT.md#p2-04-the-renovations-page-lacks-the-service-route-alias-pair).
+  - **Verification:** Confirmed 12 unique 301 rules covering both extensionless aliases for each of the six services, six existing HTML destinations, and the unchanged final 404 rule. Both renovations aliases match the canonical path in `oferta/remonty.html`. `git diff --check` passed. Hosted HTTP responses remain scheduled for `PH14-01`. [Audit P2-04](AUDIT.md#p2-04-the-renovations-page-lacks-the-service-route-alias-pair).
 
 - [ ] **PH13-04 — Align PWA shortcut dimensions with the icon files**
   - Correct the entries in `manifest.webmanifest` or supply PNGs of the declared size.
@@ -100,7 +99,7 @@
   - **Completion condition:** The corrected pages and interaction states have been checked visually and any regression introduced by this cycle has been resolved. [Audit verification scope](AUDIT.md#2-audit-scope-and-verification).
 
 - [ ] **PH14-01 — Verify the Netlify-hosted candidate**
-  - [ ] On an authorized Netlify deployment of the corrected revision, verify the service aliases, unknown-route HTTP 404, and configured response headers.
+  - [ ] On an authorized Netlify deployment of the corrected revision, verify HTTP 301 responses and `Location` headers for both alias variants of all six services, unknown-route HTTP 404, and configured response headers.
   - [ ] Use synthetic data to confirm Netlify Forms receives both the native and enhanced submissions, including the optional service when selected, and presents the corresponding confirmation.
   - [ ] Confirm the consent-gated map loads under the hosted headers and the production Service Worker controls the site and serves the offline fallback. Check installation and shortcuts on a supported device.
   - **Depends on:** `PH9-02`, `PH9-03`, and access to the authorized hosted candidate and its form submissions.
