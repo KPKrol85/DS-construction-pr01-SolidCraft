@@ -58,9 +58,9 @@
 
   - **Verification:** Chromium measured 8.72:1 in both light and dark themes, including system theme selection. Tab revealed the link above the header, Enter reached `#main`, and the next Tab continued within the main content. [Design review](docs/archive/improvements/IMPROVEMENTS-DESIGN-2026-11-15.md#owner-decisions-and-open-items).
 
-- [ ] **PH12-03 — Restore the legal documents' print typography**
-  - Adjust the print cascade where `css/modules/utilities.css` and `css/modules/subpages.css` currently disagree.
-  - **Completion condition:** Chromium print emulation shows 12 pt body text and 14 pt second-level headings on all three legal pages, with header and footer excluded and screen styles preserved. [Audit P2-07](AUDIT.md#p2-07-screen-typography-overrides-the-legal-page-print-rules).
+- [x] **PH12-03 — Restore the legal documents' print typography**
+
+  - **Verification:** Chromium print emulation measured 16 px body, paragraph, and list text at a 27.2 px line height (1.7) and 18.6667 px second-level headings on all three legal pages. The header, footer, and navigation were excluded from print. Screen typography and layout matched the baseline at 390 px and 1440 px in light, dark, and system modes. [Audit P2-07](AUDIT.md#p2-07-screen-typography-overrides-the-legal-page-print-rules).
 
 ## Phase 13 — Regression checks and production delivery
 

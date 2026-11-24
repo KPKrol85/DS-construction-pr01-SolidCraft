@@ -70,6 +70,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 
 ### Fixed
 
+- Restored 12 pt body text with 1.7 line spacing and 14 pt section headings in print across all three legal documents.
 - Restored text contrast and visibility for the focused skip link in both themes.
 - Preserved service-gallery interactions and scroll reveal after back/forward cache restoration.
 - Corrected public disclosures about contact form submissions and how saved consent controls the Google Maps embed.
