@@ -66,10 +66,9 @@
 
 **Goal:** Make the contact timing test deterministic and correct the routing, manifest, and cache behavior used by the production build.
 
-- [ ] **PH13-01 — Make the early-submit regression independent of runner speed**
+- [x] **PH13-01 — Make the early-submit regression independent of runner speed**
 
-  - Control the browser clock in the focused case in `scripts/functional/contact-form.mjs`. Keep the production two-second threshold.
-  - **Completion condition:** The scenario passes even when setup takes more than two seconds of wall time and still checks zero POSTs, retained values and consent, and the expected retry message. [Audit P2-03](AUDIT.md#p2-03-the-early-submit-regression-case-depends-on-test-runner-speed).
+  - **Verification:** All early-submit assertions passed in Chromium after a measured 2,403.8 ms delay following form initialization, with `Date.now()` fixed throughout the delay. The valid-submission scenario passed in the next browser context. [Audit P2-03](AUDIT.md#p2-03-the-early-submit-regression-case-depends-on-test-runner-speed).
 
 - [ ] **PH13-02 — Refresh changed portfolio images at stable URLs**
 

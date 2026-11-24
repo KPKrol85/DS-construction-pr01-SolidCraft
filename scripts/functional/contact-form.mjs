@@ -13,7 +13,6 @@
    harness fails any scenario that issues an off-origin request. */
 
 import {
-  ANTI_SPAM_WINDOW_MS,
   AssertionError,
   DESKTOP_VIEWPORT,
   MOBILE_VIEWPORT,
@@ -1027,17 +1026,10 @@ const contactFormScenarios = [
             status: 200,
           });
 
-          /* Measured before navigation, so the form's own timer can only have
-             started later — everything below happens inside its window. */
-          const beforeNavigation = Date.now();
+          // Freeze Date.now() before the form records its anti-spam start time.
+          await page.clock.setFixedTime(new Date());
           await openContactForm(page, { waitUntil: "domcontentloaded" });
           await fillValidForm(page);
-
-          const elapsed = Date.now() - beforeNavigation;
-          assert(
-            elapsed < ANTI_SPAM_WINDOW_MS - 200,
-            `harness setup took ${elapsed} ms, too slow to submit inside the ${ANTI_SPAM_WINDOW_MS} ms anti-spam window`,
-          );
 
           await page.locator(SUBMIT).click();
           await waitForNote(

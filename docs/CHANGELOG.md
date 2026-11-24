@@ -143,6 +143,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 - Added a functional regression scenario for the consent-gated map embed covering pre-consent request absence, iframe insertion, persisted consent, and unavailable `localStorage`, with Google requests aborted locally.
 - Scoped `check:links` and `check:assets` to the shared source-HTML discovery used by `build:dist`, excluding agent worktree copies from local validation.
 - Added functional regression scenarios for the home service index covering entry order, quote and service-page link targets, keyboard order, and the absence of home lightbox triggers.
+- Made the contact form's early-submit regression independent of runner speed.
 
 ### Documentation
 
