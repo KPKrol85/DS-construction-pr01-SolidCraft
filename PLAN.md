@@ -80,9 +80,9 @@
 
   - **Verification:** Confirmed 12 unique 301 rules covering both extensionless aliases for each of the six services, six existing HTML destinations, and the unchanged final 404 rule. Both renovations aliases match the canonical path in `oferta/remonty.html`. `git diff --check` passed. Hosted HTTP responses remain scheduled for `PH14-01`. [Audit P2-04](AUDIT.md#p2-04-the-renovations-page-lacks-the-service-route-alias-pair).
 
-- [ ] **PH13-04 — Align PWA shortcut dimensions with the icon files**
-  - Correct the entries in `manifest.webmanifest` or supply PNGs of the declared size.
-  - **Completion condition:** The declared dimensions match the intrinsic PNG dimensions for Oferta, Dokumenty, and Kontakt. All three currently declare 96×96 and reference 64×64 assets. [Audit P2-05](AUDIT.md#p2-05-three-pwa-shortcut-icons-declare-the-wrong-dimensions).
+- [x] **PH13-04 — Align PWA shortcut dimensions with the icon files**
+
+  - **Verification:** Sharp confirmed 64 × 64 pixels for each PNG, matching its filename and manifest declaration. All three files matched their original bytes. JSON, active reference, and formatting checks passed. Hosted installation and shortcut checks remain scheduled for `PH14-01`. [Audit P2-05](AUDIT.md#p2-05-three-pwa-shortcut-icons-declare-the-wrong-dimensions).
 
 ## Phase 14 — Final verification
 

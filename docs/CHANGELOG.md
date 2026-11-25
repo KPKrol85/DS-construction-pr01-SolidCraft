@@ -70,6 +70,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 
 ### Fixed
 
+- Corrected the three PWA shortcut icon filenames and manifest declarations to match their 64 × 64 pixel dimensions.
 - Redirected both extensionless renovations URLs to the canonical renovations page with HTTP 301.
 - Refreshed runtime images at stable URLs through HTTP revalidation while preserving offline access.
 - Restored 12 pt body text with 1.7 line spacing and 14 pt section headings in print across all three legal documents.

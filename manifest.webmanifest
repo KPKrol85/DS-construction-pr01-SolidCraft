@@ -49,8 +49,8 @@
       "url": "/#oferta",
       "icons": [
         {
-          "src": "/assets/img/shortcuts/offer-96.png",
-          "sizes": "96x96",
+          "src": "/assets/img/shortcuts/offer-64.png",
+          "sizes": "64x64",
           "type": "image/png",
           "purpose": "any maskable"
         }
@@ -63,8 +63,8 @@
       "url": "/regulamin.html",
       "icons": [
         {
-          "src": "/assets/img/shortcuts/legal-96.png",
-          "sizes": "96x96",
+          "src": "/assets/img/shortcuts/legal-64.png",
+          "sizes": "64x64",
           "type": "image/png",
           "purpose": "any maskable"
         }
@@ -77,8 +77,8 @@
       "url": "/#kontakt",
       "icons": [
         {
-          "src": "/assets/img/shortcuts/contact-96.png",
-          "sizes": "96x96",
+          "src": "/assets/img/shortcuts/contact-64.png",
+          "sizes": "64x64",
           "type": "image/png",
           "purpose": "any maskable"
         }
