@@ -87,16 +87,16 @@
   ],
   "screenshots": [
     {
-      "src": "/assets/img/screenshots/mobile.jpg",
+      "src": "/assets/img/screenshots/mobile-720x1280.png",
       "sizes": "720x1280",
-      "type": "image/jpeg",
+      "type": "image/png",
       "form_factor": "narrow",
       "label": "Strona główna — widok mobilny"
     },
     {
-      "src": "/assets/img/screenshots/desktop.jpg",
+      "src": "/assets/img/screenshots/desktop-1280x720.png",
       "sizes": "1280x720",
-      "type": "image/jpeg",
+      "type": "image/png",
       "form_factor": "wide",
       "label": "Strona główna — widok desktopowy"
     }

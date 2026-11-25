@@ -87,7 +87,7 @@ const CONFIG = [
     outputDir: "og",
     sizes: null,
     nameFor: (baseName) => baseName,
-    formats: ["avif", "webp", "source"],
+    formats: ["source"],
   },
   {
     name: "screenshots",
@@ -95,7 +95,7 @@ const CONFIG = [
     outputDir: "screenshots",
     sizes: null,
     nameFor: (baseName) => baseName,
-    formats: ["avif", "webp", "source"],
+    formats: ["source"],
   },
 ];
 

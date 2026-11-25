@@ -1,6 +1,6 @@
 # SolidCraft — Development Plan
 
-- **Last reviewed:** 2026-11-22
+- **Last reviewed:** 2026-11-25
 - **Project type:** Polish-language, static multi-page portfolio demo for construction and renovation services
 - **Plan status:** Active
 
@@ -12,9 +12,11 @@
 
 ## Current priorities
 
-1. `PH11-01` — Keep mobile navigation and page content available if the main script fails.
-2. `PH11-02` — Enforce required fields and consent in the native form.
-3. `PH11-03` — Make the contact journey consistent with the portfolio demo.
+1. `PH14-02` — Refine the image pipeline and refresh PWA screenshots (complete).
+2. `PH14-03` — Refresh Open Graph artwork.
+3. `PH9-02` — Revalidate the final candidate.
+4. `PH9-03` — Perform manual final visual QA.
+5. `PH14-01` — Verify the Netlify-hosted candidate.
 
 ## Phase 11 — Public contact and script fallback
 
@@ -88,7 +90,19 @@
 
 **Goal:** Verify the corrected candidate in the production build and confirm behavior that requires the Netlify environment.
 
-- [x] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
+- [x] **PH14-02 — Refine the image pipeline and refresh PWA screenshots**
+
+  - Inspected both new PNGs visually and verified their dimensions, lossless outputs, and manifest references. Confirmed a clean scoped dry run, byte identity of the existing OG PNGs, and the final production build with its generated Service Worker.
+
+- [ ] **PH14-03 — Refresh Open Graph artwork**
+
+  - After `PH14-02`, prepare the replacement PNG artwork and verify that the Open Graph, Twitter Card, and structured-data image references resolve in the production build.
+
+- [ ] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
+
+  - After `PH14-03`, rerun the production build, pre-deploy gate, functional suite, and Service Worker suite. Record the results and exact revision of the final candidate.
+
+  **Historical verification**
 
   - Verified locally on 2026-11-25 at `f48c95dcacb93662cd99ba7e60cf42511110be92` using Windows 11 26H2 x64 (build 26300.10075), Node.js 22.23.5, npm 10.9.9, Playwright 1.58.2, and Chromium 145.0.7632.6. Reused lockfile-matched dependencies and Chromium. The worktree was clean before and after verification. CI uses Ubuntu 24.04 and Node.js 24. [CI workflow](.github/workflows/ci.yml).
   - `npm run build:dist` passed once (exit 0). The 718-file output contained 13 fully rendered pages, three non-empty minified bundles referenced by every page, and 10 unique indexable canonical URLs in the sitemap. Verified 40 precache URLs, independently reproduced `solidcraft-vd1164cb1b93b94fc`, and matched the worker runtime to the source outside the generated block. Confirmed three 64 × 64 shortcut PNGs with no obsolete copies, 12 service aliases and the final 404 rule, byte-identical `_headers`, and the exclusion of source imagery and development tooling.
@@ -97,7 +111,7 @@
 
 - [ ] **PH9-03 — Manual final visual QA pass**
 
-  - After Phases 11–13, inspect the built home, service, and legal routes affected by the fixes at representative mobile, tablet, and desktop widths. Check both themes, the contact and confirmation states, the gallery, and the legal print layout.
+  - After `PH9-02`, inspect the built home, service, and legal routes affected by the fixes at representative mobile, tablet, and desktop widths. Check both themes, the contact and confirmation states, the gallery, and the legal print layout.
   - **Completion condition:** The corrected pages and interaction states have been checked visually and any regression introduced by this cycle has been resolved. [Audit verification scope](AUDIT.md#2-audit-scope-and-verification).
 
 - [ ] **PH14-01 — Verify the Netlify-hosted candidate**

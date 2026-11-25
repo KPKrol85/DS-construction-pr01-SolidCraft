@@ -38,6 +38,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 
 ### Changed
 
+- Refreshed the mobile and desktop PWA installation screenshots with PNG captures of the current home page.
 - Replaced the MIT license with the KP_Code Proprietary Project License v1.0 and aligned `package.json` (**breaking**).
 - Replaced duplicated header and footer markup with build-time shared partials.
 - Consolidated interface icons into a shared SVG registry and removed legacy assets and redundant contact icons.
@@ -108,6 +109,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 
 ### Build and Tooling
 
+- Limited Open Graph and PWA screenshot generation to one output per master at its source format and dimensions.
 - Removed the superseded `watch:css` and `watch:js` commands from the local workflow.
 - Added an optional `DEV_SERVER_PORT` override for parallel development previews with strict validation and no fallback on port conflicts.
 - Extended Prettier formatting and validation to `.mjs` tooling scripts.
