@@ -88,10 +88,12 @@
 
 **Goal:** Verify the corrected candidate in the production build and confirm behavior that requires the Netlify environment.
 
-- [ ] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
+- [x] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
 
-  - After Phases 11–13, run the existing CI steps against the corrected candidate. Check the generated pages, minified entry points, sitemap, and Service Worker from one `npm run build:dist` run.
-  - **Completion condition:** The build, `npm run check:predeploy`, `npm run qa:functional`, and `npm run qa:sw` pass for the same revision. [CI workflow](.github/workflows/ci.yml).
+  - Verified locally on 2026-11-25 at `f48c95dcacb93662cd99ba7e60cf42511110be92` using Windows 11 26H2 x64 (build 26300.10075), Node.js 22.23.5, npm 10.9.9, Playwright 1.58.2, and Chromium 145.0.7632.6. Reused lockfile-matched dependencies and Chromium. The worktree was clean before and after verification. CI uses Ubuntu 24.04 and Node.js 24. [CI workflow](.github/workflows/ci.yml).
+  - `npm run build:dist` passed once (exit 0). The 718-file output contained 13 fully rendered pages, three non-empty minified bundles referenced by every page, and 10 unique indexable canonical URLs in the sitemap. Verified 40 precache URLs, independently reproduced `solidcraft-vd1164cb1b93b94fc`, and matched the worker runtime to the source outside the generated block. Confirmed three 64 × 64 shortcut PNGs with no obsolete copies, 12 service aliases and the final 404 rule, byte-identical `_headers`, and the exclusion of source imagery and development tooling.
+  - `npm run check:predeploy` passed (exit 0) with link and asset checks on 13 pages and 28 axe scans with zero serious or critical violations. `npm run qa:functional` passed 41 scenarios and `npm run qa:sw` passed 11 scenarios (both exit 0).
+  - Browserslist warned about stale data. The link checker skipped 63 external link occurrences after fetch errors. This record covers local verification. GitHub Actions execution and hosted Netlify checks are outside this result.
 
 - [ ] **PH9-03 — Manual final visual QA pass**
 
