@@ -38,6 +38,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 
 ### Changed
 
+- Refreshed the SolidCraft Open Graph artwork to identify the site as a KP_Code Digital Studio demonstration project.
 - Refreshed the mobile and desktop PWA installation screenshots with PNG captures of the current home page.
 - Replaced the MIT license with the KP_Code Proprietary Project License v1.0 and aligned `package.json` (**breaking**).
 - Replaced duplicated header and footer markup with build-time shared partials.

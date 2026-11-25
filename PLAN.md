@@ -13,7 +13,7 @@
 ## Current priorities
 
 1. `PH14-02` — Refine the image pipeline and refresh PWA screenshots (complete).
-2. `PH14-03` — Refresh Open Graph artwork.
+2. `PH14-03` — Refresh Open Graph artwork (complete).
 3. `PH9-02` — Revalidate the final candidate.
 4. `PH9-03` — Perform manual final visual QA.
 5. `PH14-01` — Verify the Netlify-hosted candidate.
@@ -94,9 +94,9 @@
 
   - Inspected both new PNGs visually and verified their dimensions, lossless outputs, and manifest references. Confirmed a clean scoped dry run, byte identity of the existing OG PNGs, and the final production build with its generated Service Worker.
 
-- [ ] **PH14-03 — Refresh Open Graph artwork**
+- [x] **PH14-03 — Refresh Open Graph artwork**
 
-  - After `PH14-02`, prepare the replacement PNG artwork and verify that the Open Graph, Twitter Card, and structured-data image references resolve in the production build.
+  - Verified decoded pixel equality with both masters, byte-identical copies in `dist/`, and HTTP 200 responses with `image/png`. Checked Open Graph, Twitter Card, and JSON-LD image references on all 11 consuming pages and confirmed zero pending writes or obsolete outputs in the scoped dry run.
 
 - [ ] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
 
