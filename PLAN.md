@@ -14,7 +14,7 @@
 
 1. `PH14-02` — Refine the image pipeline and refresh PWA screenshots (complete).
 2. `PH14-03` — Refresh Open Graph artwork (complete).
-3. `PH9-02` — Revalidate the final candidate.
+3. `PH9-02` — Revalidate the final candidate (complete).
 4. `PH9-03` — Perform manual final visual QA.
 5. `PH14-01` — Verify the Netlify-hosted candidate.
 
@@ -98,9 +98,15 @@
 
   - Verified decoded pixel equality with both masters, byte-identical copies in `dist/`, and HTTP 200 responses with `image/png`. Checked Open Graph, Twitter Card, and JSON-LD image references on all 11 consuming pages and confirmed zero pending writes or obsolete outputs in the scoped dry run.
 
-- [ ] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
+- [x] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
 
-  - After `PH14-03`, rerun the production build, pre-deploy gate, functional suite, and Service Worker suite. Record the results and exact revision of the final candidate.
+  **Candidate verification**
+
+  - Verified locally on 2026-11-26 at `c36ef337d9a60ff5b7082b880f9d360faccc9583` using Windows 11 26H2 x64 (build 26300.10075), Node.js 22.23.5, npm 10.9.9, Playwright 1.58.2, and Chromium 145.0.7632.6. Reused lockfile-matched dependencies and existing Chromium binaries. The worktree was clean before and after verification.
+  - `npm run build:dist` passed (exit 0) with 710 files, 13 fully rendered pages, three non-empty bundles referenced by every page, and 10 unique indexable canonical URLs in the sitemap. Verified both Open Graph PNGs (1200 × 630 and 1200 × 1200), Open Graph, Twitter, and JSON-LD image references on 11 pages, manifest screenshot PNGs (1280 × 720 wide and 720 × 1280 narrow), and three 64 × 64 shortcut PNGs. The artifact preserved 12 service 301 redirects, the final 404 rule, and byte-identical `_headers`. Obsolete image variants, image masters, and development tooling were absent.
+  - Independently reproduced `solidcraft-v85614b4fc75b3de7` from the 40 unique, sorted application-shell URLs and their file digests. The worker matched the canonical runtime outside the generated block. Open Graph images and screenshots were outside the precache.
+  - `npm run check:predeploy` passed (exit 0) with link and asset checks on 13 HTML pages and 28 axe scans with zero serious or critical violations. `npm run qa:functional` passed all 41 scenarios, and `npm run qa:sw` passed all 11 scenarios against the canonical worker and fixture manifests (both exit 0).
+  - Browserslist reported 13-month-old `caniuse-lite` data. The link checker skipped 63 link occurrences across six distinct external `href` values after `fetch` raised `TypeError`. Manual visual QA and hosted Netlify verification remain pending under `PH9-03` and `PH14-01`.
 
   **Historical verification**
 
