@@ -14,8 +14,8 @@
 
 1. `PH14-02` — Refine the image pipeline and refresh PWA screenshots (complete).
 2. `PH14-03` — Refresh Open Graph artwork (complete).
-3. `PH9-02` — Revalidate the final candidate (complete).
-4. `PH9-03` — Perform manual final visual QA.
+3. `PH9-02` — Revalidate the final candidate after both visual QA defects are resolved (pending).
+4. `PH9-03` — Complete final visual QA after the legal print fix (open).
 5. `PH14-01` — Verify the Netlify-hosted candidate.
 
 ## Phase 11 — Public contact and script fallback
@@ -98,17 +98,19 @@
 
   - Verified decoded pixel equality with both masters, byte-identical copies in `dist/`, and HTTP 200 responses with `image/png`. Checked Open Graph, Twitter Card, and JSON-LD image references on all 11 consuming pages and confirmed zero pending writes or obsolete outputs in the scoped dry run.
 
-- [x] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
+- [ ] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
 
-  **Candidate verification**
+  - Rerun the production build, pre-deploy gate, functional regression suite, and Service Worker suite after both `PH9-03` defects are resolved.
+
+  **Historical verification — 2026-11-26**
 
   - Verified locally on 2026-11-26 at `c36ef337d9a60ff5b7082b880f9d360faccc9583` using Windows 11 26H2 x64 (build 26300.10075), Node.js 22.23.5, npm 10.9.9, Playwright 1.58.2, and Chromium 145.0.7632.6. Reused lockfile-matched dependencies and existing Chromium binaries. The worktree was clean before and after verification.
   - `npm run build:dist` passed (exit 0) with 710 files, 13 fully rendered pages, three non-empty bundles referenced by every page, and 10 unique indexable canonical URLs in the sitemap. Verified both Open Graph PNGs (1200 × 630 and 1200 × 1200), Open Graph, Twitter, and JSON-LD image references on 11 pages, manifest screenshot PNGs (1280 × 720 wide and 720 × 1280 narrow), and three 64 × 64 shortcut PNGs. The artifact preserved 12 service 301 redirects, the final 404 rule, and byte-identical `_headers`. Obsolete image variants, image masters, and development tooling were absent.
   - Independently reproduced `solidcraft-v85614b4fc75b3de7` from the 40 unique, sorted application-shell URLs and their file digests. The worker matched the canonical runtime outside the generated block. Open Graph images and screenshots were outside the precache.
   - `npm run check:predeploy` passed (exit 0) with link and asset checks on 13 HTML pages and 28 axe scans with zero serious or critical violations. `npm run qa:functional` passed all 41 scenarios, and `npm run qa:sw` passed all 11 scenarios against the canonical worker and fixture manifests (both exit 0).
-  - Browserslist reported 13-month-old `caniuse-lite` data. The link checker skipped 63 link occurrences across six distinct external `href` values after `fetch` raised `TypeError`. Manual visual QA and hosted Netlify verification remain pending under `PH9-03` and `PH14-01`.
+  - Browserslist reported 13-month-old `caniuse-lite` data. The link checker skipped 63 link occurrences across six distinct external `href` values after `fetch` raised `TypeError`. Manual visual QA and hosted Netlify verification were pending under `PH9-03` and `PH14-01`.
 
-  **Historical verification**
+  **Historical verification — 2026-11-25**
 
   - Verified locally on 2026-11-25 at `f48c95dcacb93662cd99ba7e60cf42511110be92` using Windows 11 26H2 x64 (build 26300.10075), Node.js 22.23.5, npm 10.9.9, Playwright 1.58.2, and Chromium 145.0.7632.6. Reused lockfile-matched dependencies and Chromium. The worktree was clean before and after verification. CI uses Ubuntu 24.04 and Node.js 24. [CI workflow](.github/workflows/ci.yml).
   - `npm run build:dist` passed once (exit 0). The 718-file output contained 13 fully rendered pages, three non-empty minified bundles referenced by every page, and 10 unique indexable canonical URLs in the sitemap. Verified 40 precache URLs, independently reproduced `solidcraft-vd1164cb1b93b94fc`, and matched the worker runtime to the source outside the generated block. Confirmed three 64 × 64 shortcut PNGs with no obsolete copies, 12 service aliases and the final 404 rule, byte-identical `_headers`, and the exclusion of source imagery and development tooling.
@@ -117,7 +119,8 @@
 
 - [ ] **PH9-03 — Manual final visual QA pass**
 
-  - After `PH9-02`, inspect the built home, service, and legal routes affected by the fixes at representative mobile, tablet, and desktop widths. Check both themes, the contact and confirmation states, the gallery, and the legal print layout.
+  - Resolved the 320 px header clipping. Chromium 145.0.7632.6 verified the full menu icon and focus outline, pointer and keyboard operation in both header states, and fallback links on all four affected production routes in both themes. Header geometry and navigation passed checks at 390, 768, 1023, 1024, and 1440 px.
+  - Resolve the navigation overlay in the three legal PDFs. After `PH9-02`, inspect the final production build at representative mobile, tablet, and desktop widths in both themes, including the contact and confirmation states, galleries, and legal print layouts.
   - **Completion condition:** The corrected pages and interaction states have been checked visually and any regression introduced by this cycle has been resolved. [Audit verification scope](AUDIT.md#2-audit-scope-and-verification).
 
 - [ ] **PH14-01 — Verify the Netlify-hosted candidate**

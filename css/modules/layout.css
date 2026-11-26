@@ -17,7 +17,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-6);
   min-height: 74px;
   padding-block: var(--space-2);
 }
@@ -358,6 +357,9 @@
   }
 }
 @media (min-width: 1024px) {
+  .header-bar {
+    gap: var(--space-6);
+  }
   .brand-logo img {
     display: block;
     max-height: 60px;
