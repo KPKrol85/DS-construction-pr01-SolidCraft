@@ -14,8 +14,8 @@
 
 1. `PH14-02` — Refine the image pipeline and refresh PWA screenshots (complete).
 2. `PH14-03` — Refresh Open Graph artwork (complete).
-3. `PH9-02` — Revalidate the final candidate after both visual QA defects are resolved (pending).
-4. `PH9-03` — Complete final visual QA after the legal print fix (open).
+3. `PH9-02` — Revalidate the final candidate after both visual QA fixes are integrated into `main` (pending).
+4. `PH9-03` — Complete final visual QA after `PH9-02` (open).
 5. `PH14-01` — Verify the Netlify-hosted candidate.
 
 ## Phase 11 — Public contact and script fallback
@@ -100,7 +100,7 @@
 
 - [ ] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
 
-  - Rerun the production build, pre-deploy gate, functional regression suite, and Service Worker suite after both `PH9-03` defects are resolved.
+  - Rerun the production build, pre-deploy gate, functional regression suite, and Service Worker suite after both `PH9-03` fixes are integrated into `main`.
 
   **Historical verification — 2026-11-26**
 
@@ -120,7 +120,8 @@
 - [ ] **PH9-03 — Manual final visual QA pass**
 
   - Resolved the 320 px header clipping. Chromium 145.0.7632.6 verified the full menu icon and focus outline, pointer and keyboard operation in both header states, and fallback links on all four affected production routes in both themes. Header geometry and navigation passed checks at 390, 768, 1023, 1024, and 1440 px.
-  - Resolve the navigation overlay in the three legal PDFs. After `PH9-02`, inspect the final production build at representative mobile, tablet, and desktop widths in both themes, including the contact and confirmation states, galleries, and legal print layouts.
+  - Resolved the legal print navigation overlay. Review of all six Chromium A4 PDFs confirmed that the legal text, typography, and links were preserved and that neither screen-only control appeared. Keyboard navigation passed on all three routes in both themes.
+  - After `PH9-02`, inspect the final production build at representative mobile, tablet, and desktop widths in both themes, including the contact and confirmation states, galleries, and legal print layouts.
   - **Completion condition:** The corrected pages and interaction states have been checked visually and any regression introduced by this cycle has been resolved. [Audit verification scope](AUDIT.md#2-audit-scope-and-verification).
 
 - [ ] **PH14-01 — Verify the Netlify-hosted candidate**

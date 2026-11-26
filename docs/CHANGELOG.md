@@ -72,6 +72,7 @@ For each implementation task, determine `Changelog: yes` or `Changelog: no`. Add
 
 ### Fixed
 
+- Removed screen-only navigation from printed legal documents, preventing the skip link from obscuring text.
 - Restored full visibility and operability of the mobile menu button at a 320 px viewport.
 - Corrected the three PWA shortcut icon filenames and manifest declarations to match their 64 × 64 pixel dimensions.
 - Redirected both extensionless renovations URLs to the canonical renovations page with HTTP 301.

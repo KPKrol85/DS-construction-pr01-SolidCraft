@@ -123,7 +123,9 @@
   .doc-toc,
   .breadcrumb,
   .nav,
-  .header-actions {
+  .header-actions,
+  .doc-page .skip,
+  .doc-page .doc-back {
     display: none !important;
   }
   .block {
