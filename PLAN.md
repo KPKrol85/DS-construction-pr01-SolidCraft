@@ -14,7 +14,7 @@
 
 1. `PH14-02` — Refine the image pipeline and refresh PWA screenshots (complete).
 2. `PH14-03` — Refresh Open Graph artwork (complete).
-3. `PH9-02` — Revalidate the final candidate after both visual QA fixes are integrated into `main` (pending).
+3. `PH9-02` — Revalidate the final candidate after both visual QA fixes are integrated into `main` (complete).
 4. `PH9-03` — Complete final visual QA after `PH9-02` (open).
 5. `PH14-01` — Verify the Netlify-hosted candidate.
 
@@ -98,9 +98,15 @@
 
   - Verified decoded pixel equality with both masters, byte-identical copies in `dist/`, and HTTP 200 responses with `image/png`. Checked Open Graph, Twitter Card, and JSON-LD image references on all 11 consuming pages and confirmed zero pending writes or obsolete outputs in the scoped dry run.
 
-- [ ] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
+- [x] **PH9-02 — Confirm the pre-deploy gate passes against the corrected implementation**
 
-  - Rerun the production build, pre-deploy gate, functional regression suite, and Service Worker suite after both `PH9-03` fixes are integrated into `main`.
+  **Candidate verification — 2026-11-26**
+
+  - Verified `2ff4483c49b949145e9ffb7dcf24f57ee504116e` from a clean detached worktree matching local `main` and `origin/main`. Reused lockfile-matched dependencies and existing Chromium binaries on Windows 26H2 x64 (build 26300.10075) with Node.js 22.23.5, npm 10.9.9, Playwright 1.58.2, and Chromium 145.0.7632.6.
+  - `npm run build:dist`, `npm run check:predeploy`, `npm run qa:functional`, and `npm run qa:sw` each exited 0. Link and asset checks covered 13 pages. Axe completed 28 scans with zero serious or critical violations. All 41 functional scenarios passed. All 11 Service Worker scenarios passed against the canonical worker and fixture manifests.
+  - Verified 710 production files, both CSS fixes, 13 fully rendered pages, three referenced non-empty bundles, and 10 indexable canonical sitemap URLs. Confirmed PWA manifest assets and shortcut targets, both Open Graph images and their references on 11 pages, and byte-identical redirect and header definitions. Source imagery and development tooling were excluded.
+  - Independently reproduced `solidcraft-vac226cf3769f0dde` from 40 unique, sorted precache URLs backed by production files. The worker runtime matched the canonical source outside the generated block. The source retained the empty development precache, and Open Graph images and PWA screenshots stayed outside the production precache.
+  - Browserslist reported 13-month-old `caniuse-lite` data. The link checker skipped 63 occurrences of six external URLs after `fetch` raised `TypeError`. Final visual QA and hosted verification remain open under `PH9-03` and `PH14-01`.
 
   **Historical verification — 2026-11-26**
 
