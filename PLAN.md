@@ -15,7 +15,7 @@
 1. `PH14-02` — Refine the image pipeline and refresh PWA screenshots (complete).
 2. `PH14-03` — Refresh Open Graph artwork (complete).
 3. `PH9-02` — Revalidate the final candidate after both visual QA fixes are integrated into `main` (complete).
-4. `PH9-03` — Complete final visual QA after `PH9-02` (open).
+4. `PH9-03` — Complete final visual QA after `PH9-02` (complete).
 5. `PH14-01` — Verify the Netlify-hosted candidate.
 
 ## Phase 11 — Public contact and script fallback
@@ -123,11 +123,21 @@
   - `npm run check:predeploy` passed (exit 0) with link and asset checks on 13 pages and 28 axe scans with zero serious or critical violations. `npm run qa:functional` passed 41 scenarios and `npm run qa:sw` passed 11 scenarios (both exit 0).
   - Browserslist warned about stale data. The link checker skipped 63 external link occurrences after fetch errors. This record covers local verification. GitHub Actions execution and hosted Netlify checks are outside this result.
 
-- [ ] **PH9-03 — Manual final visual QA pass**
+- [x] **PH9-03 — Manual final visual QA pass**
+
+  **Final visual verification — 2026-11-27**
+
+  - Verified the `npm run build:dist` artifact (exit 0, cache `solidcraft-vac226cf3769f0dde`) at `92aac7b9260fdef137bb32fd14754d19ec6ccc48` from a clean worktree, served from `dist/` on 127.0.0.1 with Playwright 1.58.2 and Chromium 145.0.7632.6 on Windows 26H2 x64. Each viewport and theme used an isolated context with the Service Worker blocked and external requests aborted.
+  - Inspected stitched viewport screenshots of all 11 routes at 390 × 844, 768 × 1024, and 1440 × 900 in both themes. Layout, typography, images, and revealed content rendered correctly, with no horizontal overflow, broken images, uncaught errors, or failed same-origin requests.
+  - At 320 × 780, the brand, theme toggle, menu icon, and focus outline remained fully visible in both header states on the four affected routes in both themes. Pointer and keyboard drawer operation passed, and navigation switched correctly between 1023 and 1024 px.
+  - Inspected the drawer, Oferta submenu, project notice, both service lightboxes, form default, error, corrected, and confirmation states, the confirmation page, and both map states. Form and map requests were fulfilled locally.
+  - Inspected all pages of the six A4 PDFs in the Chromium viewer. Navigation, `.skip`, and `.doc-back` were absent, content and links were intact, and print typography measured 12pt with 1.7 line height and 14pt H2 headings.
+  - Pre-existing, outside scope: the drawer background is intentionally translucent, and the dark-theme legal lead prints at 2.50:1 contrast because the print rules keep its muted token.
+
+  **Defect resolution**
 
   - Resolved the 320 px header clipping. Chromium 145.0.7632.6 verified the full menu icon and focus outline, pointer and keyboard operation in both header states, and fallback links on all four affected production routes in both themes. Header geometry and navigation passed checks at 390, 768, 1023, 1024, and 1440 px.
   - Resolved the legal print navigation overlay. Review of all six Chromium A4 PDFs confirmed that the legal text, typography, and links were preserved and that neither screen-only control appeared. Keyboard navigation passed on all three routes in both themes.
-  - After `PH9-02`, inspect the final production build at representative mobile, tablet, and desktop widths in both themes, including the contact and confirmation states, galleries, and legal print layouts.
   - **Completion condition:** The corrected pages and interaction states have been checked visually and any regression introduced by this cycle has been resolved. [Audit verification scope](AUDIT.md#2-audit-scope-and-verification).
 
 - [ ] **PH14-01 — Verify the Netlify-hosted candidate**
