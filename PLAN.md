@@ -158,9 +158,9 @@ These completed items from the earlier plan provide the baseline for the active 
 
 ## Optional future improvements
 
-- [ ] **O-08 — Align CI environment documentation with the workflow**
+- [x] **O-08 — Align CI environment documentation with the workflow**
 
-  - Correct the runner named in `docs/settings.md` and the stale Node minimum in the workflow comment. Completion means both agree with `.github/workflows/ci.yml` and `package.json`. [Workflow observations](docs/archive/improvements/IMPROVEMENTS-WORKFLOW-2026-11-19.md#out-of-scope-observations).
+  - **Verification:** `docs/settings.md` names the `ubuntu-24.04` runner and the workflow comment states the `>=22.19.0` engines floor, matching `.github/workflows/ci.yml` and `package.json`; no executable workflow line changed and `git diff --check` passed. [Workflow observations](docs/archive/improvements/IMPROVEMENTS-WORKFLOW-2026-11-19.md#out-of-scope-observations).
 
 - [ ] **O-09 — Recover the demo imagery provenance where evidence exists**
   - Correct the tooling guide's reference to the removed provenance record. If reliable records are available, restore `assets/img-src/PROVENANCE.md` as a new source-only record with the supported generation and usage details. Record missing evidence explicitly. [Design finding P-02](docs/archive/improvements/IMPROVEMENTS-DESIGN-2026-11-15.md#owner-decisions-and-open-items).

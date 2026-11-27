@@ -115,7 +115,7 @@ DEV_SERVER_PORT=15501 npm run dev
 
 - One workflow: `.github/workflows/ci.yml`, workflow name `CI`, one job `quality-gate`. GitHub reports the status check as `CI / quality-gate`. Both names are part of the contract — branch protection selects a check by name, so renaming either silently detaches a required check.
 - Triggers: `push` to `main`, `pull_request` targeting `main`, and `workflow_dispatch`. Development branches are not built on every push: a pull request validates a branch before merge, and `main` is validated independently of it.
-- Runner: one `ubuntu-latest`. No OS matrix, no Node matrix, no browser matrix.
+- Runner: one `ubuntu-24.04`. No OS matrix, no Node matrix, no browser matrix.
 - Node: `24` LTS, pinned in the workflow only, tracking the current Active LTS line. `engines` is `">=22.19.0"`, the floor required by the Lighthouse QA tooling; the repository pins no version elsewhere (no `.nvmrc`, and `netlify.toml` sets no `NODE_VERSION`).
 - Actions: `actions/checkout@v7` and `actions/setup-node@v7` only. `setup-node` supplies the npm cache, keyed on `package-lock.json`. No third-party action is used.
 - Permissions: `contents: read`. No secret is read, nothing is written back to the repository, no release is created, and nothing is deployed — deployment stays with Netlify.
