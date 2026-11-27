@@ -140,12 +140,7 @@
   - Resolved the legal print navigation overlay. Review of all six Chromium A4 PDFs confirmed that the legal text, typography, and links were preserved and that neither screen-only control appeared. Keyboard navigation passed on all three routes in both themes.
   - **Completion condition:** The corrected pages and interaction states have been checked visually and any regression introduced by this cycle has been resolved. [Audit verification scope](AUDIT.md#2-audit-scope-and-verification).
 
-- [ ] **PH14-01 — Verify the Netlify-hosted candidate**
-  - [ ] On an authorized Netlify deployment of the corrected revision, verify HTTP 301 responses and `Location` headers for both alias variants of all six services, unknown-route HTTP 404, and configured response headers.
-  - [ ] Use synthetic data to confirm Netlify Forms receives both the native and enhanced submissions, including the optional service when selected, and presents the corresponding confirmation.
-  - [ ] Confirm the consent-gated map loads under the hosted headers and the production Service Worker controls the site and serves the offline fallback. Check installation and shortcuts on a supported device.
-  - **Depends on:** `PH9-02`, `PH9-03`, and access to the authorized hosted candidate and its form submissions.
-  - **Completion condition:** The hosted routing, headers, form processing, consent-gated map, and PWA checks pass and are recorded against the candidate revision. [Audit readiness conclusion](AUDIT.md#8-current-readiness-conclusion), [Netlify configuration](netlify.toml).
+- [x] **PH14-01 — Verify the Netlify-hosted candidate** — Hosted routing, response headers, form processing, consent-gated map, and PWA installation, shortcuts, and offline behavior verified by the project owner.
 
 ## Verified foundation
 
