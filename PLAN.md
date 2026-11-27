@@ -162,5 +162,6 @@ These completed items from the earlier plan provide the baseline for the active 
 
   - **Verification:** `docs/settings.md` names the `ubuntu-24.04` runner and the workflow comment states the `>=22.19.0` engines floor, matching `.github/workflows/ci.yml` and `package.json`; no executable workflow line changed and `git diff --check` passed. [Workflow observations](docs/archive/improvements/IMPROVEMENTS-WORKFLOW-2026-11-19.md#out-of-scope-observations).
 
-- [ ] **O-09 — Recover the demo imagery provenance where evidence exists**
-  - Correct the tooling guide's reference to the removed provenance record. If reliable records are available, restore `assets/img-src/PROVENANCE.md` as a new source-only record with the supported generation and usage details. Record missing evidence explicitly. [Design finding P-02](docs/archive/improvements/IMPROVEMENTS-DESIGN-2026-11-15.md#owner-decisions-and-open-items).
+- [x] **O-09 — Recover the demo imagery provenance where evidence exists**
+
+  - **Verification:** `assets/img-src/PROVENANCE.md` records the owner-confirmed ChatGPT (OpenAI) origin of the hero, service, gallery, and Open Graph masters, identifies the PWA screenshots as actual application captures, and lists the unavailable generation and usage-rights evidence. The `docs/settings.md` reference now resolves, `build-dist.js` skips `img-src`, and Prettier and `git diff --check` passed. [Design finding P-02](docs/archive/improvements/IMPROVEMENTS-DESIGN-2026-11-15.md#owner-decisions-and-open-items).
